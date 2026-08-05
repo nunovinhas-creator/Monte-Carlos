@@ -259,9 +259,15 @@ def gerar_dashboard_html(jogos):
         <title>Previsões Monte Carlo</title>
         <style>
             body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 10px; background: #f8f9fa; color: #212529; }}
-            h2 {{ text-align: center; color: #0d6efd; margin-bottom: 5px; }}
-            p.update {{ text-align: center; font-size: 0.8em; color: #6c757d; margin-top: 0; margin-bottom: 15px; }}
             
+            .header-container {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }}
+            .header-title {{ text-align: left; }}
+            h2 {{ color: #0d6efd; margin: 0 0 4px 0; }}
+            p.update {{ font-size: 0.8em; color: #6c757d; margin: 0; }}
+            
+            .btn-backtest {{ background: #0d6efd; color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 0.85em; font-weight: bold; display: inline-block; transition: background 0.2s; }}
+            .btn-backtest:hover {{ background: #0b5ed7; }}
+
             .filter-container {{ display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }}
             .filter-container select, .filter-container input {{
                 flex: 1; min-width: 140px; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9em;
@@ -283,8 +289,15 @@ def gerar_dashboard_html(jogos):
         </style>
     </head>
     <body>
-        <h2>⚽ Previsões Monte Carlo</h2>
-        <p class="update">Última atualização: {agora}</p>
+        <div class="header-container">
+            <div class="header-title">
+                <h2>⚽ Previsões Monte Carlo</h2>
+                <p class="update">Última atualização: {agora}</p>
+            </div>
+            <div>
+                <a href="backtest.html" class="btn-backtest">📊 Ver Backtest & Desempenho</a>
+            </div>
+        </div>
 
         <div class="filter-container">
             <select id="ligaFilter" onchange="filtrarTabela()">
