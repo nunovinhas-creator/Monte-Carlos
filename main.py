@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import requests
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 API_TOKEN = os.getenv("BSD_API_TOKEN")
 BASE_URL = "https://sports.bzzoiro.com/api/v2"
@@ -46,59 +46,47 @@ def extrair_data_hora(match):
             return None
     return None
 
-def obter_todos_eventos_paginados(max_paginas=15):
-    """Percorre as páginas da API para capturar todos os eventos disponíveis."""
-    todos_jogos = []
-    url = f"{BASE_URL}/events/"
+def obter_proximos_jogos():
+    """Consulta a API forçando a ordenação por data dos próximos jogos não realizados."""
+    urls_tentativas = [
+        f"{BASE_URL}/events/?status=notstarted&ordering=event_date",
+        f"{BASE_URL}/events/?ordering=event_date",
+        f"{BASE_URL}/events/"
+    ]
     
-    for page in range(1, max_paginas + 1):
+    for url in urls_tentativas:
         try:
-            res = requests.get(url, headers=HEADERS, params={"page": page}, timeout=10)
-            if res.status_code != 200:
-                break
-            
-            data = res.json()
-            if isinstance(data, dict):
-                matches = data.get('results', data.get('data', []))
-                has_next = data.get('next') is not None
-            elif isinstance(data, list):
-                matches = data
-                has_next = False
-            else:
-                break
-
-            if not matches:
-                break
-
-            todos_jogos.extend(matches)
-
-            if not has_next:
-                break
+            print(f"A consultar endpoint: {url}")
+            res = requests.get(url, headers=HEADERS, timeout=12)
+            if res.status_code == 200:
+                data = res.json()
+                matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
+                if isinstance(matches, list) and len(matches) > 0:
+                    print(f"✅ {len(matches)} jogos obtidos com sucesso.")
+                    return matches
         except Exception as e:
-            print(f"Erro ao obter página {page}: {e}")
-            break
+            print(f"Aviso ao consultar {url}: {e}")
             
-    return todos_jogos
+    return []
 
 def analisar():
-    agora_utc = datetime.now(timezone.utc)
+    matches = obter_proximos_jogos()
     
-    # Define a janela: a partir de hoje até aos próximos 4 dias
-    limite_inicio = agora_utc - timedelta(hours=3) # Mantém jogos de hoje a decorrer/recentes
-    limite_fim = agora_utc + timedelta(days=4)
-
-    raw_matches = obter_todos_eventos_paginados(max_paginas=20)
-    print(f"Total de jogos recolhidos (todas as páginas): {len(raw_matches)}")
+    if not matches:
+        print("❌ Nenhum jogo retornado pela API.")
+        gerar_dashboard_html([])
+        return
 
     jogos_processados = []
 
-    for match in raw_matches:
+    for match in matches:
         dt_obj = extrair_data_hora(match)
         if not dt_obj:
             continue
 
-        # Filtra os jogos dentro da janela temporal correta
-        if not (limite_inicio <= dt_obj <= limite_fim):
+        # Filtra jogos não iniciados ou sem resultado registado
+        status = str(match.get('status', '')).lower()
+        if status not in ['notstarted', 'ns', 'scheduled', '']:
             continue
 
         home_name = match.get('home_team', 'Desconhecido')
@@ -127,10 +115,11 @@ def analisar():
             'btts': p_btts
         })
 
+    # Ordenar jogos por data cronológica
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
     gerar_dashboard_html(jogos_processados)
-    print(f"✅ Processamento concluído: {len(jogos_processados)} jogos mantidos para exibição.")
+    print(f"✅ Dashboard gerado com {len(jogos_processados)} próximos jogos!")
 
 def gerar_dashboard_html(jogos):
     agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -156,7 +145,7 @@ def gerar_dashboard_html(jogos):
         """
 
     if not linhas_tabela:
-        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo agendado para os próximos dias.</td></tr>'
+        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo encontrado na API.</td></tr>'
 
     html = f"""
     <!DOCTYPE html>
