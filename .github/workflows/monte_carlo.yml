@@ -1,0 +1,32 @@
+name: Previsoes Monte Carlo Hourly
+
+on:
+  schedule:
+    # Executa a cada hora no minuto 0
+    - cron: '0 * * * *'
+  # Permite executar manualmente no GitHub a qualquer momento
+  workflow_dispatch:
+
+jobs:
+  run-monte-carlo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Script Monte Carlo
+        env:
+          BSD_API_TOKEN: ${{ secrets.BSD_API_TOKEN }}
+        run: |
+          python main.py
