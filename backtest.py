@@ -54,46 +54,34 @@ def build_table_rows(brackets):
     return html
 
 def main():
-    if not os.path.exists("predictions.db"):
-        print("⚠️ Base de dados 'predictions.db' não encontrada. A ignorar geração do backtest.")
-        return
+    total_finished = 0
+    over25_rows = ""
+    btts_rows = ""
 
-    conn = sqlite3.connect("predictions.db")
-    cursor = conn.cursor()
+    if os.path.exists("predictions.db"):
+        conn = sqlite3.connect("predictions.db")
+        cursor = conn.cursor()
 
-    # Verificar estrutura da tabela predictions
-    cursor.execute("PRAGMA table_info(predictions);")
-    columns = [col[1] for col in cursor.fetchall()]
+        # Verificar se as colunas necessárias existem
+        cursor.execute("PRAGMA table_info(predictions);")
+        columns = [col[1] for col in cursor.fetchall()]
 
-    # Garantir colunas necessárias para liquidação de resultados
-    required_cols = ['prob_over25', 'prob_btts', 'status', 'settled_over25', 'settled_btts']
-    if not all(col in columns for col in required_cols):
-        print("ℹ️ Tabela de previsões ainda não possui registos com liquidação concluída.")
+        required_cols = ['prob_over25', 'prob_btts', 'status', 'settled_over25', 'settled_btts']
+        if all(col in columns for col in required_cols):
+            cursor.execute("""
+                SELECT prob_over25, prob_btts, settled_over25, settled_btts 
+                FROM predictions 
+                WHERE status = 'finished' AND settled_over25 IS NOT NULL
+            """)
+            rows = cursor.fetchall()
+            if rows:
+                total_finished = len(rows)
+                over25_brackets = calculate_brackets(rows, 0, 2)
+                btts_brackets = calculate_brackets(rows, 1, 3)
+                over25_rows = build_table_rows(over25_brackets)
+                btts_rows = build_table_rows(btts_brackets)
+
         conn.close()
-        return
-
-    cursor.execute("""
-        SELECT prob_over25, prob_btts, settled_over25, settled_btts 
-        from predictions 
-        WHERE status = 'finished' AND settled_over25 IS NOT NULL
-    """)
-    rows = cursor.fetchall()
-    conn.close()
-
-    if not rows:
-        print("ℹ️ Sem jogos finalizados suficientes para gerar relatório de backtest.")
-        total_finished = 0
-        over25_rows = ""
-        btts_rows = ""
-    else:
-        total_finished = len(rows)
-        # Índice 0: prob_over25, Índice 2: settled_over25
-        over25_brackets = calculate_brackets(rows, 0, 2)
-        # Índice 1: prob_btts, Índice 3: settled_btts
-        btts_brackets = calculate_brackets(rows, 1, 3)
-
-        over25_rows = build_table_rows(over25_brackets)
-        btts_rows = build_table_rows(btts_brackets)
 
     html_content = f"""<!DOCTYPE html>
 <html lang="pt">
@@ -138,7 +126,7 @@ def main():
                                 </tr>
                             </thead>
                             <tbody>
-                                {over25_rows if over25_rows else '<tr><td colspan="4" class="text-center text-muted">Aguardando mais dados...</td></tr>'}
+                                {over25_rows if over25_rows else '<tr><td colspan="4" class="text-center text-muted py-3">Aguardando liquidação de jogos...</td></tr>'}
                             </tbody>
                         </table>
                     </div>
@@ -160,7 +148,7 @@ def main():
                                 </tr>
                             </thead>
                             <tbody>
-                                {btts_rows if btts_rows else '<tr><td colspan="4" class="text-center text-muted">Aguardando mais dados...</td></tr>'}
+                                {btts_rows if btts_rows else '<tr><td colspan="4" class="text-center text-muted py-3">Aguardando liquidação de jogos...</td></tr>'}
                             </tbody>
                         </table>
                     </div>
@@ -179,4 +167,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
