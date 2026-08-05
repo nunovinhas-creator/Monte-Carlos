@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 API_TOKEN = os.getenv("BSD_API_TOKEN")
 BASE_URL = "https://sports.bzzoiro.com/api/v2"
@@ -46,36 +46,51 @@ def extrair_data_hora(match):
             return None
     return None
 
-def obter_proximos_jogos():
-    """Consulta a API forçando a ordenação por data dos próximos jogos não realizados."""
-    urls_tentativas = [
-        f"{BASE_URL}/events/?status=notstarted&ordering=event_date",
-        f"{BASE_URL}/events/?ordering=event_date",
-        f"{BASE_URL}/events/"
-    ]
-    
-    for url in urls_tentativas:
-        try:
-            print(f"A consultar endpoint: {url}")
-            res = requests.get(url, headers=HEADERS, timeout=12)
-            if res.status_code == 200:
-                data = res.json()
-                matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
-                if isinstance(matches, list) and len(matches) > 0:
-                    print(f"✅ {len(matches)} jogos obtidos com sucesso.")
-                    return matches
-        except Exception as e:
-            print(f"Aviso ao consultar {url}: {e}")
-            
+def obter_jogos_proximos_dias():
+    agora_utc = datetime.now(timezone.utc)
+    hoje_str = agora_utc.strftime('%Y-%m-%d')
+    limite_str = (agora_utc + timedelta(days=3)).strftime('%Y-%m-%d')
+
+    # Parâmetros exatos conforme a documentação da API BSD
+    params = {
+        "status": "upcoming",
+        "date_from": hoje_str,
+        "date_to": limite_str,
+        "limit": 200
+    }
+
+    url = f"{BASE_URL}/events/"
+    print(f"A solicitar API: {url} | Params: {params}")
+
+    try:
+        res = requests.get(url, headers=HEADERS, params=params, timeout=15)
+        if res.status_code == 200:
+            data = res.json()
+            matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
+            print(f"✅ {len(matches)} jogos obtidos diretamente da API para a janela {hoje_str} a {limite_str}.")
+            return matches
+        else:
+            print(f"❌ Erro HTTP {res.status_code}: {res.text}")
+    except Exception as e:
+        print(f"❌ Erro na ligação: {e}")
+
+    # Fallback caso date_from / date_to dependam do formato do servidor
+    params_fallback = {"status": "upcoming", "limit": 200}
+    try:
+        res = requests.get(url, headers=HEADERS, params=params_fallback, timeout=15)
+        if res.status_code == 200:
+            data = res.json()
+            return data.get('results', data.get('data', data)) if isinstance(data, dict) else data
+    except Exception as e:
+        print(f"❌ Erro no fallback: {e}")
+
     return []
 
 def analisar():
-    matches = obter_proximos_jogos()
+    matches = obter_jogos_proximos_dias()
     
-    if not matches:
-        print("❌ Nenhum jogo retornado pela API.")
-        gerar_dashboard_html([])
-        return
+    agora_utc = datetime.now(timezone.utc)
+    limite_3_dias = agora_utc + timedelta(days=3, hours=12)
 
     jogos_processados = []
 
@@ -84,9 +99,8 @@ def analisar():
         if not dt_obj:
             continue
 
-        # Filtra jogos não iniciados ou sem resultado registado
-        status = str(match.get('status', '')).lower()
-        if status not in ['notstarted', 'ns', 'scheduled', '']:
+        # Garante que o jogo está dentro da janela de 3 dias
+        if dt_obj < (agora_utc - timedelta(hours=3)) or dt_obj > limite_3_dias:
             continue
 
         home_name = match.get('home_team', 'Desconhecido')
@@ -115,11 +129,10 @@ def analisar():
             'btts': p_btts
         })
 
-    # Ordenar jogos por data cronológica
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
     gerar_dashboard_html(jogos_processados)
-    print(f"✅ Dashboard gerado com {len(jogos_processados)} próximos jogos!")
+    print(f"✅ Dashboard gerado com {len(jogos_processados)} jogos próximos!")
 
 def gerar_dashboard_html(jogos):
     agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -145,7 +158,7 @@ def gerar_dashboard_html(jogos):
         """
 
     if not linhas_tabela:
-        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo encontrado na API.</td></tr>'
+        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo agendado para os próximos 3 dias.</td></tr>'
 
     html = f"""
     <!DOCTYPE html>
