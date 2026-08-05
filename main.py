@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 API_TOKEN = os.getenv("BSD_API_TOKEN")
 BASE_URL = "https://sports.bzzoiro.com/api/v2"
@@ -14,14 +14,14 @@ HEADERS = {
 LEAGUE_MAP = {
     1: "Premier League",
     3: "LaLiga",
-    38: "LaLiga 2",
-    39: "LaLiga",
     8: "Premier League",
     9: "Championship",
+    38: "LaLiga 2",
+    39: "LaLiga",
     94: "Liga Portugal",
-    201: "Serie A",
+    168: "Ligue 1",
     181: "Bundesliga",
-    168: "Ligue 1"
+    201: "Serie A"
 }
 
 def monte_carlo_sim(lambda_home, lambda_away, simulations=50000):
@@ -41,77 +41,100 @@ def extrair_data_hora(match):
     event_date = match.get('event_date')
     if event_date:
         try:
-            dt = datetime.fromisoformat(str(event_date).replace('Z', '+00:00'))
-            return dt
+            return datetime.fromisoformat(str(event_date).replace('Z', '+00:00'))
         except Exception:
             return None
     return None
 
-def analisar():
-    hoje = datetime.now()
-    limite = hoje + timedelta(days=7)
+def obter_eventos():
+    agora_utc = datetime.now(timezone.utc)
+    hoje_inicio = agora_utc.replace(hour=0, minute=0, second=0, microsecond=0)
     
-    # Passa filtros de data na API para evitar jogos de 2027
-    params = {
-        'from': hoje.strftime('%Y-%m-%d'),
-        'to': limite.strftime('%Y-%m-%d')
-    }
+    todos_jogos = {}
     
-    url = f"{BASE_URL}/events/"
-    print(f"A ligar ao endpoint: {url} com datas entre {params['from']} e {params['to']}")
-
-    try:
-        response = requests.get(url, headers=HEADERS, params=params, timeout=15)
+    # Consulta a API dia a dia para os próximos 3 dias
+    for i in range(4):
+        dia_alvo = (hoje_inicio + timedelta(days=i)).strftime('%Y-%m-%d')
         
-        if response.status_code == 200:
-            data = response.json()
-            matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
+        for param_key in ['date', 'day']:
+            url = f"{BASE_URL}/events/"
+            try:
+                res = requests.get(url, headers=HEADERS, params={param_key: dia_alvo}, timeout=10)
+                if res.status_code == 200:
+                    data = res.json()
+                    matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
+                    if isinstance(matches, list):
+                        for m in matches:
+                            m_id = m.get('id')
+                            if m_id and m_id not in todos_jogos:
+                                todos_jogos[m_id] = m
+            except Exception as e:
+                print(f"Aviso ao consultar {dia_alvo}: {e}")
 
-            jogos_processados = []
+    # Fallback se a API não aceitar filtros por query string
+    if not todos_jogos:
+        try:
+            res = requests.get(f"{BASE_URL}/events/", headers=HEADERS, timeout=15)
+            if res.status_code == 200:
+                data = res.json()
+                matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
+                if isinstance(matches, list):
+                    for m in matches:
+                        m_id = m.get('id')
+                        if m_id:
+                            todos_jogos[m_id] = m
+        except Exception as e:
+            print(f"Erro no fallback geral: {e}")
 
-            for match in matches:
-                dt_obj = extrair_data_hora(match)
-                
-                # Filtrar programaticamente caso a API ignore os parâmetros de URL
-                if dt_obj and dt_obj.year > hoje.year + 1:
-                    continue  # Ignores jogos em anos futuros distantes (ex: 2027+)
+    return list(todos_jogos.values())
 
-                home_name = match.get('home_team', 'Desconhecido')
-                away_name = match.get('away_team', 'Desconhecido')
-                
-                league_id = match.get('league_id')
-                liga_name = LEAGUE_MAP.get(league_id, f"Liga ID {league_id}") if league_id else "Outras Ligas"
-                
-                data_str = dt_obj.strftime('%d/%m/%Y %H:%M') if dt_obj else 'Data N/D'
+def analisar():
+    agora_utc = datetime.now(timezone.utc)
+    hoje_inicio = agora_utc.replace(hour=0, minute=0, second=0, microsecond=0)
+    limite_3_dias = hoje_inicio + timedelta(days=4)  # Inclui hoje + próximos 3 dias
 
-                h2h = match.get('head_to_head', {})
-                avg_goals = h2h.get('avg_total_goals', 2.4) / 2.0 if h2h else 1.3
-                
-                xg_home = match.get('home_xg', avg_goals)
-                xg_away = match.get('away_xg', avg_goals)
+    print(f"Filtrando jogos entre {hoje_inicio.strftime('%d/%m/%Y')} e {(limite_3_dias - timedelta(seconds=1)).strftime('%d/%m/%Y')}")
 
-                p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
+    matches = obter_eventos()
+    jogos_processados = []
 
-                jogos_processados.append({
-                    'data_str': data_str,
-                    'dt_obj': dt_obj or datetime.max,
-                    'liga': liga_name,
-                    'home': home_name,
-                    'away': away_name,
-                    'o25': p_o25,
-                    'btts': p_btts
-                })
+    for match in matches:
+        dt_obj = extrair_data_hora(match)
 
-            jogos_processados.sort(key=lambda x: x['dt_obj'])
+        # FILTRO RÍGIDO: Apenas aceita datas dentro da janela dos próximos 3 dias
+        if not dt_obj or not (hoje_inicio <= dt_obj < limite_3_dias):
+            continue
 
-            gerar_dashboard_html(jogos_processados)
-            print(f"✅ Dashboard gerado com {len(jogos_processados)} jogos recentes!")
-            
-        else:
-            print(f"❌ Erro na API: {response.status_code}")
+        home_name = match.get('home_team', 'Desconhecido')
+        away_name = match.get('away_team', 'Desconhecido')
+        
+        league_id = match.get('league_id')
+        liga_name = LEAGUE_MAP.get(league_id, f"Liga ID {league_id}") if league_id else "Outras Ligas"
+        
+        data_str = dt_obj.strftime('%d/%m/%Y %H:%M')
 
-    except Exception as e:
-        print(f"❌ Erro de execução: {e}")
+        h2h = match.get('head_to_head', {})
+        avg_goals = h2h.get('avg_total_goals', 2.4) / 2.0 if h2h else 1.3
+        
+        xg_home = match.get('home_xg', avg_goals)
+        xg_away = match.get('away_xg', avg_goals)
+
+        p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
+
+        jogos_processados.append({
+            'data_str': data_str,
+            'dt_obj': dt_obj,
+            'liga': liga_name,
+            'home': home_name,
+            'away': away_name,
+            'o25': p_o25,
+            'btts': p_btts
+        })
+
+    jogos_processados.sort(key=lambda x: x['dt_obj'])
+
+    gerar_dashboard_html(jogos_processados)
+    print(f"✅ Processamento concluído: {len(jogos_processados)} jogos mantidos.")
 
 def gerar_dashboard_html(jogos):
     agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -135,6 +158,9 @@ def gerar_dashboard_html(jogos):
             <td style="color: {cor_btts}; font-weight: bold;">{j['btts']:.1f}%</td>
         </tr>
         """
+
+    if not linhas_tabela:
+        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo agendado para os próximos 3 dias.</td></tr>'
 
     html = f"""
     <!DOCTYPE html>
@@ -196,7 +222,9 @@ def gerar_dashboard_html(jogos):
                 var rows = document.querySelectorAll("#matchesTable tbody tr");
 
                 rows.forEach(function(row) {{
-                    var ligaRow = row.getAttribute("data-liga").toLowerCase();
+                    var ligaRow = row.getAttribute("data-liga");
+                    if (!ligaRow) return;
+                    ligaRow = ligaRow.toLowerCase();
                     var textoRow = row.innerText.toLowerCase();
 
                     var bateLiga = (ligaSelec === "" || ligaRow === ligaSelec);
