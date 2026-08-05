@@ -11,6 +11,7 @@ HEADERS = {
     "Accept": "application/json"
 }
 
+# Dicionário de fallback alargado caso a API só envie o ID numérico
 LEAGUE_MAP = {
     1: "Premier League",
     3: "LaLiga",
@@ -18,6 +19,11 @@ LEAGUE_MAP = {
     9: "Championship",
     38: "LaLiga 2",
     39: "LaLiga",
+    40: "EFL Championship / Cup",
+    79: "Tercera RFEF",
+    80: "Liga BetPlay",
+    83: "UEFA Conference League",
+    85: "Liga Argentina",
     94: "Liga Portugal",
     168: "Ligue 1",
     181: "Bundesliga",
@@ -45,6 +51,27 @@ def extrair_data_hora(match):
         except Exception:
             return None
     return None
+
+def extrair_nome_liga(match):
+    """Extrai dinamicamente o nome da liga enviado pela API ou recorre ao LEAGUE_MAP."""
+    league_info = match.get('league')
+    if isinstance(league_info, dict):
+        nome = league_info.get('name')
+        if nome:
+            return nome
+    elif isinstance(league_info, str) and league_info.strip():
+        return league_info.strip()
+
+    for campo in ['league_name', 'competition_name', 'competition', 'tournament_name']:
+        val = match.get(campo)
+        if val and isinstance(val, str) and val.strip():
+            return val.strip()
+
+    league_id = match.get('league_id')
+    if league_id:
+        return LEAGUE_MAP.get(league_id, f"Liga ID {league_id}")
+
+    return "Outras Ligas"
 
 def obter_jogos_proximos_dias():
     agora_utc = datetime.now(timezone.utc)
@@ -102,11 +129,10 @@ def analisar():
 
         home_name = match.get('home_team', 'Desconhecido')
         away_name = match.get('away_team', 'Desconhecido')
-        
-        league_id = match.get('league_id')
-        liga_name = LEAGUE_MAP.get(league_id, f"Liga ID {league_id}") if league_id else "Outras Ligas"
+        liga_name = extrair_nome_liga(match)
         
         data_str = dt_obj.strftime('%d/%m/%Y %H:%M')
+        timestamp = int(dt_obj.timestamp())
 
         h2h = match.get('head_to_head', {})
         avg_goals = h2h.get('avg_total_goals', 2.4) / 2.0 if h2h else 1.3
@@ -118,6 +144,7 @@ def analisar():
 
         jogos_processados.append({
             'data_str': data_str,
+            'timestamp': timestamp,
             'dt_obj': dt_obj,
             'liga': liga_name,
             'home': home_name,
@@ -146,7 +173,7 @@ def gerar_dashboard_html(jogos):
 
         linhas_tabela += f"""
         <tr data-liga="{j['liga']}">
-            <td><b>{j['data_str']}</b></td>
+            <td data-value="{j['timestamp']}"><b>{j['data_str']}</b></td>
             <td><span class="badge-liga">{j['liga']}</span></td>
             <td>{j['home']} vs {j['away']}</td>
             <td data-value="{j['o25']}" style="color: {cor_o25}; font-weight: bold;">{j['o25']:.1f}%</td>
@@ -179,7 +206,6 @@ def gerar_dashboard_html(jogos):
             th, td {{ padding: 10px 8px; border-bottom: 1px solid #dee2e6; font-size: 0.85em; white-space: nowrap; }}
             th {{ background: #0d6efd; color: white; position: sticky; top: 0; }}
             
-            /* Estilos para colunas ordenáveis */
             th.sortable {{ cursor: pointer; user-select: none; }}
             th.sortable:hover {{ background: #0b5ed7; }}
             th.sortable::after {{ content: ' ⇅'; opacity: 0.5; font-size: 0.9em; }}
@@ -205,7 +231,7 @@ def gerar_dashboard_html(jogos):
             <table id="matchesTable">
                 <thead>
                     <tr>
-                        <th>Data/Hora</th>
+                        <th class="sortable" onclick="ordenarTabela(0)">Data/Hora</th>
                         <th>Liga</th>
                         <th>Jogo</th>
                         <th class="sortable" onclick="ordenarTabela(3)">Over 2.5</th>
@@ -249,31 +275,34 @@ def gerar_dashboard_html(jogos):
                 const rows = Array.from(tbody.querySelectorAll("tr"));
                 const headers = table.querySelectorAll("th.sortable");
                 
-                if (rows.length <= 1 && rows[0].cells.length === 1) return; // Ignora se for a mensagem "Nenhum jogo"
+                if (rows.length <= 1 && rows[0].cells.length === 1) return;
 
-                // Define direção padrão (descendente no primeiro clique para percentagens)
-                sortDirection[colIndex] = !sortDirection[colIndex];
-                const isAsc = !sortDirection[colIndex];
+                // Define direção inicial: Data (col 0) começa Ascendente (mais próximo primeiro)
+                // Over 2.5 e BTTS (col 3 e 4) começam Descendentes (maior % primeiro)
+                if (sortDirection[colIndex] === undefined) {{
+                    sortDirection[colIndex] = (colIndex === 0) ? 'asc' : 'desc';
+                }} else {{
+                    sortDirection[colIndex] = (sortDirection[colIndex] === 'asc') ? 'desc' : 'asc';
+                }}
 
-                // Atualiza ícones dos cabeçalhos
-                headers.forEach((th, idx) => {{
+                const dir = sortDirection[colIndex];
+
+                headers.forEach((th) => {{
                     th.classList.remove('sort-asc', 'sort-desc');
                     if (th.cellIndex === colIndex) {{
-                        th.classList.add(isAsc ? 'sort-asc' : 'sort-desc');
+                        th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
                     }}
                 }});
 
                 rows.sort((a, b) => {{
-                    // Usa o atributo data-value adicionado no HTML para uma ordenação numérica correta
-                    const cellA = parseFloat(a.cells[colIndex].getAttribute('data-value'));
-                    const cellB = parseFloat(b.cells[colIndex].getAttribute('data-value'));
+                    const cellA = parseFloat(a.cells[colIndex].getAttribute('data-value') || 0);
+                    const cellB = parseFloat(b.cells[colIndex].getAttribute('data-value') || 0);
 
-                    if (cellA < cellB) return isAsc ? -1 : 1;
-                    if (cellA > cellB) return isAsc ? 1 : -1;
+                    if (cellA < cellB) return dir === 'asc' ? -1 : 1;
+                    if (cellA > cellB) return dir === 'asc' ? 1 : -1;
                     return 0;
                 }});
 
-                // Reaplica as linhas ordenadas no tbody
                 rows.forEach(row => tbody.appendChild(row));
             }}
         </script>
