@@ -46,63 +46,59 @@ def extrair_data_hora(match):
             return None
     return None
 
-def obter_eventos():
-    agora_utc = datetime.now(timezone.utc)
-    hoje_inicio = agora_utc.replace(hour=0, minute=0, second=0, microsecond=0)
+def obter_todos_eventos_paginados(max_paginas=15):
+    """Percorre as páginas da API para capturar todos os eventos disponíveis."""
+    todos_jogos = []
+    url = f"{BASE_URL}/events/"
     
-    todos_jogos = {}
-    
-    # Consulta a API dia a dia para os próximos 3 dias
-    for i in range(4):
-        dia_alvo = (hoje_inicio + timedelta(days=i)).strftime('%Y-%m-%d')
-        
-        for param_key in ['date', 'day']:
-            url = f"{BASE_URL}/events/"
-            try:
-                res = requests.get(url, headers=HEADERS, params={param_key: dia_alvo}, timeout=10)
-                if res.status_code == 200:
-                    data = res.json()
-                    matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
-                    if isinstance(matches, list):
-                        for m in matches:
-                            m_id = m.get('id')
-                            if m_id and m_id not in todos_jogos:
-                                todos_jogos[m_id] = m
-            except Exception as e:
-                print(f"Aviso ao consultar {dia_alvo}: {e}")
-
-    # Fallback se a API não aceitar filtros por query string
-    if not todos_jogos:
+    for page in range(1, max_paginas + 1):
         try:
-            res = requests.get(f"{BASE_URL}/events/", headers=HEADERS, timeout=15)
-            if res.status_code == 200:
-                data = res.json()
-                matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
-                if isinstance(matches, list):
-                    for m in matches:
-                        m_id = m.get('id')
-                        if m_id:
-                            todos_jogos[m_id] = m
-        except Exception as e:
-            print(f"Erro no fallback geral: {e}")
+            res = requests.get(url, headers=HEADERS, params={"page": page}, timeout=10)
+            if res.status_code != 200:
+                break
+            
+            data = res.json()
+            if isinstance(data, dict):
+                matches = data.get('results', data.get('data', []))
+                has_next = data.get('next') is not None
+            elif isinstance(data, list):
+                matches = data
+                has_next = False
+            else:
+                break
 
-    return list(todos_jogos.values())
+            if not matches:
+                break
+
+            todos_jogos.extend(matches)
+
+            if not has_next:
+                break
+        except Exception as e:
+            print(f"Erro ao obter página {page}: {e}")
+            break
+            
+    return todos_jogos
 
 def analisar():
     agora_utc = datetime.now(timezone.utc)
-    hoje_inicio = agora_utc.replace(hour=0, minute=0, second=0, microsecond=0)
-    limite_3_dias = hoje_inicio + timedelta(days=4)  # Inclui hoje + próximos 3 dias
+    
+    # Define a janela: a partir de hoje até aos próximos 4 dias
+    limite_inicio = agora_utc - timedelta(hours=3) # Mantém jogos de hoje a decorrer/recentes
+    limite_fim = agora_utc + timedelta(days=4)
 
-    print(f"Filtrando jogos entre {hoje_inicio.strftime('%d/%m/%Y')} e {(limite_3_dias - timedelta(seconds=1)).strftime('%d/%m/%Y')}")
+    raw_matches = obter_todos_eventos_paginados(max_paginas=20)
+    print(f"Total de jogos recolhidos (todas as páginas): {len(raw_matches)}")
 
-    matches = obter_eventos()
     jogos_processados = []
 
-    for match in matches:
+    for match in raw_matches:
         dt_obj = extrair_data_hora(match)
+        if not dt_obj:
+            continue
 
-        # FILTRO RÍGIDO: Apenas aceita datas dentro da janela dos próximos 3 dias
-        if not dt_obj or not (hoje_inicio <= dt_obj < limite_3_dias):
+        # Filtra os jogos dentro da janela temporal correta
+        if not (limite_inicio <= dt_obj <= limite_fim):
             continue
 
         home_name = match.get('home_team', 'Desconhecido')
@@ -134,7 +130,7 @@ def analisar():
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
     gerar_dashboard_html(jogos_processados)
-    print(f"✅ Processamento concluído: {len(jogos_processados)} jogos mantidos.")
+    print(f"✅ Processamento concluído: {len(jogos_processados)} jogos mantidos para exibição.")
 
 def gerar_dashboard_html(jogos):
     agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -160,7 +156,7 @@ def gerar_dashboard_html(jogos):
         """
 
     if not linhas_tabela:
-        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo agendado para os próximos 3 dias.</td></tr>'
+        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo agendado para os próximos dias.</td></tr>'
 
     html = f"""
     <!DOCTYPE html>
