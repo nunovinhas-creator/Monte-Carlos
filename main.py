@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import numpy as np
 import requests
 from datetime import datetime, timezone, timedelta
@@ -11,7 +12,6 @@ HEADERS = {
     "Accept": "application/json"
 }
 
-# Dicionário de fallback alargado caso a API só envie o ID numérico
 LEAGUE_MAP = {
     1: "Premier League",
     3: "LaLiga",
@@ -29,6 +29,68 @@ LEAGUE_MAP = {
     181: "Bundesliga",
     201: "Serie A"
 }
+
+DB_NAME = "predictions.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS predictions (
+            match_id TEXT PRIMARY KEY,
+            event_date TEXT,
+            timestamp INTEGER,
+            league TEXT,
+            home_team TEXT,
+            away_team TEXT,
+            xg_home REAL,
+            xg_away REAL,
+            prob_o25 REAL,
+            prob_btts REAL,
+            created_at TEXT,
+            status TEXT DEFAULT 'pending',
+            home_score INTEGER,
+            away_score INTEGER,
+            result_o25 INTEGER,
+            result_btts INTEGER
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def salvar_previsoes_db(jogos):
+    if not jogos:
+        return
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    agora_iso = datetime.now(timezone.utc).isoformat()
+
+    for j in jogos:
+        match_id = str(j.get('id') or f"{j['home']}_{j['away']}_{j['timestamp']}")
+        
+        cursor.execute("""
+            INSERT OR IGNORE INTO predictions (
+                match_id, event_date, timestamp, league, home_team, away_team,
+                xg_home, xg_away, prob_o25, prob_btts, created_at, status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+        """, (
+            match_id,
+            j['data_str'],
+            j['timestamp'],
+            j['liga'],
+            j['home'],
+            j['away'],
+            j['xg_home'],
+            j['xg_away'],
+            round(j['o25'], 2),
+            round(j['btts'], 2),
+            agora_iso
+        ))
+
+    conn.commit()
+    conn.close()
+    print(f"💾 Registos processados na base de dados '{DB_NAME}'.")
 
 def monte_carlo_sim(lambda_home, lambda_away, simulations=50000):
     lambda_home = max(float(lambda_home or 1.2), 0.2)
@@ -53,7 +115,6 @@ def extrair_data_hora(match):
     return None
 
 def extrair_nome_liga(match):
-    """Extrai dinamicamente o nome da liga enviado pela API ou recorre ao LEAGUE_MAP."""
     league_info = match.get('league')
     if isinstance(league_info, dict):
         nome = league_info.get('name')
@@ -112,6 +173,7 @@ def obter_jogos_proximos_dias():
     return []
 
 def analisar():
+    init_db()
     matches = obter_jogos_proximos_dias()
     
     agora_utc = datetime.now(timezone.utc)
@@ -143,18 +205,22 @@ def analisar():
         p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
 
         jogos_processados.append({
+            'id': match.get('id'),
             'data_str': data_str,
             'timestamp': timestamp,
             'dt_obj': dt_obj,
             'liga': liga_name,
             'home': home_name,
             'away': away_name,
+            'xg_home': xg_home,
+            'xg_away': xg_away,
             'o25': p_o25,
             'btts': p_btts
         })
 
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
+    salvar_previsoes_db(jogos_processados)
     gerar_dashboard_html(jogos_processados)
     print(f"✅ Dashboard gerado com {len(jogos_processados)} jogos próximos!")
 
@@ -277,8 +343,6 @@ def gerar_dashboard_html(jogos):
                 
                 if (rows.length <= 1 && rows[0].cells.length === 1) return;
 
-                // Define direção inicial: Data (col 0) começa Ascendente (mais próximo primeiro)
-                // Over 2.5 e BTTS (col 3 e 4) começam Descendentes (maior % primeiro)
                 if (sortDirection[colIndex] === undefined) {{
                     sortDirection[colIndex] = (colIndex === 0) ? 'asc' : 'desc';
                 }} else {{
