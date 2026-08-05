@@ -33,10 +33,13 @@ jobs:
           BSD_API_TOKEN: ${{ secrets.BSD_API_TOKEN }}
         run: python settlement.py
 
+      - name: Gerar Relatório de Backtest (backtest.py)
+        run: python backtest.py
+
       - name: Commit e Push das Alterações
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add index.html predictions.db
-          git commit -m "Auto-update: dashboard e base de dados de previsões" || exit 0
+          git add index.html backtest.html predictions.db
+          git commit -m "Auto-update: dashboard, backtest e base de dados" || exit 0
           git push
