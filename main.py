@@ -51,7 +51,6 @@ def obter_jogos_proximos_dias():
     hoje_str = agora_utc.strftime('%Y-%m-%d')
     limite_str = (agora_utc + timedelta(days=3)).strftime('%Y-%m-%d')
 
-    # Parâmetros exatos conforme a documentação da API BSD
     params = {
         "status": "upcoming",
         "date_from": hoje_str,
@@ -74,7 +73,6 @@ def obter_jogos_proximos_dias():
     except Exception as e:
         print(f"❌ Erro na ligação: {e}")
 
-    # Fallback caso date_from / date_to dependam do formato do servidor
     params_fallback = {"status": "upcoming", "limit": 200}
     try:
         res = requests.get(url, headers=HEADERS, params=params_fallback, timeout=15)
@@ -99,7 +97,6 @@ def analisar():
         if not dt_obj:
             continue
 
-        # Garante que o jogo está dentro da janela de 3 dias
         if dt_obj < (agora_utc - timedelta(hours=3)) or dt_obj > limite_3_dias:
             continue
 
@@ -152,8 +149,8 @@ def gerar_dashboard_html(jogos):
             <td><b>{j['data_str']}</b></td>
             <td><span class="badge-liga">{j['liga']}</span></td>
             <td>{j['home']} vs {j['away']}</td>
-            <td style="color: {cor_o25}; font-weight: bold;">{j['o25']:.1f}%</td>
-            <td style="color: {cor_btts}; font-weight: bold;">{j['btts']:.1f}%</td>
+            <td data-value="{j['o25']}" style="color: {cor_o25}; font-weight: bold;">{j['o25']:.1f}%</td>
+            <td data-value="{j['btts']}" style="color: {cor_btts}; font-weight: bold;">{j['btts']:.1f}%</td>
         </tr>
         """
 
@@ -181,6 +178,14 @@ def gerar_dashboard_html(jogos):
             table {{ width: 100%; border-collapse: collapse; text-align: left; }}
             th, td {{ padding: 10px 8px; border-bottom: 1px solid #dee2e6; font-size: 0.85em; white-space: nowrap; }}
             th {{ background: #0d6efd; color: white; position: sticky; top: 0; }}
+            
+            /* Estilos para colunas ordenáveis */
+            th.sortable {{ cursor: pointer; user-select: none; }}
+            th.sortable:hover {{ background: #0b5ed7; }}
+            th.sortable::after {{ content: ' ⇅'; opacity: 0.5; font-size: 0.9em; }}
+            th.sort-desc::after {{ content: ' ↓'; opacity: 1; }}
+            th.sort-asc::after {{ content: ' ↑'; opacity: 1; }}
+
             tr:nth-child(even) {{ background: #f9f9f9; }}
             .badge-liga {{ background: #e9ecef; color: #495057; padding: 3px 6px; border-radius: 4px; font-size: 0.8em; font-weight: 500; }}
         </style>
@@ -203,8 +208,8 @@ def gerar_dashboard_html(jogos):
                         <th>Data/Hora</th>
                         <th>Liga</th>
                         <th>Jogo</th>
-                        <th>Over 2.5</th>
-                        <th>BTTS</th>
+                        <th class="sortable" onclick="ordenarTabela(3)">Over 2.5</th>
+                        <th class="sortable" onclick="ordenarTabela(4)">BTTS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -234,6 +239,42 @@ def gerar_dashboard_html(jogos):
                         row.style.display = "none";
                     }}
                 }});
+            }}
+
+            let sortDirection = {{}};
+
+            function ordenarTabela(colIndex) {{
+                const table = document.getElementById("matchesTable");
+                const tbody = table.querySelector("tbody");
+                const rows = Array.from(tbody.querySelectorAll("tr"));
+                const headers = table.querySelectorAll("th.sortable");
+                
+                if (rows.length <= 1 && rows[0].cells.length === 1) return; // Ignora se for a mensagem "Nenhum jogo"
+
+                // Define direção padrão (descendente no primeiro clique para percentagens)
+                sortDirection[colIndex] = !sortDirection[colIndex];
+                const isAsc = !sortDirection[colIndex];
+
+                // Atualiza ícones dos cabeçalhos
+                headers.forEach((th, idx) => {{
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.cellIndex === colIndex) {{
+                        th.classList.add(isAsc ? 'sort-asc' : 'sort-desc');
+                    }}
+                }});
+
+                rows.sort((a, b) => {{
+                    // Usa o atributo data-value adicionado no HTML para uma ordenação numérica correta
+                    const cellA = parseFloat(a.cells[colIndex].getAttribute('data-value'));
+                    const cellB = parseFloat(b.cells[colIndex].getAttribute('data-value'));
+
+                    if (cellA < cellB) return isAsc ? -1 : 1;
+                    if (cellA > cellB) return isAsc ? 1 : -1;
+                    return 0;
+                }});
+
+                // Reaplica as linhas ordenadas no tbody
+                rows.forEach(row => tbody.appendChild(row));
             }}
         </script>
     </body>
