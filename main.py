@@ -16,9 +16,13 @@ LEAGUE_MAP = {
     3: "LaLiga",
     8: "Premier League",
     9: "Championship",
+    35: "Brasileirão Série A",
     38: "LaLiga 2",
     39: "LaLiga",
     40: "EFL Championship / Cup",
+    49: "J1 League",
+    52: "Chinese Super League",
+    70: "A-League",
     79: "Tercera RFEF",
     80: "Liga BetPlay",
     83: "UEFA Conference League",
@@ -68,20 +72,24 @@ def extrair_nome_equipa(match, campo):
     return 'Desconhecido'
 
 def extrair_nome_liga(match):
-    league_info = match.get('league')
-    if isinstance(league_info, dict):
-        nome = league_info.get('name')
-        if nome:
-            return nome
-    elif isinstance(league_info, str) and league_info.strip():
-        return league_info.strip()
+    # Procura em dicionários aninhados
+    for key in ['league', 'competition', 'tournament', 'category']:
+        obj = match.get(key)
+        if isinstance(obj, dict):
+            nome = obj.get('name') or obj.get('title') or obj.get('label')
+            if nome and str(nome).strip():
+                return str(nome).strip()
+        elif isinstance(obj, str) and obj.strip():
+            return obj.strip()
 
-    for campo in ['league_name', 'competition_name', 'competition', 'tournament_name']:
+    # Procura em campos de texto simples
+    for campo in ['league_name', 'competition_name', 'tournament_name', 'category_name', 'country_name']:
         val = match.get(campo)
         if val and isinstance(val, str) and val.strip():
             return val.strip()
 
-    league_id = match.get('league_id')
+    # Mapeamento via ID
+    league_id = match.get('league_id') or match.get('competition_id')
     if league_id:
         return LEAGUE_MAP.get(league_id, f"Liga ID {league_id}")
 
@@ -89,7 +97,6 @@ def extrair_nome_liga(match):
 
 def obter_jogos_proximos_dias():
     hoje = datetime.now(timezone.utc).date()
-    # Margem de segurança de 1 dia atrás para evitar conflitos de fuso horário
     data_inicio_str = (hoje - timedelta(days=1)).isoformat()
     data_fim_str = (hoje + timedelta(days=4)).isoformat()
 
@@ -105,10 +112,9 @@ def obter_jogos_proximos_dias():
     print(f"A solicitar API: {url} | Params: {params}")
 
     try:
-        # Loop de paginação para obter todos os resultados
         while url and len(todos_jogos) < 600:
             res = requests.get(url, headers=HEADERS, params=params, timeout=15)
-            params = None  # Apaga os params pois o próximo URL ('next') já traz a query integrada
+            params = None
             
             if res.status_code == 200:
                 data = res.json()
@@ -147,7 +153,6 @@ def analisar():
         if not dt_obj:
             dt_obj = agora_utc
 
-        # Manter jogos das últimas 2 horas até aos próximos 4 dias
         if dt_obj < (agora_utc - timedelta(hours=2)):
             continue
 
@@ -156,6 +161,7 @@ def analisar():
         liga_name = extrair_nome_liga(match)
         
         data_str = dt_obj.strftime('%d/%m/%Y %H:%M')
+        data_dia = dt_obj.strftime('%d/%m/%Y')
         timestamp = int(dt_obj.timestamp())
 
         h2h = match.get('head_to_head', {})
@@ -169,6 +175,7 @@ def analisar():
         jogos_processados.append({
             'id': match.get('id'),
             'data_str': data_str,
+            'data_dia': data_dia,
             'timestamp': timestamp,
             'dt_obj': dt_obj,
             'liga': liga_name,
@@ -189,6 +196,11 @@ def analisar():
 def gerar_dashboard_html(jogos):
     agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     
+    datas_unicas = sorted(list(set(j['data_dia'] for j in jogos)), key=lambda d: datetime.strptime(d, '%d/%m/%Y'))
+    options_datas = '<option value="">Todas as Datas</option>'
+    for d in datas_unicas:
+        options_datas += f'<option value="{d}">{d}</option>'
+
     ligas_unicas = sorted(list(set(j['liga'] for j in jogos)))
     options_ligas = '<option value="">Todas as Ligas</option>'
     for l in ligas_unicas:
@@ -200,7 +212,7 @@ def gerar_dashboard_html(jogos):
         cor_btts = "#28a745" if j['btts'] >= 60 else "#212529"
 
         linhas_tabela += f"""
-        <tr data-liga="{j['liga']}">
+        <tr data-liga="{j['liga']}" data-data="{j['data_dia']}">
             <td data-value="{j['timestamp']}"><b>{j['data_str']}</b></td>
             <td><span class="badge-liga">{j['liga']}</span></td>
             <td>{j['home']} vs {j['away']}</td>
@@ -232,7 +244,7 @@ def gerar_dashboard_html(jogos):
 
             .filter-container {{ display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }}
             .filter-container select, .filter-container input {{
-                flex: 1; min-width: 140px; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9em;
+                flex: 1; min-width: 130px; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9em;
             }}
 
             .table-container {{ overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }}
@@ -262,10 +274,13 @@ def gerar_dashboard_html(jogos):
         </div>
 
         <div class="filter-container">
+            <select id="dataFilter" onchange="filtrarTabela()">
+                {options_datas}
+            </select>
             <select id="ligaFilter" onchange="filtrarTabela()">
                 {options_ligas}
             </select>
-            <input type="text" id="searchFilter" onkeyup="filtrarTabela()" placeholder="Filtrar por data, equipa...">
+            <input type="text" id="searchFilter" onkeyup="filtrarTabela()" placeholder="Filtrar equipa...">
         </div>
 
         <div class="table-container">
@@ -287,20 +302,21 @@ def gerar_dashboard_html(jogos):
 
         <script>
             function filtrarTabela() {{
+                var dataSelec = document.getElementById("dataFilter").value.toLowerCase();
                 var ligaSelec = document.getElementById("ligaFilter").value.toLowerCase();
                 var termoBusca = document.getElementById("searchFilter").value.toLowerCase();
                 var rows = document.querySelectorAll("#matchesTable tbody tr");
 
                 rows.forEach(function(row) {{
-                    var ligaRow = row.getAttribute("data-liga");
-                    if (!ligaRow) return;
-                    ligaRow = ligaRow.toLowerCase();
+                    var dataRow = (row.getAttribute("data-data") || "").toLowerCase();
+                    var ligaRow = (row.getAttribute("data-liga") || "").toLowerCase();
                     var textoRow = row.innerText.toLowerCase();
 
+                    var bateData = (dataSelec === "" || dataRow === dataSelec);
                     var bateLiga = (ligaSelec === "" || ligaRow === ligaSelec);
                     var bateBusca = (termoBusca === "" || textoRow.includes(termoBusca));
 
-                    if (bateLiga && bateBusca) {{
+                    if (bateData && bateLiga && bateBusca) {{
                         row.style.display = "";
                     }} else {{
                         row.style.display = "none";
