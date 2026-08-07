@@ -74,9 +74,9 @@ def extrair_nome_liga(match):
     return "Outras Ligas"
 
 def obter_jogos_proximos_dias():
-    agora_utc = datetime.now(timezone.utc)
-    hoje_str = agora_utc.strftime('%Y-%m-%d')
-    limite_str = (agora_utc + timedelta(days=3)).strftime('%Y-%m-%d')
+    hoje = datetime.now(timezone.utc).date()
+    hoje_str = hoje.isoformat()
+    limite_str = (hoje + timedelta(days=4)).isoformat()
 
     params = {
         "status": "upcoming",
@@ -102,7 +102,7 @@ def obter_jogos_proximos_dias():
 
     params_fallback = {"status": "upcoming", "limit": 200}
     try:
-        res = requests.get(url, headers=HEADERS, params=params_fallback, timeout=15)
+        res = requests.get(url, headers=HEADERS, params_fallback, timeout=15)
         if res.status_code == 200:
             data = res.json()
             return data.get('results', data.get('data', data)) if isinstance(data, dict) else data
@@ -114,19 +114,14 @@ def obter_jogos_proximos_dias():
 def analisar():
     init_db()
     matches = obter_jogos_proximos_dias()
-    
     agora_utc = datetime.now(timezone.utc)
-    limite_3_dias = agora_utc + timedelta(days=3, hours=12)
 
     jogos_processados = []
 
     for match in matches:
         dt_obj = extrair_data_hora(match)
         if not dt_obj:
-            continue
-
-        if dt_obj < (agora_utc - timedelta(hours=3)) or dt_obj > limite_3_dias:
-            continue
+            dt_obj = agora_utc
 
         home_name = match.get('home_team', 'Desconhecido')
         away_name = match.get('away_team', 'Desconhecido')
@@ -187,7 +182,7 @@ def gerar_dashboard_html(jogos):
         """
 
     if not linhas_tabela:
-        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo agendado para os próximos 3 dias.</td></tr>'
+        linhas_tabela = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum jogo agendado para os próximos dias.</td></tr>'
 
     html = f"""
     <!DOCTYPE html>
