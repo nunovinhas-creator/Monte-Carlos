@@ -113,7 +113,8 @@ def obter_jogos_proximos_dias():
 
     try:
         while url and len(todos_jogos) < 600:
-            res = requests.get(url, headers=HEADERS, params=params, timeout=15)
+            # Timeout aumentado de 15 para 45 segundos
+            res = requests.get(url, headers=HEADERS, params=params, timeout=45)
             params = None
             
             if res.status_code == 200:
