@@ -61,7 +61,8 @@ def consultar_resultado_api(match_id):
     if str(match_id).isdigit():
         url = f"{BASE_URL}/events/{match_id}/"
         try:
-            res = requests.get(url, headers=HEADERS, timeout=10)
+            # Timeout aumentado de 10 para 30 segundos
+            res = requests.get(url, headers=HEADERS, timeout=30)
             if res.status_code == 200:
                 data = res.json()
                 status = str(data.get('status', '')).lower()
