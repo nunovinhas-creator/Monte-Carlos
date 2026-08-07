@@ -1,4 +1,4 @@
-Name: Executar Previsões e Backtest
+name: Executar Previsões e Backtest
 
 on:
   schedule:
