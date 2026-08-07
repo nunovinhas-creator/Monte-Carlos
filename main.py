@@ -45,13 +45,27 @@ def monte_carlo_sim(lambda_home, lambda_away, simulations=50000):
     return prob_o25, prob_btts
 
 def extrair_data_hora(match):
-    event_date = match.get('event_date')
-    if event_date:
-        try:
-            return datetime.fromisoformat(str(event_date).replace('Z', '+00:00'))
-        except Exception:
-            return None
+    for campo in ['event_date', 'date', 'starting_at', 'match_date']:
+        val = match.get(campo)
+        if val:
+            try:
+                return datetime.fromisoformat(str(val).replace('Z', '+00:00'))
+            except Exception:
+                pass
     return None
+
+def extrair_nome_equipa(match, campo):
+    equipa = match.get(campo)
+    if isinstance(equipa, dict):
+        return equipa.get('name') or equipa.get('team_name') or 'Desconhecido'
+    if isinstance(equipa, str) and equipa.strip():
+        return equipa.strip()
+    
+    alt_key = f"{campo}_name"
+    if match.get(alt_key):
+        return str(match.get(alt_key)).strip()
+        
+    return 'Desconhecido'
 
 def extrair_nome_liga(match):
     league_info = match.get('league')
@@ -75,39 +89,49 @@ def extrair_nome_liga(match):
 
 def obter_jogos_proximos_dias():
     hoje = datetime.now(timezone.utc).date()
-    hoje_str = hoje.isoformat()
-    limite_str = (hoje + timedelta(days=4)).isoformat()
-
-    params = {
-        "status": "upcoming",
-        "date_from": hoje_str,
-        "date_to": limite_str,
-        "limit": 200
-    }
+    # Margem de segurança de 1 dia atrás para evitar conflitos de fuso horário
+    data_inicio_str = (hoje - timedelta(days=1)).isoformat()
+    data_fim_str = (hoje + timedelta(days=4)).isoformat()
 
     url = f"{BASE_URL}/events/"
+    params = {
+        "status": "upcoming",
+        "date_from": data_inicio_str,
+        "date_to": data_fim_str,
+        "limit": 100
+    }
+
+    todos_jogos = []
     print(f"A solicitar API: {url} | Params: {params}")
 
     try:
-        res = requests.get(url, headers=HEADERS, params=params, timeout=15)
-        if res.status_code == 200:
-            data = res.json()
-            matches = data.get('results', data.get('data', data)) if isinstance(data, dict) else data
-            print(f"✅ {len(matches)} jogos obtidos diretamente da API para a janela {hoje_str} a {limite_str}.")
-            return matches
-        else:
-            print(f"❌ Erro HTTP {res.status_code}: {res.text}")
+        # Loop de paginação para obter todos os resultados
+        while url and len(todos_jogos) < 600:
+            res = requests.get(url, headers=HEADERS, params=params, timeout=15)
+            params = None  # Apaga os params pois o próximo URL ('next') já traz a query integrada
+            
+            if res.status_code == 200:
+                data = res.json()
+                if isinstance(data, dict):
+                    matches = data.get('results', data.get('data', []))
+                    url = data.get('next')
+                elif isinstance(data, list):
+                    matches = data
+                    url = None
+                else:
+                    break
+
+                todos_jogos.extend(matches)
+                if not matches or not url:
+                    break
+            else:
+                print(f"❌ Erro HTTP {res.status_code}: {res.text}")
+                break
+
+        print(f"✅ {len(todos_jogos)} jogos obtidos no total (com paginação).")
+        return todos_jogos
     except Exception as e:
         print(f"❌ Erro na ligação: {e}")
-
-    params_fallback = {"status": "upcoming", "limit": 200}
-    try:
-        res = requests.get(url, headers=HEADERS, params=params_fallback, timeout=15)
-        if res.status_code == 200:
-            data = res.json()
-            return data.get('results', data.get('data', data)) if isinstance(data, dict) else data
-    except Exception as e:
-        print(f"❌ Erro no fallback: {e}")
 
     return []
 
@@ -123,8 +147,12 @@ def analisar():
         if not dt_obj:
             dt_obj = agora_utc
 
-        home_name = match.get('home_team', 'Desconhecido')
-        away_name = match.get('away_team', 'Desconhecido')
+        # Manter jogos das últimas 2 horas até aos próximos 4 dias
+        if dt_obj < (agora_utc - timedelta(hours=2)):
+            continue
+
+        home_name = extrair_nome_equipa(match, 'home_team')
+        away_name = extrair_nome_equipa(match, 'away_team')
         liga_name = extrair_nome_liga(match)
         
         data_str = dt_obj.strftime('%d/%m/%Y %H:%M')
