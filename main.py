@@ -102,7 +102,7 @@ def obter_jogos_proximos_dias():
 
     params_fallback = {"status": "upcoming", "limit": 200}
     try:
-        res = requests.get(url, headers=HEADERS, params_fallback, timeout=15)
+        res = requests.get(url, headers=HEADERS, params=params_fallback, timeout=15)
         if res.status_code == 200:
             data = res.json()
             return data.get('results', data.get('data', data)) if isinstance(data, dict) else data
