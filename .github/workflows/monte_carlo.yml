@@ -1,8 +1,8 @@
-name: Executar Previsões e Backtest
+Name: Executar Previsões e Backtest
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 jobs:
