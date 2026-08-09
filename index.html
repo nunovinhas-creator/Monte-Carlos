@@ -40,7 +40,7 @@
         <div class="header-container">
             <div class="header-title">
                 <h2>⚽ Previsões Monte Carlo</h2>
-                <p class="update">Última atualização: 08/08/2026 23:46:26</p>
+                <p class="update">Última atualização: 09/08/2026 02:30:33</p>
             </div>
             <div>
                 <a href="backtest.html" class="btn-backtest">📊 Ver Backtest & Desempenho</a>
@@ -49,10 +49,10 @@
 
         <div class="filter-container">
             <select id="dataFilter" onchange="filtrarTabela()">
-                <option value="">Todas as Datas</option><option value="08/08/2026">08/08/2026</option><option value="09/08/2026">09/08/2026</option><option value="10/08/2026">10/08/2026</option><option value="11/08/2026">11/08/2026</option><option value="12/08/2026">12/08/2026</option>
+                <option value="">Todas as Datas</option><option value="09/08/2026">09/08/2026</option><option value="10/08/2026">10/08/2026</option><option value="11/08/2026">11/08/2026</option><option value="12/08/2026">12/08/2026</option><option value="13/08/2026">13/08/2026</option>
             </select>
             <select id="ligaFilter" onchange="filtrarTabela()">
-                <option value="">Todas as Ligas</option><option value="Championship">Championship</option><option value="Chinese Super League">Chinese Super League</option><option value="EFL Championship / Cup">EFL Championship / Cup</option><option value="J1 League">J1 League</option><option value="Liga Argentina">Liga Argentina</option><option value="Liga BetPlay">Liga BetPlay</option><option value="Liga ID 10">Liga ID 10</option><option value="Liga ID 13">Liga ID 13</option><option value="Liga ID 14">Liga ID 14</option><option value="Liga ID 15">Liga ID 15</option><option value="Liga ID 2">Liga ID 2</option><option value="Liga ID 22">Liga ID 22</option><option value="Liga ID 23">Liga ID 23</option><option value="Liga ID 25">Liga ID 25</option><option value="Liga ID 26">Liga ID 26</option><option value="Liga ID 32">Liga ID 32</option><option value="Liga ID 33">Liga ID 33</option><option value="Liga ID 34">Liga ID 34</option><option value="Liga ID 42">Liga ID 42</option><option value="Liga ID 54">Liga ID 54</option><option value="Liga ID 55">Liga ID 55</option><option value="Liga ID 57">Liga ID 57</option><option value="Liga ID 7">Liga ID 7</option><option value="Liga ID 72">Liga ID 72</option><option value="Liga ID 82">Liga ID 82</option><option value="Liga ID 84">Liga ID 84</option><option value="Liga ID 88">Liga ID 88</option><option value="Premier League">Premier League</option><option value="Tercera RFEF">Tercera RFEF</option><option value="UEFA Conference League">UEFA Conference League</option>
+                <option value="">Todas as Ligas</option><option value="Championship">Championship</option><option value="Chinese Super League">Chinese Super League</option><option value="EFL Championship / Cup">EFL Championship / Cup</option><option value="J1 League">J1 League</option><option value="Liga Argentina">Liga Argentina</option><option value="Liga BetPlay">Liga BetPlay</option><option value="Liga ID 10">Liga ID 10</option><option value="Liga ID 13">Liga ID 13</option><option value="Liga ID 14">Liga ID 14</option><option value="Liga ID 15">Liga ID 15</option><option value="Liga ID 17">Liga ID 17</option><option value="Liga ID 2">Liga ID 2</option><option value="Liga ID 22">Liga ID 22</option><option value="Liga ID 23">Liga ID 23</option><option value="Liga ID 25">Liga ID 25</option><option value="Liga ID 26">Liga ID 26</option><option value="Liga ID 32">Liga ID 32</option><option value="Liga ID 33">Liga ID 33</option><option value="Liga ID 34">Liga ID 34</option><option value="Liga ID 42">Liga ID 42</option><option value="Liga ID 54">Liga ID 54</option><option value="Liga ID 55">Liga ID 55</option><option value="Liga ID 57">Liga ID 57</option><option value="Liga ID 7">Liga ID 7</option><option value="Liga ID 72">Liga ID 72</option><option value="Liga ID 81">Liga ID 81</option><option value="Liga ID 82">Liga ID 82</option><option value="Liga ID 84">Liga ID 84</option><option value="Liga ID 88">Liga ID 88</option><option value="Premier League">Premier League</option><option value="Tercera RFEF">Tercera RFEF</option><option value="UEFA Conference League">UEFA Conference League</option>
             </select>
             <input type="text" id="searchFilter" onkeyup="filtrarTabela()" placeholder="Filtrar equipa...">
         </div>
@@ -70,355 +70,235 @@
                 </thead>
                 <tbody>
                     
-        <tr data-liga="Liga Argentina" data-data="08/08/2026">
-            <td data-value="1786227300"><b>08/08/2026 22:15</b></td>
-            <td><span class="badge-liga">Liga Argentina</span></td>
-            <td>Boca Juniors vs Vélez Sarsfield</td>
-            <td data-value="7.066" style="color: #212529; font-weight: bold;">7.1%</td>
-            <td data-value="14.104" style="color: #212529; font-weight: bold;">14.1%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 72" data-data="08/08/2026">
-            <td data-value="1786228200"><b>08/08/2026 22:30</b></td>
-            <td><span class="badge-liga">Liga ID 72</span></td>
-            <td>Washington Spirit vs North Carolina Courage</td>
-            <td data-value="6.204" style="color: #212529; font-weight: bold;">6.2%</td>
-            <td data-value="13.174" style="color: #212529; font-weight: bold;">13.2%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="08/08/2026">
-            <td data-value="1786230000"><b>08/08/2026 23:00</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>Pittsburgh Riverhounds vs Sacramento Republic FC</td>
-            <td data-value="7.9" style="color: #212529; font-weight: bold;">7.9%</td>
-            <td data-value="15.509999999999998" style="color: #212529; font-weight: bold;">15.5%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="08/08/2026">
-            <td data-value="1786230000"><b>08/08/2026 23:00</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>Miami FC vs Las Vegas Lights</td>
-            <td data-value="67.86" style="color: #28a745; font-weight: bold;">67.9%</td>
-            <td data-value="68.054" style="color: #28a745; font-weight: bold;">68.1%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="08/08/2026">
-            <td data-value="1786230000"><b>08/08/2026 23:00</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>Loudoun United FC vs Charleston Battery</td>
-            <td data-value="32.23" style="color: #212529; font-weight: bold;">32.2%</td>
-            <td data-value="40.014" style="color: #212529; font-weight: bold;">40.0%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="08/08/2026">
-            <td data-value="1786230000"><b>08/08/2026 23:00</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>Lexington SC vs Phoenix Rising FC</td>
-            <td data-value="19.274" style="color: #212529; font-weight: bold;">19.3%</td>
-            <td data-value="27.98" style="color: #212529; font-weight: bold;">28.0%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="08/08/2026">
-            <td data-value="1786230000"><b>08/08/2026 23:00</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>Brooklyn FC vs Birmingham Legion FC</td>
-            <td data-value="48.43" style="color: #212529; font-weight: bold;">48.4%</td>
-            <td data-value="53.294" style="color: #212529; font-weight: bold;">53.3%</td>
-        </tr>
-        
-        <tr data-liga="Liga BetPlay" data-data="08/08/2026">
-            <td data-value="1786231500"><b>08/08/2026 23:25</b></td>
-            <td><span class="badge-liga">Liga BetPlay</span></td>
-            <td>Deportes Tolima vs Internacional de Bogotá</td>
-            <td data-value="37.638" style="color: #212529; font-weight: bold;">37.6%</td>
-            <td data-value="44.080000000000005" style="color: #212529; font-weight: bold;">44.1%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="08/08/2026">
-            <td data-value="1786231800"><b>08/08/2026 23:30</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>Rhode Island FC vs Colorado Springs Switchbacks FC</td>
-            <td data-value="68.624" style="color: #28a745; font-weight: bold;">68.6%</td>
-            <td data-value="68.328" style="color: #28a745; font-weight: bold;">68.3%</td>
-        </tr>
-        
-        <tr data-liga="Championship" data-data="08/08/2026">
-            <td data-value="1786231800"><b>08/08/2026 23:30</b></td>
-            <td><span class="badge-liga">Championship</span></td>
-            <td>Coritiba vs Chapecoense</td>
-            <td data-value="25.722" style="color: #212529; font-weight: bold;">25.7%</td>
-            <td data-value="34.248" style="color: #212529; font-weight: bold;">34.2%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="09/08/2026">
-            <td data-value="1786233600"><b>09/08/2026 00:00</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>Louisville City FC vs San Antonio FC</td>
-            <td data-value="41.03" style="color: #212529; font-weight: bold;">41.0%</td>
-            <td data-value="47.194" style="color: #212529; font-weight: bold;">47.2%</td>
-        </tr>
-        
-        <tr data-liga="Championship" data-data="09/08/2026">
-            <td data-value="1786233600"><b>09/08/2026 00:00</b></td>
-            <td><span class="badge-liga">Championship</span></td>
-            <td>Botafogo vs Fluminense</td>
-            <td data-value="0.758" style="color: #212529; font-weight: bold;">0.8%</td>
-            <td data-value="3.144" style="color: #212529; font-weight: bold;">3.1%</td>
-        </tr>
-        
-        <tr data-liga="Liga Argentina" data-data="09/08/2026">
-            <td data-value="1786235400"><b>09/08/2026 00:30</b></td>
-            <td><span class="badge-liga">Liga Argentina</span></td>
-            <td>Instituto De Córdoba vs Gimnasia y Esgrima Mendoza</td>
-            <td data-value="8.052" style="color: #212529; font-weight: bold;">8.1%</td>
-            <td data-value="15.338" style="color: #212529; font-weight: bold;">15.3%</td>
-        </tr>
-        
-        <tr data-liga="Liga Argentina" data-data="09/08/2026">
-            <td data-value="1786235400"><b>09/08/2026 00:30</b></td>
-            <td><span class="badge-liga">Liga Argentina</span></td>
-            <td>CA Independiente vs Club Atlético Platense</td>
-            <td data-value="36.302" style="color: #212529; font-weight: bold;">36.3%</td>
-            <td data-value="43.478" style="color: #212529; font-weight: bold;">43.5%</td>
-        </tr>
-        
-        <tr data-liga="Liga ID 57" data-data="09/08/2026">
-            <td data-value="1786235400"><b>09/08/2026 00:30</b></td>
-            <td><span class="badge-liga">Liga ID 57</span></td>
-            <td>FC Tulsa vs Detroit City FC</td>
-            <td data-value="61.751999999999995" style="color: #28a745; font-weight: bold;">61.8%</td>
-            <td data-value="63.392" style="color: #28a745; font-weight: bold;">63.4%</td>
-        </tr>
-        
         <tr data-liga="Liga ID 72" data-data="09/08/2026">
             <td data-value="1786236300"><b>09/08/2026 00:45</b></td>
             <td><span class="badge-liga">Liga ID 72</span></td>
             <td>Houston Dash vs Kansas City Current</td>
-            <td data-value="3.7800000000000002" style="color: #212529; font-weight: bold;">3.8%</td>
-            <td data-value="9.428" style="color: #212529; font-weight: bold;">9.4%</td>
+            <td data-value="3.92" style="color: #212529; font-weight: bold;">3.9%</td>
+            <td data-value="9.456000000000001" style="color: #212529; font-weight: bold;">9.5%</td>
         </tr>
         
         <tr data-liga="Liga ID 57" data-data="09/08/2026">
             <td data-value="1786237200"><b>09/08/2026 01:00</b></td>
             <td><span class="badge-liga">Liga ID 57</span></td>
             <td>El Paso Locomotive FC vs Oakland Roots SC</td>
-            <td data-value="55.286" style="color: #212529; font-weight: bold;">55.3%</td>
-            <td data-value="58.589999999999996" style="color: #212529; font-weight: bold;">58.6%</td>
+            <td data-value="55.315999999999995" style="color: #212529; font-weight: bold;">55.3%</td>
+            <td data-value="58.536" style="color: #212529; font-weight: bold;">58.5%</td>
         </tr>
         
         <tr data-liga="Liga BetPlay" data-data="09/08/2026">
             <td data-value="1786239000"><b>09/08/2026 01:30</b></td>
             <td><span class="badge-liga">Liga BetPlay</span></td>
             <td>Deportivo Pasto vs Deportivo Cali</td>
-            <td data-value="18.948" style="color: #212529; font-weight: bold;">18.9%</td>
-            <td data-value="27.933999999999997" style="color: #212529; font-weight: bold;">27.9%</td>
+            <td data-value="19.201999999999998" style="color: #212529; font-weight: bold;">19.2%</td>
+            <td data-value="28.076" style="color: #212529; font-weight: bold;">28.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 72" data-data="09/08/2026">
             <td data-value="1786240800"><b>09/08/2026 02:00</b></td>
             <td><span class="badge-liga">Liga ID 72</span></td>
             <td>Denver Summit FC vs Utah Royals FC</td>
-            <td data-value="57.696000000000005" style="color: #212529; font-weight: bold;">57.7%</td>
-            <td data-value="60.29" style="color: #28a745; font-weight: bold;">60.3%</td>
+            <td data-value="57.54" style="color: #212529; font-weight: bold;">57.5%</td>
+            <td data-value="60.358000000000004" style="color: #28a745; font-weight: bold;">60.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 57" data-data="09/08/2026">
             <td data-value="1786240800"><b>09/08/2026 02:00</b></td>
             <td><span class="badge-liga">Liga ID 57</span></td>
             <td>Orange County SC vs FC Tampa Bay Rowdies</td>
-            <td data-value="57.794000000000004" style="color: #212529; font-weight: bold;">57.8%</td>
-            <td data-value="60.716" style="color: #28a745; font-weight: bold;">60.7%</td>
+            <td data-value="57.618" style="color: #212529; font-weight: bold;">57.6%</td>
+            <td data-value="60.31999999999999" style="color: #28a745; font-weight: bold;">60.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 57" data-data="09/08/2026">
             <td data-value="1786240800"><b>09/08/2026 02:00</b></td>
             <td><span class="badge-liga">Liga ID 57</span></td>
             <td>Monterey Bay FC vs New Mexico United</td>
-            <td data-value="51.87199999999999" style="color: #212529; font-weight: bold;">51.9%</td>
-            <td data-value="55.64" style="color: #212529; font-weight: bold;">55.6%</td>
+            <td data-value="51.876" style="color: #212529; font-weight: bold;">51.9%</td>
+            <td data-value="55.476000000000006" style="color: #212529; font-weight: bold;">55.5%</td>
         </tr>
         
         <tr data-liga="J1 League" data-data="09/08/2026">
             <td data-value="1786266000"><b>09/08/2026 09:00</b></td>
             <td><span class="badge-liga">J1 League</span></td>
             <td>Tokyo Verdy vs Kawasaki Frontale</td>
-            <td data-value="34.832" style="color: #212529; font-weight: bold;">34.8%</td>
-            <td data-value="42.138" style="color: #212529; font-weight: bold;">42.1%</td>
+            <td data-value="35.205999999999996" style="color: #212529; font-weight: bold;">35.2%</td>
+            <td data-value="42.144" style="color: #212529; font-weight: bold;">42.1%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786269600"><b>09/08/2026 10:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Club Haro Deportivo vs UD Logroñés</td>
-            <td data-value="48.126000000000005" style="color: #212529; font-weight: bold;">48.1%</td>
-            <td data-value="53.138" style="color: #212529; font-weight: bold;">53.1%</td>
+            <td data-value="48.186" style="color: #212529; font-weight: bold;">48.2%</td>
+            <td data-value="53.04600000000001" style="color: #212529; font-weight: bold;">53.0%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786269600"><b>09/08/2026 10:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Radomiak Radom vs AEL Limassol</td>
-            <td data-value="47.967999999999996" style="color: #212529; font-weight: bold;">48.0%</td>
-            <td data-value="53.052" style="color: #212529; font-weight: bold;">53.1%</td>
+            <td data-value="48.205999999999996" style="color: #212529; font-weight: bold;">48.2%</td>
+            <td data-value="52.727999999999994" style="color: #212529; font-weight: bold;">52.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 88" data-data="09/08/2026">
             <td data-value="1786269600"><b>09/08/2026 10:00</b></td>
             <td><span class="badge-liga">Liga ID 88</span></td>
             <td>SC Farense vs Torreense</td>
-            <td data-value="45.368" style="color: #212529; font-weight: bold;">45.4%</td>
-            <td data-value="50.763999999999996" style="color: #212529; font-weight: bold;">50.8%</td>
+            <td data-value="46.012" style="color: #212529; font-weight: bold;">46.0%</td>
+            <td data-value="51.104000000000006" style="color: #212529; font-weight: bold;">51.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 82" data-data="09/08/2026">
             <td data-value="1786269600"><b>09/08/2026 10:00</b></td>
             <td><span class="badge-liga">Liga ID 82</span></td>
             <td>AD Marco 09 vs Paços de Ferreira</td>
-            <td data-value="48.193999999999996" style="color: #212529; font-weight: bold;">48.2%</td>
-            <td data-value="52.82" style="color: #212529; font-weight: bold;">52.8%</td>
+            <td data-value="48.526" style="color: #212529; font-weight: bold;">48.5%</td>
+            <td data-value="53.164" style="color: #212529; font-weight: bold;">53.2%</td>
         </tr>
         
         <tr data-liga="J1 League" data-data="09/08/2026">
             <td data-value="1786269600"><b>09/08/2026 10:00</b></td>
             <td><span class="badge-liga">J1 League</span></td>
             <td>V-Varen Nagasaki vs Kyoto Sanga FC</td>
-            <td data-value="32.132" style="color: #212529; font-weight: bold;">32.1%</td>
-            <td data-value="39.814" style="color: #212529; font-weight: bold;">39.8%</td>
+            <td data-value="32.332" style="color: #212529; font-weight: bold;">32.3%</td>
+            <td data-value="40.29" style="color: #212529; font-weight: bold;">40.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 10" data-data="09/08/2026">
             <td data-value="1786270500"><b>09/08/2026 10:15</b></td>
             <td><span class="badge-liga">Liga ID 10</span></td>
             <td>Sparta Rotterdam vs Feyenoord</td>
-            <td data-value="2.374" style="color: #212529; font-weight: bold;">2.4%</td>
-            <td data-value="6.7780000000000005" style="color: #212529; font-weight: bold;">6.8%</td>
+            <td data-value="2.436" style="color: #212529; font-weight: bold;">2.4%</td>
+            <td data-value="6.728000000000001" style="color: #212529; font-weight: bold;">6.7%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786273200"><b>09/08/2026 11:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Manchester City vs Atlético Madrid</td>
-            <td data-value="1.414" style="color: #212529; font-weight: bold;">1.4%</td>
-            <td data-value="4.988" style="color: #212529; font-weight: bold;">5.0%</td>
+            <td data-value="1.4080000000000001" style="color: #212529; font-weight: bold;">1.4%</td>
+            <td data-value="4.9799999999999995" style="color: #212529; font-weight: bold;">5.0%</td>
         </tr>
         
         <tr data-liga="Chinese Super League" data-data="09/08/2026">
             <td data-value="1786273200"><b>09/08/2026 11:00</b></td>
             <td><span class="badge-liga">Chinese Super League</span></td>
             <td>Henan FC vs Qingdao West Coast</td>
-            <td data-value="37.564" style="color: #212529; font-weight: bold;">37.6%</td>
-            <td data-value="44.336" style="color: #212529; font-weight: bold;">44.3%</td>
+            <td data-value="38.058" style="color: #212529; font-weight: bold;">38.1%</td>
+            <td data-value="44.472" style="color: #212529; font-weight: bold;">44.5%</td>
         </tr>
         
         <tr data-liga="Liga ID 14" data-data="09/08/2026">
             <td data-value="1786275000"><b>09/08/2026 11:30</b></td>
             <td><span class="badge-liga">Liga ID 14</span></td>
             <td>KAA Gent vs KV Mechelen</td>
-            <td data-value="0.8160000000000001" style="color: #212529; font-weight: bold;">0.8%</td>
-            <td data-value="3.26" style="color: #212529; font-weight: bold;">3.3%</td>
+            <td data-value="0.742" style="color: #212529; font-weight: bold;">0.7%</td>
+            <td data-value="3.1940000000000004" style="color: #212529; font-weight: bold;">3.2%</td>
         </tr>
         
         <tr data-liga="Chinese Super League" data-data="09/08/2026">
             <td data-value="1786275300"><b>09/08/2026 11:35</b></td>
             <td><span class="badge-liga">Chinese Super League</span></td>
             <td>Chongqing Tonglianglong FC vs Shanghai Port</td>
-            <td data-value="57.37" style="color: #212529; font-weight: bold;">57.4%</td>
-            <td data-value="60.528000000000006" style="color: #28a745; font-weight: bold;">60.5%</td>
+            <td data-value="57.647999999999996" style="color: #212529; font-weight: bold;">57.6%</td>
+            <td data-value="60.053999999999995" style="color: #28a745; font-weight: bold;">60.1%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786276800"><b>09/08/2026 12:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Johor Darul Ta'zim vs Chelsea</td>
-            <td data-value="48.208" style="color: #212529; font-weight: bold;">48.2%</td>
-            <td data-value="53.13" style="color: #212529; font-weight: bold;">53.1%</td>
+            <td data-value="48.3" style="color: #212529; font-weight: bold;">48.3%</td>
+            <td data-value="52.856" style="color: #212529; font-weight: bold;">52.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 15" data-data="09/08/2026">
             <td data-value="1786276800"><b>09/08/2026 12:00</b></td>
             <td><span class="badge-liga">Liga ID 15</span></td>
             <td>FC Lugano vs FC Zürich</td>
-            <td data-value="2.722" style="color: #212529; font-weight: bold;">2.7%</td>
-            <td data-value="7.335999999999999" style="color: #212529; font-weight: bold;">7.3%</td>
+            <td data-value="2.556" style="color: #212529; font-weight: bold;">2.6%</td>
+            <td data-value="7.132" style="color: #212529; font-weight: bold;">7.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 55" data-data="09/08/2026">
             <td data-value="1786276800"><b>09/08/2026 12:00</b></td>
             <td><span class="badge-liga">Liga ID 55</span></td>
             <td>Kuopion Palloseura vs Turun Palloseura</td>
-            <td data-value="11.266" style="color: #212529; font-weight: bold;">11.3%</td>
-            <td data-value="19.224" style="color: #212529; font-weight: bold;">19.2%</td>
+            <td data-value="11.566" style="color: #212529; font-weight: bold;">11.6%</td>
+            <td data-value="19.576" style="color: #212529; font-weight: bold;">19.6%</td>
         </tr>
         
         <tr data-liga="Chinese Super League" data-data="09/08/2026">
             <td data-value="1786276800"><b>09/08/2026 12:00</b></td>
             <td><span class="badge-liga">Chinese Super League</span></td>
             <td>Shandong Taishan vs Tianjin Jinmen Tiger</td>
-            <td data-value="7.932" style="color: #212529; font-weight: bold;">7.9%</td>
-            <td data-value="15.4" style="color: #212529; font-weight: bold;">15.4%</td>
+            <td data-value="7.920000000000001" style="color: #212529; font-weight: bold;">7.9%</td>
+            <td data-value="15.586" style="color: #212529; font-weight: bold;">15.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 26" data-data="09/08/2026">
             <td data-value="1786276800"><b>09/08/2026 12:00</b></td>
             <td><span class="badge-liga">Liga ID 26</span></td>
             <td>Malmö FF vs Degerfors IF</td>
-            <td data-value="64.806" style="color: #28a745; font-weight: bold;">64.8%</td>
-            <td data-value="65.884" style="color: #28a745; font-weight: bold;">65.9%</td>
+            <td data-value="64.96600000000001" style="color: #28a745; font-weight: bold;">65.0%</td>
+            <td data-value="66.10000000000001" style="color: #28a745; font-weight: bold;">66.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 26" data-data="09/08/2026">
             <td data-value="1786276800"><b>09/08/2026 12:00</b></td>
             <td><span class="badge-liga">Liga ID 26</span></td>
             <td>Hammarby IF vs BK Häcken</td>
-            <td data-value="87.478" style="color: #28a745; font-weight: bold;">87.5%</td>
-            <td data-value="84.164" style="color: #28a745; font-weight: bold;">84.2%</td>
+            <td data-value="87.578" style="color: #28a745; font-weight: bold;">87.6%</td>
+            <td data-value="84.378" style="color: #28a745; font-weight: bold;">84.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 13" data-data="09/08/2026">
             <td data-value="1786278600"><b>09/08/2026 12:30</b></td>
             <td><span class="badge-liga">Liga ID 13</span></td>
             <td>Kilmarnock vs Celtic</td>
-            <td data-value="3.3680000000000003" style="color: #212529; font-weight: bold;">3.4%</td>
-            <td data-value="8.39" style="color: #212529; font-weight: bold;">8.4%</td>
+            <td data-value="3.436" style="color: #212529; font-weight: bold;">3.4%</td>
+            <td data-value="8.732" style="color: #212529; font-weight: bold;">8.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 10" data-data="09/08/2026">
             <td data-value="1786278600"><b>09/08/2026 12:30</b></td>
             <td><span class="badge-liga">Liga ID 10</span></td>
             <td>PEC Zwolle vs AFC Ajax</td>
-            <td data-value="5.204000000000001" style="color: #212529; font-weight: bold;">5.2%</td>
-            <td data-value="11.372" style="color: #212529; font-weight: bold;">11.4%</td>
+            <td data-value="5.328" style="color: #212529; font-weight: bold;">5.3%</td>
+            <td data-value="11.732" style="color: #212529; font-weight: bold;">11.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 10" data-data="09/08/2026">
             <td data-value="1786278600"><b>09/08/2026 12:30</b></td>
             <td><span class="badge-liga">Liga ID 10</span></td>
             <td>FC Groningen vs FC Utrecht</td>
-            <td data-value="0.8420000000000001" style="color: #212529; font-weight: bold;">0.8%</td>
-            <td data-value="3.266" style="color: #212529; font-weight: bold;">3.3%</td>
+            <td data-value="0.774" style="color: #212529; font-weight: bold;">0.8%</td>
+            <td data-value="3.2419999999999995" style="color: #212529; font-weight: bold;">3.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 54" data-data="09/08/2026">
             <td data-value="1786278600"><b>09/08/2026 12:30</b></td>
             <td><span class="badge-liga">Liga ID 54</span></td>
             <td>Lillestrøm SK vs Rosenborg BK</td>
-            <td data-value="7.538" style="color: #212529; font-weight: bold;">7.5%</td>
-            <td data-value="14.87" style="color: #212529; font-weight: bold;">14.9%</td>
+            <td data-value="7.57" style="color: #212529; font-weight: bold;">7.6%</td>
+            <td data-value="14.540000000000001" style="color: #212529; font-weight: bold;">14.5%</td>
         </tr>
         
         <tr data-liga="Liga ID 25" data-data="09/08/2026">
             <td data-value="1786279500"><b>09/08/2026 12:45</b></td>
             <td><span class="badge-liga">Liga ID 25</span></td>
             <td>Śląsk Wrocław vs KS Cracovia</td>
-            <td data-value="6.0280000000000005" style="color: #212529; font-weight: bold;">6.0%</td>
-            <td data-value="12.792" style="color: #212529; font-weight: bold;">12.8%</td>
+            <td data-value="6.002" style="color: #212529; font-weight: bold;">6.0%</td>
+            <td data-value="12.678" style="color: #212529; font-weight: bold;">12.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 25" data-data="09/08/2026">
             <td data-value="1786279500"><b>09/08/2026 12:45</b></td>
             <td><span class="badge-liga">Liga ID 25</span></td>
             <td>Raków Częstochowa vs Zagłębie Lubin</td>
-            <td data-value="25.228" style="color: #212529; font-weight: bold;">25.2%</td>
+            <td data-value="25.013999999999996" style="color: #212529; font-weight: bold;">25.0%</td>
             <td data-value="33.442" style="color: #212529; font-weight: bold;">33.4%</td>
         </tr>
         
@@ -426,1000 +306,1376 @@
             <td data-value="1786280400"><b>09/08/2026 13:00</b></td>
             <td><span class="badge-liga">Liga ID 88</span></td>
             <td>Vizela vs União de Leiria</td>
-            <td data-value="45.751999999999995" style="color: #212529; font-weight: bold;">45.8%</td>
-            <td data-value="50.966" style="color: #212529; font-weight: bold;">51.0%</td>
+            <td data-value="45.373999999999995" style="color: #212529; font-weight: bold;">45.4%</td>
+            <td data-value="50.397999999999996" style="color: #212529; font-weight: bold;">50.4%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786282200"><b>09/08/2026 13:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Liverpool FC vs AS Monaco</td>
-            <td data-value="19.012" style="color: #212529; font-weight: bold;">19.0%</td>
-            <td data-value="27.974" style="color: #212529; font-weight: bold;">28.0%</td>
+            <td data-value="19.33" style="color: #212529; font-weight: bold;">19.3%</td>
+            <td data-value="28.154" style="color: #212529; font-weight: bold;">28.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 84" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Liga ID 84</span></td>
             <td>Randers FC vs Lyngby</td>
-            <td data-value="8.962" style="color: #212529; font-weight: bold;">9.0%</td>
-            <td data-value="16.536" style="color: #212529; font-weight: bold;">16.5%</td>
+            <td data-value="8.878" style="color: #212529; font-weight: bold;">8.9%</td>
+            <td data-value="16.375999999999998" style="color: #212529; font-weight: bold;">16.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 14" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Liga ID 14</span></td>
             <td>SV Zulte Waregem vs KRC Genk</td>
-            <td data-value="4.64" style="color: #212529; font-weight: bold;">4.6%</td>
-            <td data-value="11.04" style="color: #212529; font-weight: bold;">11.0%</td>
+            <td data-value="4.748" style="color: #212529; font-weight: bold;">4.7%</td>
+            <td data-value="10.793999999999999" style="color: #212529; font-weight: bold;">10.8%</td>
         </tr>
         
         <tr data-liga="Liga ID 14" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Liga ID 14</span></td>
             <td>RC Sporting Charleroi vs Oud-Heverlee Leuven</td>
-            <td data-value="4.102" style="color: #212529; font-weight: bold;">4.1%</td>
-            <td data-value="9.756" style="color: #212529; font-weight: bold;">9.8%</td>
+            <td data-value="3.894" style="color: #212529; font-weight: bold;">3.9%</td>
+            <td data-value="9.602" style="color: #212529; font-weight: bold;">9.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 13" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Liga ID 13</span></td>
             <td>Motherwell vs Falkirk FC</td>
-            <td data-value="20.1" style="color: #212529; font-weight: bold;">20.1%</td>
-            <td data-value="28.802" style="color: #212529; font-weight: bold;">28.8%</td>
+            <td data-value="20.62" style="color: #212529; font-weight: bold;">20.6%</td>
+            <td data-value="29.334" style="color: #212529; font-weight: bold;">29.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 13" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Liga ID 13</span></td>
             <td>Heart of Midlothian vs Dundee United</td>
-            <td data-value="5.1339999999999995" style="color: #212529; font-weight: bold;">5.1%</td>
-            <td data-value="11.468" style="color: #212529; font-weight: bold;">11.5%</td>
+            <td data-value="4.968" style="color: #212529; font-weight: bold;">5.0%</td>
+            <td data-value="11.108" style="color: #212529; font-weight: bold;">11.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 55" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Liga ID 55</span></td>
             <td>Inter Turku vs FC Lahti</td>
-            <td data-value="4.0680000000000005" style="color: #212529; font-weight: bold;">4.1%</td>
-            <td data-value="9.684" style="color: #212529; font-weight: bold;">9.7%</td>
+            <td data-value="4.276" style="color: #212529; font-weight: bold;">4.3%</td>
+            <td data-value="10.027999999999999" style="color: #212529; font-weight: bold;">10.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 34" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Liga ID 34</span></td>
             <td>Athletic Club vs Criciúma</td>
-            <td data-value="49.87" style="color: #212529; font-weight: bold;">49.9%</td>
-            <td data-value="54.36" style="color: #212529; font-weight: bold;">54.4%</td>
+            <td data-value="49.63" style="color: #212529; font-weight: bold;">49.6%</td>
+            <td data-value="54.308" style="color: #212529; font-weight: bold;">54.3%</td>
         </tr>
         
         <tr data-liga="Championship" data-data="09/08/2026">
             <td data-value="1786284000"><b>09/08/2026 14:00</b></td>
             <td><span class="badge-liga">Championship</span></td>
             <td>Cruzeiro vs Mirassol</td>
-            <td data-value="57.652" style="color: #212529; font-weight: bold;">57.7%</td>
-            <td data-value="60.402" style="color: #28a745; font-weight: bold;">60.4%</td>
+            <td data-value="57.778" style="color: #212529; font-weight: bold;">57.8%</td>
+            <td data-value="60.318000000000005" style="color: #28a745; font-weight: bold;">60.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 88" data-data="09/08/2026">
             <td data-value="1786285800"><b>09/08/2026 14:30</b></td>
             <td><span class="badge-liga">Liga ID 88</span></td>
             <td>Feirense vs Felgueiras</td>
-            <td data-value="25.592" style="color: #212529; font-weight: bold;">25.6%</td>
-            <td data-value="34.04" style="color: #212529; font-weight: bold;">34.0%</td>
+            <td data-value="25.476" style="color: #212529; font-weight: bold;">25.5%</td>
+            <td data-value="33.666000000000004" style="color: #212529; font-weight: bold;">33.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 88" data-data="09/08/2026">
             <td data-value="1786285800"><b>09/08/2026 14:30</b></td>
             <td><span class="badge-liga">Liga ID 88</span></td>
             <td>AVS - Futebol SAD vs Sporting CP B U21</td>
-            <td data-value="48.214" style="color: #212529; font-weight: bold;">48.2%</td>
-            <td data-value="52.932" style="color: #212529; font-weight: bold;">52.9%</td>
+            <td data-value="48.012" style="color: #212529; font-weight: bold;">48.0%</td>
+            <td data-value="52.724000000000004" style="color: #212529; font-weight: bold;">52.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 15" data-data="09/08/2026">
             <td data-value="1786285800"><b>09/08/2026 14:30</b></td>
             <td><span class="badge-liga">Liga ID 15</span></td>
             <td>FC St. Gallen 1879 vs FC Luzern</td>
-            <td data-value="0.95" style="color: #212529; font-weight: bold;">0.9%</td>
-            <td data-value="3.596" style="color: #212529; font-weight: bold;">3.6%</td>
+            <td data-value="0.9820000000000001" style="color: #212529; font-weight: bold;">1.0%</td>
+            <td data-value="3.64" style="color: #212529; font-weight: bold;">3.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 15" data-data="09/08/2026">
             <td data-value="1786285800"><b>09/08/2026 14:30</b></td>
             <td><span class="badge-liga">Liga ID 15</span></td>
             <td>FC Sion vs FC Vaduz</td>
-            <td data-value="25.650000000000002" style="color: #212529; font-weight: bold;">25.7%</td>
-            <td data-value="34.314" style="color: #212529; font-weight: bold;">34.3%</td>
+            <td data-value="25.83" style="color: #212529; font-weight: bold;">25.8%</td>
+            <td data-value="34.292" style="color: #212529; font-weight: bold;">34.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 15" data-data="09/08/2026">
             <td data-value="1786285800"><b>09/08/2026 14:30</b></td>
             <td><span class="badge-liga">Liga ID 15</span></td>
             <td>Basel vs FC Thun</td>
-            <td data-value="3.688" style="color: #212529; font-weight: bold;">3.7%</td>
-            <td data-value="9.088000000000001" style="color: #212529; font-weight: bold;">9.1%</td>
+            <td data-value="3.798" style="color: #212529; font-weight: bold;">3.8%</td>
+            <td data-value="9.234" style="color: #212529; font-weight: bold;">9.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 26" data-data="09/08/2026">
             <td data-value="1786285800"><b>09/08/2026 14:30</b></td>
             <td><span class="badge-liga">Liga ID 26</span></td>
             <td>IFK Göteborg vs Kalmar FF</td>
-            <td data-value="1.5859999999999999" style="color: #212529; font-weight: bold;">1.6%</td>
-            <td data-value="5.394" style="color: #212529; font-weight: bold;">5.4%</td>
+            <td data-value="1.53" style="color: #212529; font-weight: bold;">1.5%</td>
+            <td data-value="5.082" style="color: #212529; font-weight: bold;">5.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 26" data-data="09/08/2026">
             <td data-value="1786285800"><b>09/08/2026 14:30</b></td>
             <td><span class="badge-liga">Liga ID 26</span></td>
             <td>Halmstads BK vs GAIS</td>
-            <td data-value="32.31" style="color: #212529; font-weight: bold;">32.3%</td>
-            <td data-value="39.946" style="color: #212529; font-weight: bold;">39.9%</td>
+            <td data-value="32.224000000000004" style="color: #212529; font-weight: bold;">32.2%</td>
+            <td data-value="40.386" style="color: #212529; font-weight: bold;">40.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 10" data-data="09/08/2026">
             <td data-value="1786286700"><b>09/08/2026 14:45</b></td>
             <td><span class="badge-liga">Liga ID 10</span></td>
             <td>SC Heerenveen vs FC Twente</td>
-            <td data-value="2.024" style="color: #212529; font-weight: bold;">2.0%</td>
-            <td data-value="6.168" style="color: #212529; font-weight: bold;">6.2%</td>
+            <td data-value="2.016" style="color: #212529; font-weight: bold;">2.0%</td>
+            <td data-value="6.276" style="color: #212529; font-weight: bold;">6.3%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786287600"><b>09/08/2026 15:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Reggiana vs Alcione Milano</td>
-            <td data-value="47.918" style="color: #212529; font-weight: bold;">47.9%</td>
-            <td data-value="53.052" style="color: #212529; font-weight: bold;">53.1%</td>
+            <td data-value="48.094" style="color: #212529; font-weight: bold;">48.1%</td>
+            <td data-value="52.756" style="color: #212529; font-weight: bold;">52.8%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786287600"><b>09/08/2026 15:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>1. FC Union Berlin vs Aris Limassol</td>
-            <td data-value="47.922" style="color: #212529; font-weight: bold;">47.9%</td>
-            <td data-value="52.646" style="color: #212529; font-weight: bold;">52.6%</td>
+            <td data-value="48.486000000000004" style="color: #212529; font-weight: bold;">48.5%</td>
+            <td data-value="53.018" style="color: #212529; font-weight: bold;">53.0%</td>
         </tr>
         
         <tr data-liga="EFL Championship / Cup" data-data="09/08/2026">
             <td data-value="1786287600"><b>09/08/2026 15:00</b></td>
             <td><span class="badge-liga">EFL Championship / Cup</span></td>
             <td>Mansfield Town vs Sheffield United</td>
-            <td data-value="97.076" style="color: #28a745; font-weight: bold;">97.1%</td>
-            <td data-value="94.188" style="color: #28a745; font-weight: bold;">94.2%</td>
+            <td data-value="97.056" style="color: #28a745; font-weight: bold;">97.1%</td>
+            <td data-value="94.11" style="color: #28a745; font-weight: bold;">94.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 13" data-data="09/08/2026">
             <td data-value="1786287600"><b>09/08/2026 15:00</b></td>
             <td><span class="badge-liga">Liga ID 13</span></td>
             <td>Rangers vs Hibernian</td>
-            <td data-value="1.554" style="color: #212529; font-weight: bold;">1.6%</td>
-            <td data-value="5.204000000000001" style="color: #212529; font-weight: bold;">5.2%</td>
+            <td data-value="1.49" style="color: #212529; font-weight: bold;">1.5%</td>
+            <td data-value="5.002" style="color: #212529; font-weight: bold;">5.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 55" data-data="09/08/2026">
             <td data-value="1786287600"><b>09/08/2026 15:00</b></td>
             <td><span class="badge-liga">Liga ID 55</span></td>
             <td>Ilves vs IFK Mariehamn</td>
-            <td data-value="8.696" style="color: #212529; font-weight: bold;">8.7%</td>
-            <td data-value="16.124" style="color: #212529; font-weight: bold;">16.1%</td>
+            <td data-value="8.772" style="color: #212529; font-weight: bold;">8.8%</td>
+            <td data-value="16.406000000000002" style="color: #212529; font-weight: bold;">16.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 54" data-data="09/08/2026">
             <td data-value="1786287600"><b>09/08/2026 15:00</b></td>
             <td><span class="badge-liga">Liga ID 54</span></td>
             <td>HamKam vs Aalesunds FK</td>
-            <td data-value="43.646" style="color: #212529; font-weight: bold;">43.6%</td>
-            <td data-value="49.278" style="color: #212529; font-weight: bold;">49.3%</td>
+            <td data-value="43.728" style="color: #212529; font-weight: bold;">43.7%</td>
+            <td data-value="49.230000000000004" style="color: #212529; font-weight: bold;">49.2%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786289400"><b>09/08/2026 15:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Juve Stabia vs Campobasso FC</td>
-            <td data-value="47.734" style="color: #212529; font-weight: bold;">47.7%</td>
-            <td data-value="52.394" style="color: #212529; font-weight: bold;">52.4%</td>
+            <td data-value="48.064" style="color: #212529; font-weight: bold;">48.1%</td>
+            <td data-value="52.934000000000005" style="color: #212529; font-weight: bold;">52.9%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786289400"><b>09/08/2026 15:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Lecce vs Monopoli</td>
-            <td data-value="47.86" style="color: #212529; font-weight: bold;">47.9%</td>
-            <td data-value="52.727999999999994" style="color: #212529; font-weight: bold;">52.7%</td>
+            <td data-value="48.17" style="color: #212529; font-weight: bold;">48.2%</td>
+            <td data-value="53.086" style="color: #212529; font-weight: bold;">53.1%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786289400"><b>09/08/2026 15:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Olympique de Marseille vs Athletic Club</td>
-            <td data-value="45.438" style="color: #212529; font-weight: bold;">45.4%</td>
-            <td data-value="50.912" style="color: #212529; font-weight: bold;">50.9%</td>
+            <td data-value="45.558" style="color: #212529; font-weight: bold;">45.6%</td>
+            <td data-value="50.763999999999996" style="color: #212529; font-weight: bold;">50.8%</td>
         </tr>
         
         <tr data-liga="Liga ID 23" data-data="09/08/2026">
             <td data-value="1786289400"><b>09/08/2026 15:30</b></td>
             <td><span class="badge-liga">Liga ID 23</span></td>
             <td>FC Petrolul Ploiești vs SC Oțelul Galați</td>
-            <td data-value="10.416" style="color: #212529; font-weight: bold;">10.4%</td>
-            <td data-value="18.529999999999998" style="color: #212529; font-weight: bold;">18.5%</td>
+            <td data-value="10.07" style="color: #212529; font-weight: bold;">10.1%</td>
+            <td data-value="18.029999999999998" style="color: #212529; font-weight: bold;">18.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 25" data-data="09/08/2026">
             <td data-value="1786289400"><b>09/08/2026 15:30</b></td>
             <td><span class="badge-liga">Liga ID 25</span></td>
             <td>Lech Poznań vs Piast Gliwice</td>
-            <td data-value="57.372" style="color: #212529; font-weight: bold;">57.4%</td>
-            <td data-value="60.106" style="color: #28a745; font-weight: bold;">60.1%</td>
+            <td data-value="58.306000000000004" style="color: #212529; font-weight: bold;">58.3%</td>
+            <td data-value="60.78" style="color: #28a745; font-weight: bold;">60.8%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786291200"><b>09/08/2026 16:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Modena vs A.S.D. Cittadella Vis Modena</td>
-            <td data-value="48.154" style="color: #212529; font-weight: bold;">48.2%</td>
-            <td data-value="53.162" style="color: #212529; font-weight: bold;">53.2%</td>
+            <td data-value="48.437999999999995" style="color: #212529; font-weight: bold;">48.4%</td>
+            <td data-value="53.126" style="color: #212529; font-weight: bold;">53.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 84" data-data="09/08/2026">
             <td data-value="1786291200"><b>09/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 84</span></td>
             <td>AC Horsens vs Brøndby IF</td>
-            <td data-value="20.06" style="color: #212529; font-weight: bold;">20.1%</td>
-            <td data-value="28.914" style="color: #212529; font-weight: bold;">28.9%</td>
+            <td data-value="19.972" style="color: #212529; font-weight: bold;">20.0%</td>
+            <td data-value="28.586" style="color: #212529; font-weight: bold;">28.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 82" data-data="09/08/2026">
             <td data-value="1786291200"><b>09/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 82</span></td>
             <td>CD Trofense vs Varzim SC</td>
-            <td data-value="32.18" style="color: #212529; font-weight: bold;">32.2%</td>
-            <td data-value="40.08" style="color: #212529; font-weight: bold;">40.1%</td>
+            <td data-value="32.332" style="color: #212529; font-weight: bold;">32.3%</td>
+            <td data-value="39.858" style="color: #212529; font-weight: bold;">39.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 82" data-data="09/08/2026">
             <td data-value="1786291200"><b>09/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 82</span></td>
             <td>AD Fafe vs SC Vianense</td>
-            <td data-value="19.0" style="color: #212529; font-weight: bold;">19.0%</td>
-            <td data-value="28.000000000000004" style="color: #212529; font-weight: bold;">28.0%</td>
+            <td data-value="19.116" style="color: #212529; font-weight: bold;">19.1%</td>
+            <td data-value="27.958" style="color: #212529; font-weight: bold;">28.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 22" data-data="09/08/2026">
             <td data-value="1786291200"><b>09/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 22</span></td>
             <td>Cherno More Varna vs Ludogorets</td>
-            <td data-value="0.788" style="color: #212529; font-weight: bold;">0.8%</td>
-            <td data-value="3.148" style="color: #212529; font-weight: bold;">3.1%</td>
+            <td data-value="0.844" style="color: #212529; font-weight: bold;">0.8%</td>
+            <td data-value="3.3480000000000003" style="color: #212529; font-weight: bold;">3.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 55" data-data="09/08/2026">
             <td data-value="1786291200"><b>09/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 55</span></td>
             <td>AC Oulu vs HJK</td>
-            <td data-value="30.148000000000003" style="color: #212529; font-weight: bold;">30.1%</td>
-            <td data-value="38.178" style="color: #212529; font-weight: bold;">38.2%</td>
+            <td data-value="30.34" style="color: #212529; font-weight: bold;">30.3%</td>
+            <td data-value="38.224000000000004" style="color: #212529; font-weight: bold;">38.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 82" data-data="09/08/2026">
             <td data-value="1786293000"><b>09/08/2026 16:30</b></td>
             <td><span class="badge-liga">Liga ID 82</span></td>
             <td>Leça FC vs SC São João Ver</td>
-            <td data-value="48.437999999999995" style="color: #212529; font-weight: bold;">48.4%</td>
-            <td data-value="53.093999999999994" style="color: #212529; font-weight: bold;">53.1%</td>
+            <td data-value="47.955999999999996" style="color: #212529; font-weight: bold;">48.0%</td>
+            <td data-value="53.105999999999995" style="color: #212529; font-weight: bold;">53.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 14" data-data="09/08/2026">
             <td data-value="1786293000"><b>09/08/2026 16:30</b></td>
             <td><span class="badge-liga">Liga ID 14</span></td>
             <td>RSC Anderlecht vs RAAL La Louvière</td>
-            <td data-value="40.928" style="color: #212529; font-weight: bold;">40.9%</td>
-            <td data-value="47.254000000000005" style="color: #212529; font-weight: bold;">47.3%</td>
+            <td data-value="40.732" style="color: #212529; font-weight: bold;">40.7%</td>
+            <td data-value="47.15" style="color: #212529; font-weight: bold;">47.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 2" data-data="09/08/2026">
             <td data-value="1786294800"><b>09/08/2026 17:00</b></td>
             <td><span class="badge-liga">Liga ID 2</span></td>
             <td>FC Porto vs FC Alverca</td>
-            <td data-value="32.308" style="color: #212529; font-weight: bold;">32.3%</td>
-            <td data-value="40.064" style="color: #212529; font-weight: bold;">40.1%</td>
+            <td data-value="32.59" style="color: #212529; font-weight: bold;">32.6%</td>
+            <td data-value="40.196" style="color: #212529; font-weight: bold;">40.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 14" data-data="09/08/2026">
             <td data-value="1786295700"><b>09/08/2026 17:15</b></td>
             <td><span class="badge-liga">Liga ID 14</span></td>
             <td>Royal Antwerp FC vs SK Beveren</td>
-            <td data-value="63.251999999999995" style="color: #28a745; font-weight: bold;">63.3%</td>
-            <td data-value="64.77199999999999" style="color: #28a745; font-weight: bold;">64.8%</td>
+            <td data-value="62.9" style="color: #28a745; font-weight: bold;">62.9%</td>
+            <td data-value="64.22200000000001" style="color: #28a745; font-weight: bold;">64.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 54" data-data="09/08/2026">
             <td data-value="1786295700"><b>09/08/2026 17:15</b></td>
             <td><span class="badge-liga">Liga ID 54</span></td>
             <td>Kristiansund BK vs Molde FK</td>
-            <td data-value="21.343999999999998" style="color: #212529; font-weight: bold;">21.3%</td>
-            <td data-value="29.992" style="color: #212529; font-weight: bold;">30.0%</td>
+            <td data-value="21.382" style="color: #212529; font-weight: bold;">21.4%</td>
+            <td data-value="30.002000000000002" style="color: #212529; font-weight: bold;">30.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 42" data-data="09/08/2026">
             <td data-value="1786297500"><b>09/08/2026 17:45</b></td>
             <td><span class="badge-liga">Liga ID 42</span></td>
             <td>Arezzo vs Union Brescia</td>
-            <td data-value="47.726" style="color: #212529; font-weight: bold;">47.7%</td>
-            <td data-value="52.332" style="color: #212529; font-weight: bold;">52.3%</td>
+            <td data-value="48.494" style="color: #212529; font-weight: bold;">48.5%</td>
+            <td data-value="53.03600000000001" style="color: #212529; font-weight: bold;">53.0%</td>
         </tr>
         
         <tr data-liga="Liga Argentina" data-data="09/08/2026">
             <td data-value="1786298400"><b>09/08/2026 18:00</b></td>
             <td><span class="badge-liga">Liga Argentina</span></td>
             <td>San Lorenzo vs Huracán</td>
-            <td data-value="3.1" style="color: #212529; font-weight: bold;">3.1%</td>
-            <td data-value="8.264000000000001" style="color: #212529; font-weight: bold;">8.3%</td>
+            <td data-value="3.2399999999999998" style="color: #212529; font-weight: bold;">3.2%</td>
+            <td data-value="8.452" style="color: #212529; font-weight: bold;">8.5%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786298400"><b>09/08/2026 18:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Parma vs Sampdoria</td>
-            <td data-value="2.888" style="color: #212529; font-weight: bold;">2.9%</td>
-            <td data-value="7.818" style="color: #212529; font-weight: bold;">7.8%</td>
+            <td data-value="2.992" style="color: #212529; font-weight: bold;">3.0%</td>
+            <td data-value="7.742" style="color: #212529; font-weight: bold;">7.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 25" data-data="09/08/2026">
             <td data-value="1786299300"><b>09/08/2026 18:15</b></td>
             <td><span class="badge-liga">Liga ID 25</span></td>
             <td>Jagiellonia Białystok vs Widzew Łódź</td>
-            <td data-value="18.576" style="color: #212529; font-weight: bold;">18.6%</td>
-            <td data-value="27.078000000000003" style="color: #212529; font-weight: bold;">27.1%</td>
+            <td data-value="18.478" style="color: #212529; font-weight: bold;">18.5%</td>
+            <td data-value="27.238" style="color: #212529; font-weight: bold;">27.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 22" data-data="09/08/2026">
             <td data-value="1786299300"><b>09/08/2026 18:15</b></td>
             <td><span class="badge-liga">Liga ID 22</span></td>
             <td>FK Septemvri Sofia vs CSKA Sofia</td>
-            <td data-value="37.669999999999995" style="color: #212529; font-weight: bold;">37.7%</td>
-            <td data-value="44.478" style="color: #212529; font-weight: bold;">44.5%</td>
+            <td data-value="38.092" style="color: #212529; font-weight: bold;">38.1%</td>
+            <td data-value="45.04" style="color: #212529; font-weight: bold;">45.0%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786300200"><b>09/08/2026 18:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Mantova vs Carpi</td>
-            <td data-value="48.315999999999995" style="color: #212529; font-weight: bold;">48.3%</td>
-            <td data-value="53.190000000000005" style="color: #212529; font-weight: bold;">53.2%</td>
+            <td data-value="48.502" style="color: #212529; font-weight: bold;">48.5%</td>
+            <td data-value="52.902" style="color: #212529; font-weight: bold;">52.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 23" data-data="09/08/2026">
             <td data-value="1786300200"><b>09/08/2026 18:30</b></td>
             <td><span class="badge-liga">Liga ID 23</span></td>
             <td>Universitatea Craiova vs FC Argeș Pitești</td>
-            <td data-value="32.800000000000004" style="color: #212529; font-weight: bold;">32.8%</td>
-            <td data-value="40.454" style="color: #212529; font-weight: bold;">40.5%</td>
+            <td data-value="32.108" style="color: #212529; font-weight: bold;">32.1%</td>
+            <td data-value="39.992" style="color: #212529; font-weight: bold;">40.0%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786301100"><b>09/08/2026 18:45</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Frosinone vs Lazio</td>
-            <td data-value="36.6" style="color: #212529; font-weight: bold;">36.6%</td>
-            <td data-value="43.39" style="color: #212529; font-weight: bold;">43.4%</td>
+            <td data-value="36.604" style="color: #212529; font-weight: bold;">36.6%</td>
+            <td data-value="43.472" style="color: #212529; font-weight: bold;">43.5%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="09/08/2026">
             <td data-value="1786302000"><b>09/08/2026 19:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>UE Olot vs CE Sabadell</td>
-            <td data-value="48.402" style="color: #212529; font-weight: bold;">48.4%</td>
-            <td data-value="53.138" style="color: #212529; font-weight: bold;">53.1%</td>
+            <td data-value="47.821999999999996" style="color: #212529; font-weight: bold;">47.8%</td>
+            <td data-value="52.564" style="color: #212529; font-weight: bold;">52.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 42" data-data="09/08/2026">
             <td data-value="1786302000"><b>09/08/2026 19:00</b></td>
             <td><span class="badge-liga">Liga ID 42</span></td>
             <td>Benevento vs Ravenna</td>
-            <td data-value="47.955999999999996" style="color: #212529; font-weight: bold;">48.0%</td>
-            <td data-value="53.276" style="color: #212529; font-weight: bold;">53.3%</td>
+            <td data-value="47.904" style="color: #212529; font-weight: bold;">47.9%</td>
+            <td data-value="52.978" style="color: #212529; font-weight: bold;">53.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 34" data-data="09/08/2026">
             <td data-value="1786302000"><b>09/08/2026 19:00</b></td>
             <td><span class="badge-liga">Liga ID 34</span></td>
             <td>Náutico vs Atlético Goianiense</td>
-            <td data-value="47.276" style="color: #212529; font-weight: bold;">47.3%</td>
-            <td data-value="52.7" style="color: #212529; font-weight: bold;">52.7%</td>
+            <td data-value="47.355999999999995" style="color: #212529; font-weight: bold;">47.4%</td>
+            <td data-value="52.066" style="color: #212529; font-weight: bold;">52.1%</td>
         </tr>
         
         <tr data-liga="Liga ID 34" data-data="09/08/2026">
             <td data-value="1786302000"><b>09/08/2026 19:00</b></td>
             <td><span class="badge-liga">Liga ID 34</span></td>
             <td>Grêmio Novorizontino vs Juventude</td>
-            <td data-value="2.9979999999999998" style="color: #212529; font-weight: bold;">3.0%</td>
-            <td data-value="7.918" style="color: #212529; font-weight: bold;">7.9%</td>
+            <td data-value="3.154" style="color: #212529; font-weight: bold;">3.2%</td>
+            <td data-value="8.246" style="color: #212529; font-weight: bold;">8.2%</td>
         </tr>
         
         <tr data-liga="Championship" data-data="09/08/2026">
             <td data-value="1786302000"><b>09/08/2026 19:00</b></td>
             <td><span class="badge-liga">Championship</span></td>
             <td>Palmeiras vs Internacional</td>
-            <td data-value="36.766" style="color: #212529; font-weight: bold;">36.8%</td>
-            <td data-value="43.896" style="color: #212529; font-weight: bold;">43.9%</td>
+            <td data-value="36.86" style="color: #212529; font-weight: bold;">36.9%</td>
+            <td data-value="43.334" style="color: #212529; font-weight: bold;">43.3%</td>
         </tr>
         
         <tr data-liga="Championship" data-data="09/08/2026">
             <td data-value="1786302000"><b>09/08/2026 19:00</b></td>
             <td><span class="badge-liga">Championship</span></td>
             <td>Bahia vs Vasco da Gama</td>
-            <td data-value="45.626" style="color: #212529; font-weight: bold;">45.6%</td>
-            <td data-value="50.79" style="color: #212529; font-weight: bold;">50.8%</td>
+            <td data-value="45.736" style="color: #212529; font-weight: bold;">45.7%</td>
+            <td data-value="51.00599999999999" style="color: #212529; font-weight: bold;">51.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 2" data-data="09/08/2026">
             <td data-value="1786303800"><b>09/08/2026 19:30</b></td>
             <td><span class="badge-liga">Liga ID 2</span></td>
             <td>Moreirense vs Sporting Braga</td>
-            <td data-value="11.808" style="color: #212529; font-weight: bold;">11.8%</td>
-            <td data-value="20.158" style="color: #212529; font-weight: bold;">20.2%</td>
+            <td data-value="12.17" style="color: #212529; font-weight: bold;">12.2%</td>
+            <td data-value="20.726" style="color: #212529; font-weight: bold;">20.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 2" data-data="09/08/2026">
             <td data-value="1786303800"><b>09/08/2026 19:30</b></td>
             <td><span class="badge-liga">Liga ID 2</span></td>
             <td>Gil Vicente vs Rio Ave</td>
-            <td data-value="11.968" style="color: #212529; font-weight: bold;">12.0%</td>
-            <td data-value="19.916" style="color: #212529; font-weight: bold;">19.9%</td>
+            <td data-value="12.038" style="color: #212529; font-weight: bold;">12.0%</td>
+            <td data-value="20.44" style="color: #212529; font-weight: bold;">20.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 2" data-data="09/08/2026">
             <td data-value="1786303800"><b>09/08/2026 19:30</b></td>
             <td><span class="badge-liga">Liga ID 2</span></td>
             <td>Benfica vs Académico Viseu FC</td>
-            <td data-value="48.138" style="color: #212529; font-weight: bold;">48.1%</td>
-            <td data-value="52.976" style="color: #212529; font-weight: bold;">53.0%</td>
+            <td data-value="47.55" style="color: #212529; font-weight: bold;">47.5%</td>
+            <td data-value="52.512" style="color: #212529; font-weight: bold;">52.5%</td>
         </tr>
         
         <tr data-liga="Liga ID 72" data-data="09/08/2026">
             <td data-value="1786305600"><b>09/08/2026 20:00</b></td>
             <td><span class="badge-liga">Liga ID 72</span></td>
             <td>Boston Legacy FC vs Portland Thorns FC</td>
-            <td data-value="48.14" style="color: #212529; font-weight: bold;">48.1%</td>
-            <td data-value="52.91400000000001" style="color: #212529; font-weight: bold;">52.9%</td>
+            <td data-value="47.866" style="color: #212529; font-weight: bold;">47.9%</td>
+            <td data-value="52.736000000000004" style="color: #212529; font-weight: bold;">52.7%</td>
         </tr>
         
         <tr data-liga="Liga Argentina" data-data="09/08/2026">
             <td data-value="1786308300"><b>09/08/2026 20:45</b></td>
             <td><span class="badge-liga">Liga Argentina</span></td>
             <td>Gimnasia y Esgrima vs Barracas Central</td>
-            <td data-value="32.592" style="color: #212529; font-weight: bold;">32.6%</td>
-            <td data-value="40.25" style="color: #212529; font-weight: bold;">40.2%</td>
+            <td data-value="32.576" style="color: #212529; font-weight: bold;">32.6%</td>
+            <td data-value="40.258" style="color: #212529; font-weight: bold;">40.3%</td>
         </tr>
         
         <tr data-liga="Liga Argentina" data-data="09/08/2026">
             <td data-value="1786308300"><b>09/08/2026 20:45</b></td>
             <td><span class="badge-liga">Liga Argentina</span></td>
             <td>Defensa y Justicia vs Newell's Old Boys</td>
-            <td data-value="14.041999999999998" style="color: #212529; font-weight: bold;">14.0%</td>
-            <td data-value="22.672" style="color: #212529; font-weight: bold;">22.7%</td>
+            <td data-value="13.832" style="color: #212529; font-weight: bold;">13.8%</td>
+            <td data-value="22.386" style="color: #212529; font-weight: bold;">22.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 57" data-data="09/08/2026">
             <td data-value="1786309200"><b>09/08/2026 21:00</b></td>
             <td><span class="badge-liga">Liga ID 57</span></td>
             <td>Indy Eleven vs Hartford Athletic</td>
-            <td data-value="49.53" style="color: #212529; font-weight: bold;">49.5%</td>
-            <td data-value="53.978" style="color: #212529; font-weight: bold;">54.0%</td>
+            <td data-value="49.71" style="color: #212529; font-weight: bold;">49.7%</td>
+            <td data-value="54.008" style="color: #212529; font-weight: bold;">54.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 34" data-data="09/08/2026">
             <td data-value="1786309200"><b>09/08/2026 21:00</b></td>
             <td><span class="badge-liga">Liga ID 34</span></td>
             <td>Cuiabá vs Fortaleza</td>
-            <td data-value="37.966" style="color: #212529; font-weight: bold;">38.0%</td>
-            <td data-value="44.04" style="color: #212529; font-weight: bold;">44.0%</td>
+            <td data-value="37.242" style="color: #212529; font-weight: bold;">37.2%</td>
+            <td data-value="43.822" style="color: #212529; font-weight: bold;">43.8%</td>
         </tr>
         
         <tr data-liga="Liga BetPlay" data-data="09/08/2026">
             <td data-value="1786309500"><b>09/08/2026 21:05</b></td>
             <td><span class="badge-liga">Liga BetPlay</span></td>
             <td>Alianza Valledupar FC vs Atlético Bucaramanga</td>
-            <td data-value="57.364000000000004" style="color: #212529; font-weight: bold;">57.4%</td>
-            <td data-value="60.114000000000004" style="color: #28a745; font-weight: bold;">60.1%</td>
+            <td data-value="57.682" style="color: #212529; font-weight: bold;">57.7%</td>
+            <td data-value="59.821999999999996" style="color: #212529; font-weight: bold;">59.8%</td>
         </tr>
         
         <tr data-liga="Championship" data-data="09/08/2026">
             <td data-value="1786311000"><b>09/08/2026 21:30</b></td>
             <td><span class="badge-liga">Championship</span></td>
             <td>Santos vs Athletico</td>
-            <td data-value="57.58" style="color: #212529; font-weight: bold;">57.6%</td>
-            <td data-value="60.27400000000001" style="color: #28a745; font-weight: bold;">60.3%</td>
+            <td data-value="57.918000000000006" style="color: #212529; font-weight: bold;">57.9%</td>
+            <td data-value="60.568" style="color: #28a745; font-weight: bold;">60.6%</td>
         </tr>
         
         <tr data-liga="Championship" data-data="09/08/2026">
             <td data-value="1786311000"><b>09/08/2026 21:30</b></td>
             <td><span class="badge-liga">Championship</span></td>
             <td>Red Bull Bragantino vs Corinthians</td>
-            <td data-value="57.53" style="color: #212529; font-weight: bold;">57.5%</td>
-            <td data-value="60.27400000000001" style="color: #28a745; font-weight: bold;">60.3%</td>
+            <td data-value="27.682000000000002" style="color: #212529; font-weight: bold;">27.7%</td>
+            <td data-value="35.984" style="color: #212529; font-weight: bold;">36.0%</td>
         </tr>
         
         <tr data-liga="Championship" data-data="09/08/2026">
             <td data-value="1786314600"><b>09/08/2026 22:30</b></td>
             <td><span class="badge-liga">Championship</span></td>
             <td>Flamengo vs Vitória</td>
-            <td data-value="45.812000000000005" style="color: #212529; font-weight: bold;">45.8%</td>
-            <td data-value="51.182" style="color: #212529; font-weight: bold;">51.2%</td>
+            <td data-value="45.53" style="color: #212529; font-weight: bold;">45.5%</td>
+            <td data-value="51.028" style="color: #212529; font-weight: bold;">51.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 72" data-data="09/08/2026">
             <td data-value="1786316400"><b>09/08/2026 23:00</b></td>
             <td><span class="badge-liga">Liga ID 72</span></td>
             <td>Chicago Stars FC vs Bay FC</td>
-            <td data-value="43.094" style="color: #212529; font-weight: bold;">43.1%</td>
-            <td data-value="48.956" style="color: #212529; font-weight: bold;">49.0%</td>
+            <td data-value="42.94" style="color: #212529; font-weight: bold;">42.9%</td>
+            <td data-value="48.518" style="color: #212529; font-weight: bold;">48.5%</td>
         </tr>
         
         <tr data-liga="Liga BetPlay" data-data="09/08/2026">
             <td data-value="1786317000"><b>09/08/2026 23:10</b></td>
             <td><span class="badge-liga">Liga BetPlay</span></td>
             <td>Jaguares de Córdoba vs Once Caldas</td>
-            <td data-value="32.028" style="color: #212529; font-weight: bold;">32.0%</td>
-            <td data-value="39.745999999999995" style="color: #212529; font-weight: bold;">39.7%</td>
+            <td data-value="32.422000000000004" style="color: #212529; font-weight: bold;">32.4%</td>
+            <td data-value="40.168" style="color: #212529; font-weight: bold;">40.2%</td>
         </tr>
         
         <tr data-liga="Liga Argentina" data-data="09/08/2026">
             <td data-value="1786317300"><b>09/08/2026 23:15</b></td>
             <td><span class="badge-liga">Liga Argentina</span></td>
             <td>Argentinos Juniors vs Racing Club</td>
-            <td data-value="9.574" style="color: #212529; font-weight: bold;">9.6%</td>
-            <td data-value="17.47" style="color: #212529; font-weight: bold;">17.5%</td>
+            <td data-value="9.597999999999999" style="color: #212529; font-weight: bold;">9.6%</td>
+            <td data-value="17.532" style="color: #212529; font-weight: bold;">17.5%</td>
         </tr>
         
         <tr data-liga="Liga ID 72" data-data="10/08/2026">
             <td data-value="1786323600"><b>10/08/2026 01:00</b></td>
             <td><span class="badge-liga">Liga ID 72</span></td>
             <td>Seattle Reign FC vs Angel City FC</td>
-            <td data-value="55.047999999999995" style="color: #212529; font-weight: bold;">55.0%</td>
-            <td data-value="58.382" style="color: #212529; font-weight: bold;">58.4%</td>
+            <td data-value="54.798" style="color: #212529; font-weight: bold;">54.8%</td>
+            <td data-value="58.182" style="color: #212529; font-weight: bold;">58.2%</td>
         </tr>
         
         <tr data-liga="Liga BetPlay" data-data="10/08/2026">
             <td data-value="1786324500"><b>10/08/2026 01:15</b></td>
             <td><span class="badge-liga">Liga BetPlay</span></td>
             <td>América de Cali vs Atlético Nacional</td>
-            <td data-value="64.778" style="color: #28a745; font-weight: bold;">64.8%</td>
-            <td data-value="65.718" style="color: #28a745; font-weight: bold;">65.7%</td>
+            <td data-value="64.716" style="color: #28a745; font-weight: bold;">64.7%</td>
+            <td data-value="65.63600000000001" style="color: #28a745; font-weight: bold;">65.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 23" data-data="10/08/2026">
             <td data-value="1786375800"><b>10/08/2026 15:30</b></td>
             <td><span class="badge-liga">Liga ID 23</span></td>
             <td>FC Botoșani vs FC Corvinul Hunedoara</td>
-            <td data-value="48.312" style="color: #212529; font-weight: bold;">48.3%</td>
-            <td data-value="53.337999999999994" style="color: #212529; font-weight: bold;">53.3%</td>
+            <td data-value="48.262" style="color: #212529; font-weight: bold;">48.3%</td>
+            <td data-value="52.86" style="color: #212529; font-weight: bold;">52.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 22" data-data="10/08/2026">
             <td data-value="1786377600"><b>10/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 22</span></td>
             <td>Botev Vratsa vs Slavia Sofia</td>
-            <td data-value="9.55" style="color: #212529; font-weight: bold;">9.6%</td>
-            <td data-value="17.471999999999998" style="color: #212529; font-weight: bold;">17.5%</td>
+            <td data-value="9.542" style="color: #212529; font-weight: bold;">9.5%</td>
+            <td data-value="17.396" style="color: #212529; font-weight: bold;">17.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 88" data-data="10/08/2026">
             <td data-value="1786381200"><b>10/08/2026 17:00</b></td>
             <td><span class="badge-liga">Liga ID 88</span></td>
             <td>SL Benfica B U21 vs Leixões SC</td>
-            <td data-value="6.768000000000001" style="color: #212529; font-weight: bold;">6.8%</td>
-            <td data-value="13.714" style="color: #212529; font-weight: bold;">13.7%</td>
+            <td data-value="6.59" style="color: #212529; font-weight: bold;">6.6%</td>
+            <td data-value="13.498" style="color: #212529; font-weight: bold;">13.5%</td>
         </tr>
         
         <tr data-liga="Liga ID 88" data-data="10/08/2026">
             <td data-value="1786381200"><b>10/08/2026 17:00</b></td>
             <td><span class="badge-liga">Liga ID 88</span></td>
             <td>Lusitânia Lourosa vs FC Porto B</td>
-            <td data-value="45.839999999999996" style="color: #212529; font-weight: bold;">45.8%</td>
-            <td data-value="50.824000000000005" style="color: #212529; font-weight: bold;">50.8%</td>
+            <td data-value="45.976" style="color: #212529; font-weight: bold;">46.0%</td>
+            <td data-value="51.254" style="color: #212529; font-weight: bold;">51.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 84" data-data="10/08/2026">
             <td data-value="1786381200"><b>10/08/2026 17:00</b></td>
             <td><span class="badge-liga">Liga ID 84</span></td>
             <td>Silkeborg IF vs Odense Boldklub</td>
-            <td data-value="3.17" style="color: #212529; font-weight: bold;">3.2%</td>
-            <td data-value="8.262" style="color: #212529; font-weight: bold;">8.3%</td>
+            <td data-value="3.124" style="color: #212529; font-weight: bold;">3.1%</td>
+            <td data-value="8.23" style="color: #212529; font-weight: bold;">8.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 26" data-data="10/08/2026">
             <td data-value="1786381200"><b>10/08/2026 17:00</b></td>
             <td><span class="badge-liga">Liga ID 26</span></td>
             <td>Västerås SK vs Djurgårdens IF</td>
-            <td data-value="8.033999999999999" style="color: #212529; font-weight: bold;">8.0%</td>
-            <td data-value="15.440000000000001" style="color: #212529; font-weight: bold;">15.4%</td>
+            <td data-value="8.186" style="color: #212529; font-weight: bold;">8.2%</td>
+            <td data-value="15.68" style="color: #212529; font-weight: bold;">15.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 26" data-data="10/08/2026">
             <td data-value="1786381200"><b>10/08/2026 17:00</b></td>
             <td><span class="badge-liga">Liga ID 26</span></td>
             <td>IK Sirius vs IF Brommapojkarna</td>
-            <td data-value="72.418" style="color: #28a745; font-weight: bold;">72.4%</td>
-            <td data-value="71.652" style="color: #28a745; font-weight: bold;">71.7%</td>
+            <td data-value="72.672" style="color: #28a745; font-weight: bold;">72.7%</td>
+            <td data-value="71.926" style="color: #28a745; font-weight: bold;">71.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 22" data-data="10/08/2026">
             <td data-value="1786385700"><b>10/08/2026 18:15</b></td>
             <td><span class="badge-liga">Liga ID 22</span></td>
             <td>Botev Plovdiv vs FK Spartak Varna</td>
-            <td data-value="52.736000000000004" style="color: #212529; font-weight: bold;">52.7%</td>
-            <td data-value="56.74" style="color: #212529; font-weight: bold;">56.7%</td>
+            <td data-value="53.334" style="color: #212529; font-weight: bold;">53.3%</td>
+            <td data-value="56.708000000000006" style="color: #212529; font-weight: bold;">56.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 23" data-data="10/08/2026">
             <td data-value="1786386600"><b>10/08/2026 18:30</b></td>
             <td><span class="badge-liga">Liga ID 23</span></td>
             <td>Sepsi OSK Sfântu Gheorghe vs FCSB</td>
-            <td data-value="11.132" style="color: #212529; font-weight: bold;">11.1%</td>
-            <td data-value="19.352" style="color: #212529; font-weight: bold;">19.4%</td>
+            <td data-value="11.53" style="color: #212529; font-weight: bold;">11.5%</td>
+            <td data-value="19.7" style="color: #212529; font-weight: bold;">19.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 23" data-data="10/08/2026">
             <td data-value="1786386600"><b>10/08/2026 18:30</b></td>
             <td><span class="badge-liga">Liga ID 23</span></td>
             <td>CFR 1907 Cluj vs FC Universitatea Cluj</td>
-            <td data-value="22.434" style="color: #212529; font-weight: bold;">22.4%</td>
-            <td data-value="31.266" style="color: #212529; font-weight: bold;">31.3%</td>
+            <td data-value="22.67" style="color: #212529; font-weight: bold;">22.7%</td>
+            <td data-value="31.130000000000003" style="color: #212529; font-weight: bold;">31.1%</td>
         </tr>
         
         <tr data-liga="EFL Championship / Cup" data-data="10/08/2026">
             <td data-value="1786388400"><b>10/08/2026 19:00</b></td>
             <td><span class="badge-liga">EFL Championship / Cup</span></td>
             <td>Plymouth Argyle vs Exeter City</td>
-            <td data-value="51.54" style="color: #212529; font-weight: bold;">51.5%</td>
-            <td data-value="55.898" style="color: #212529; font-weight: bold;">55.9%</td>
+            <td data-value="51.437999999999995" style="color: #212529; font-weight: bold;">51.4%</td>
+            <td data-value="55.232000000000006" style="color: #212529; font-weight: bold;">55.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 2" data-data="10/08/2026">
             <td data-value="1786389300"><b>10/08/2026 19:15</b></td>
             <td><span class="badge-liga">Liga ID 2</span></td>
             <td>Santa Clara vs CD Nacional</td>
-            <td data-value="66.364" style="color: #28a745; font-weight: bold;">66.4%</td>
-            <td data-value="66.994" style="color: #28a745; font-weight: bold;">67.0%</td>
+            <td data-value="65.926" style="color: #28a745; font-weight: bold;">65.9%</td>
+            <td data-value="66.644" style="color: #28a745; font-weight: bold;">66.6%</td>
         </tr>
         
         <tr data-liga="Liga BetPlay" data-data="10/08/2026">
             <td data-value="1786395600"><b>10/08/2026 21:00</b></td>
             <td><span class="badge-liga">Liga BetPlay</span></td>
             <td>Rionegro Águilas Doradas vs Llaneros FC</td>
-            <td data-value="45.426" style="color: #212529; font-weight: bold;">45.4%</td>
-            <td data-value="50.79" style="color: #212529; font-weight: bold;">50.8%</td>
+            <td data-value="45.397999999999996" style="color: #212529; font-weight: bold;">45.4%</td>
+            <td data-value="50.69200000000001" style="color: #212529; font-weight: bold;">50.7%</td>
         </tr>
         
         <tr data-liga="Liga Argentina" data-data="10/08/2026">
             <td data-value="1786399200"><b>10/08/2026 22:00</b></td>
             <td><span class="badge-liga">Liga Argentina</span></td>
             <td>Banfield vs Club Atlético Belgrano</td>
-            <td data-value="23.688000000000002" style="color: #212529; font-weight: bold;">23.7%</td>
-            <td data-value="32.434000000000005" style="color: #212529; font-weight: bold;">32.4%</td>
+            <td data-value="23.548" style="color: #212529; font-weight: bold;">23.5%</td>
+            <td data-value="31.89" style="color: #212529; font-weight: bold;">31.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 34" data-data="10/08/2026">
             <td data-value="1786401000"><b>10/08/2026 22:30</b></td>
             <td><span class="badge-liga">Liga ID 34</span></td>
             <td>Goiás vs Londrina</td>
-            <td data-value="20.798" style="color: #212529; font-weight: bold;">20.8%</td>
-            <td data-value="29.514000000000003" style="color: #212529; font-weight: bold;">29.5%</td>
+            <td data-value="20.766000000000002" style="color: #212529; font-weight: bold;">20.8%</td>
+            <td data-value="29.483999999999998" style="color: #212529; font-weight: bold;">29.5%</td>
         </tr>
         
         <tr data-liga="Liga BetPlay" data-data="10/08/2026">
             <td data-value="1786402800"><b>10/08/2026 23:00</b></td>
             <td><span class="badge-liga">Liga BetPlay</span></td>
             <td>Independiente Medellín vs Millonarios</td>
-            <td data-value="62.868" style="color: #28a745; font-weight: bold;">62.9%</td>
-            <td data-value="64.256" style="color: #28a745; font-weight: bold;">64.3%</td>
+            <td data-value="62.912" style="color: #28a745; font-weight: bold;">62.9%</td>
+            <td data-value="64.55199999999999" style="color: #28a745; font-weight: bold;">64.6%</td>
         </tr>
         
         <tr data-liga="Liga Argentina" data-data="11/08/2026">
             <td data-value="1786407300"><b>11/08/2026 00:15</b></td>
             <td><span class="badge-liga">Liga Argentina</span></td>
             <td>Club Atlético Unión de Santa Fe vs Central Córdoba</td>
-            <td data-value="31.91" style="color: #212529; font-weight: bold;">31.9%</td>
-            <td data-value="39.748" style="color: #212529; font-weight: bold;">39.7%</td>
+            <td data-value="32.379999999999995" style="color: #212529; font-weight: bold;">32.4%</td>
+            <td data-value="39.974" style="color: #212529; font-weight: bold;">40.0%</td>
         </tr>
         
         <tr data-liga="Liga BetPlay" data-data="11/08/2026">
             <td data-value="1786410300"><b>11/08/2026 01:05</b></td>
             <td><span class="badge-liga">Liga BetPlay</span></td>
             <td>Junior Barranquilla vs Deportivo Pereira</td>
-            <td data-value="82.556" style="color: #28a745; font-weight: bold;">82.6%</td>
-            <td data-value="79.976" style="color: #28a745; font-weight: bold;">80.0%</td>
+            <td data-value="82.524" style="color: #28a745; font-weight: bold;">82.5%</td>
+            <td data-value="79.732" style="color: #28a745; font-weight: bold;">79.7%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="11/08/2026">
             <td data-value="1786442400"><b>11/08/2026 10:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Palermo vs Juventus</td>
-            <td data-value="5.172000000000001" style="color: #212529; font-weight: bold;">5.2%</td>
-            <td data-value="11.384" style="color: #212529; font-weight: bold;">11.4%</td>
+            <td data-value="5.056" style="color: #212529; font-weight: bold;">5.1%</td>
+            <td data-value="11.398" style="color: #212529; font-weight: bold;">11.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786460400"><b>11/08/2026 15:00</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>Kairat Almaty vs Levski Sofia</td>
-            <td data-value="7.926" style="color: #212529; font-weight: bold;">7.9%</td>
-            <td data-value="15.282000000000002" style="color: #212529; font-weight: bold;">15.3%</td>
+            <td data-value="7.960000000000001" style="color: #212529; font-weight: bold;">8.0%</td>
+            <td data-value="15.414" style="color: #212529; font-weight: bold;">15.4%</td>
         </tr>
         
         <tr data-liga="Premier League" data-data="11/08/2026">
             <td data-value="1786464000"><b>11/08/2026 16:00</b></td>
             <td><span class="badge-liga">Premier League</span></td>
             <td>FC Iberia 1999 vs Larne FC</td>
-            <td data-value="37.604" style="color: #212529; font-weight: bold;">37.6%</td>
-            <td data-value="44.068000000000005" style="color: #212529; font-weight: bold;">44.1%</td>
+            <td data-value="37.74" style="color: #212529; font-weight: bold;">37.7%</td>
+            <td data-value="43.948" style="color: #212529; font-weight: bold;">43.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786464000"><b>11/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>Sabah FK vs AGF</td>
-            <td data-value="57.26599999999999" style="color: #212529; font-weight: bold;">57.3%</td>
-            <td data-value="59.982" style="color: #212529; font-weight: bold;">60.0%</td>
+            <td data-value="57.476000000000006" style="color: #212529; font-weight: bold;">57.5%</td>
+            <td data-value="59.872" style="color: #212529; font-weight: bold;">59.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786464000"><b>11/08/2026 16:00</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>Bodø/Glimt vs Royale Union Saint-Gilloise</td>
-            <td data-value="37.544" style="color: #212529; font-weight: bold;">37.5%</td>
-            <td data-value="43.772" style="color: #212529; font-weight: bold;">43.8%</td>
+            <td data-value="37.778" style="color: #212529; font-weight: bold;">37.8%</td>
+            <td data-value="44.482" style="color: #212529; font-weight: bold;">44.5%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786467600"><b>11/08/2026 17:00</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>FK Kauno Žalgiris vs GNK Dinamo Zagreb</td>
-            <td data-value="87.58" style="color: #28a745; font-weight: bold;">87.6%</td>
-            <td data-value="84.458" style="color: #28a745; font-weight: bold;">84.5%</td>
+            <td data-value="87.556" style="color: #28a745; font-weight: bold;">87.6%</td>
+            <td data-value="84.196" style="color: #28a745; font-weight: bold;">84.2%</td>
         </tr>
         
         <tr data-liga="UEFA Conference League" data-data="11/08/2026">
             <td data-value="1786467600"><b>11/08/2026 17:00</b></td>
             <td><span class="badge-liga">UEFA Conference League</span></td>
             <td>Apollon Limassol vs SK Brann</td>
-            <td data-value="7.951999999999999" style="color: #212529; font-weight: bold;">8.0%</td>
-            <td data-value="15.212" style="color: #212529; font-weight: bold;">15.2%</td>
+            <td data-value="8.084" style="color: #212529; font-weight: bold;">8.1%</td>
+            <td data-value="15.522" style="color: #212529; font-weight: bold;">15.5%</td>
         </tr>
         
         <tr data-liga="UEFA Conference League" data-data="11/08/2026">
             <td data-value="1786469400"><b>11/08/2026 17:30</b></td>
             <td><span class="badge-liga">UEFA Conference League</span></td>
             <td>FC CSKA 1948 Sofia vs Panathinaikos FC</td>
-            <td data-value="32.262" style="color: #212529; font-weight: bold;">32.3%</td>
-            <td data-value="39.89" style="color: #212529; font-weight: bold;">39.9%</td>
+            <td data-value="32.32" style="color: #212529; font-weight: bold;">32.3%</td>
+            <td data-value="39.92" style="color: #212529; font-weight: bold;">39.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786469400"><b>11/08/2026 17:30</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>NEC Nijmegen vs Olympiacos FC</td>
-            <td data-value="37.678" style="color: #212529; font-weight: bold;">37.7%</td>
-            <td data-value="44.232" style="color: #212529; font-weight: bold;">44.2%</td>
+            <td data-value="38.116" style="color: #212529; font-weight: bold;">38.1%</td>
+            <td data-value="44.572" style="color: #212529; font-weight: bold;">44.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786471200"><b>11/08/2026 18:00</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>FK Crvena zvezda vs Hapoel Be'er Sheva</td>
-            <td data-value="8.04" style="color: #212529; font-weight: bold;">8.0%</td>
-            <td data-value="15.648000000000001" style="color: #212529; font-weight: bold;">15.6%</td>
+            <td data-value="7.888000000000001" style="color: #212529; font-weight: bold;">7.9%</td>
+            <td data-value="15.174000000000001" style="color: #212529; font-weight: bold;">15.2%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786472100"><b>11/08/2026 18:15</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>ŠK Slovan Bratislava vs Mjällby AIF</td>
-            <td data-value="58.098000000000006" style="color: #212529; font-weight: bold;">58.1%</td>
-            <td data-value="60.641999999999996" style="color: #28a745; font-weight: bold;">60.6%</td>
+            <td data-value="58.162000000000006" style="color: #212529; font-weight: bold;">58.2%</td>
+            <td data-value="60.768" style="color: #28a745; font-weight: bold;">60.8%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786472100"><b>11/08/2026 18:15</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>NK Celje vs FC Ararat-Armenia</td>
-            <td data-value="8.102" style="color: #212529; font-weight: bold;">8.1%</td>
-            <td data-value="15.379999999999999" style="color: #212529; font-weight: bold;">15.4%</td>
+            <td data-value="7.84" style="color: #212529; font-weight: bold;">7.8%</td>
+            <td data-value="15.418000000000001" style="color: #212529; font-weight: bold;">15.4%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786473000"><b>11/08/2026 18:30</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>SK Sturm Graz vs Fenerbahçe</td>
-            <td data-value="46.012" style="color: #212529; font-weight: bold;">46.0%</td>
-            <td data-value="51.017999999999994" style="color: #212529; font-weight: bold;">51.0%</td>
+            <td data-value="45.736" style="color: #212529; font-weight: bold;">45.7%</td>
+            <td data-value="50.629999999999995" style="color: #212529; font-weight: bold;">50.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 7" data-data="11/08/2026">
             <td data-value="1786474800"><b>11/08/2026 19:00</b></td>
             <td><span class="badge-liga">Liga ID 7</span></td>
             <td>Olympique Lyonnais vs AC Sparta Praha</td>
-            <td data-value="72.074" style="color: #28a745; font-weight: bold;">72.1%</td>
-            <td data-value="71.652" style="color: #28a745; font-weight: bold;">71.7%</td>
+            <td data-value="72.616" style="color: #28a745; font-weight: bold;">72.6%</td>
+            <td data-value="71.61999999999999" style="color: #28a745; font-weight: bold;">71.6%</td>
         </tr>
         
         <tr data-liga="Liga ID 33" data-data="11/08/2026">
             <td data-value="1786485600"><b>11/08/2026 22:00</b></td>
             <td><span class="badge-liga">Liga ID 33</span></td>
             <td>Boca Juniors vs Recoleta FC</td>
-            <td data-value="48.38" style="color: #212529; font-weight: bold;">48.4%</td>
-            <td data-value="52.99" style="color: #212529; font-weight: bold;">53.0%</td>
+            <td data-value="48.083999999999996" style="color: #212529; font-weight: bold;">48.1%</td>
+            <td data-value="52.71" style="color: #212529; font-weight: bold;">52.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 32" data-data="11/08/2026">
             <td data-value="1786485600"><b>11/08/2026 22:00</b></td>
             <td><span class="badge-liga">Liga ID 32</span></td>
             <td>Fluminense vs Independiente Rivadavia</td>
-            <td data-value="45.53" style="color: #212529; font-weight: bold;">45.5%</td>
-            <td data-value="50.988" style="color: #212529; font-weight: bold;">51.0%</td>
+            <td data-value="45.334" style="color: #212529; font-weight: bold;">45.3%</td>
+            <td data-value="50.788" style="color: #212529; font-weight: bold;">50.8%</td>
         </tr>
         
         <tr data-liga="Liga ID 34" data-data="11/08/2026">
             <td data-value="1786487400"><b>11/08/2026 22:30</b></td>
             <td><span class="badge-liga">Liga ID 34</span></td>
             <td>Avaí vs Clube De Regatas Brasil</td>
-            <td data-value="7.2059999999999995" style="color: #212529; font-weight: bold;">7.2%</td>
-            <td data-value="14.31" style="color: #212529; font-weight: bold;">14.3%</td>
+            <td data-value="7.344" style="color: #212529; font-weight: bold;">7.3%</td>
+            <td data-value="14.24" style="color: #212529; font-weight: bold;">14.2%</td>
         </tr>
         
         <tr data-liga="Liga Argentina" data-data="12/08/2026">
             <td data-value="1786492800"><b>12/08/2026 00:00</b></td>
             <td><span class="badge-liga">Liga Argentina</span></td>
             <td>CA Talleres vs CA Lanús</td>
-            <td data-value="57.830000000000005" style="color: #212529; font-weight: bold;">57.8%</td>
-            <td data-value="60.68" style="color: #28a745; font-weight: bold;">60.7%</td>
+            <td data-value="58.431999999999995" style="color: #212529; font-weight: bold;">58.4%</td>
+            <td data-value="60.99" style="color: #28a745; font-weight: bold;">61.0%</td>
         </tr>
         
         <tr data-liga="Liga ID 33" data-data="12/08/2026">
             <td data-value="1786494600"><b>12/08/2026 00:30</b></td>
             <td><span class="badge-liga">Liga ID 33</span></td>
             <td>Bolívar vs São Paulo</td>
-            <td data-value="93.84400000000001" style="color: #28a745; font-weight: bold;">93.8%</td>
-            <td data-value="90.352" style="color: #28a745; font-weight: bold;">90.4%</td>
+            <td data-value="93.83399999999999" style="color: #28a745; font-weight: bold;">93.8%</td>
+            <td data-value="90.324" style="color: #28a745; font-weight: bold;">90.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 32" data-data="12/08/2026">
             <td data-value="1786494600"><b>12/08/2026 00:30</b></td>
             <td><span class="badge-liga">Liga ID 32</span></td>
             <td>Estudiantes de La Plata vs Universidad Católica</td>
-            <td data-value="48.693999999999996" style="color: #212529; font-weight: bold;">48.7%</td>
-            <td data-value="53.006" style="color: #212529; font-weight: bold;">53.0%</td>
+            <td data-value="47.874" style="color: #212529; font-weight: bold;">47.9%</td>
+            <td data-value="52.686" style="color: #212529; font-weight: bold;">52.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 32" data-data="12/08/2026">
             <td data-value="1786494600"><b>12/08/2026 00:30</b></td>
             <td><span class="badge-liga">Liga ID 32</span></td>
             <td>Deportes Tolima vs Independiente del Valle</td>
-            <td data-value="45.629999999999995" style="color: #212529; font-weight: bold;">45.6%</td>
-            <td data-value="51.102000000000004" style="color: #212529; font-weight: bold;">51.1%</td>
+            <td data-value="45.548" style="color: #212529; font-weight: bold;">45.5%</td>
+            <td data-value="50.956" style="color: #212529; font-weight: bold;">51.0%</td>
         </tr>
         
         <tr data-liga="UEFA Conference League" data-data="12/08/2026">
             <td data-value="1786550400"><b>12/08/2026 16:00</b></td>
             <td><span class="badge-liga">UEFA Conference League</span></td>
             <td>GKS Katowice vs Hapoel Tel Aviv</td>
-            <td data-value="32.098" style="color: #212529; font-weight: bold;">32.1%</td>
-            <td data-value="39.598" style="color: #212529; font-weight: bold;">39.6%</td>
+            <td data-value="32.14" style="color: #212529; font-weight: bold;">32.1%</td>
+            <td data-value="40.001999999999995" style="color: #212529; font-weight: bold;">40.0%</td>
         </tr>
         
         <tr data-liga="UEFA Conference League" data-data="12/08/2026">
             <td data-value="1786550400"><b>12/08/2026 16:00</b></td>
             <td><span class="badge-liga">UEFA Conference League</span></td>
             <td>SK Rapid Wien vs Paide Linnameeskond</td>
-            <td data-value="87.606" style="color: #28a745; font-weight: bold;">87.6%</td>
-            <td data-value="84.258" style="color: #28a745; font-weight: bold;">84.3%</td>
+            <td data-value="87.698" style="color: #28a745; font-weight: bold;">87.7%</td>
+            <td data-value="84.274" style="color: #28a745; font-weight: bold;">84.3%</td>
         </tr>
         
         <tr data-liga="UEFA Conference League" data-data="12/08/2026">
             <td data-value="1786550400"><b>12/08/2026 16:00</b></td>
             <td><span class="badge-liga">UEFA Conference League</span></td>
             <td>FC København vs Debreceni VSC</td>
-            <td data-value="57.562000000000005" style="color: #212529; font-weight: bold;">57.6%</td>
-            <td data-value="60.284000000000006" style="color: #28a745; font-weight: bold;">60.3%</td>
+            <td data-value="58.018" style="color: #212529; font-weight: bold;">58.0%</td>
+            <td data-value="60.29600000000001" style="color: #28a745; font-weight: bold;">60.3%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786550400"><b>12/08/2026 16:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>SSVg Velbert vs Borussia M'gladbach</td>
-            <td data-value="47.936" style="color: #212529; font-weight: bold;">47.9%</td>
-            <td data-value="52.976" style="color: #212529; font-weight: bold;">53.0%</td>
+            <td data-value="48.264" style="color: #212529; font-weight: bold;">48.3%</td>
+            <td data-value="53.15800000000001" style="color: #212529; font-weight: bold;">53.2%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786551300"><b>12/08/2026 16:15</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Everton vs Newcastle United</td>
-            <td data-value="1.038" style="color: #212529; font-weight: bold;">1.0%</td>
-            <td data-value="3.966" style="color: #212529; font-weight: bold;">4.0%</td>
+            <td data-value="1.068" style="color: #212529; font-weight: bold;">1.1%</td>
+            <td data-value="4.056" style="color: #212529; font-weight: bold;">4.1%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786552200"><b>12/08/2026 16:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>FSV Frankfurt vs Eintracht Frankfurt</td>
-            <td data-value="48.068" style="color: #212529; font-weight: bold;">48.1%</td>
-            <td data-value="53.012" style="color: #212529; font-weight: bold;">53.0%</td>
+            <td data-value="47.724" style="color: #212529; font-weight: bold;">47.7%</td>
+            <td data-value="52.886" style="color: #212529; font-weight: bold;">52.9%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786559400"><b>12/08/2026 18:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Arsenal vs Como</td>
-            <td data-value="48.392" style="color: #212529; font-weight: bold;">48.4%</td>
-            <td data-value="53.080000000000005" style="color: #212529; font-weight: bold;">53.1%</td>
+            <td data-value="48.158" style="color: #212529; font-weight: bold;">48.2%</td>
+            <td data-value="52.87" style="color: #212529; font-weight: bold;">52.9%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786559400"><b>12/08/2026 18:30</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Manchester United vs Leeds United</td>
-            <td data-value="9.13" style="color: #212529; font-weight: bold;">9.1%</td>
-            <td data-value="16.97" style="color: #212529; font-weight: bold;">17.0%</td>
+            <td data-value="9.55" style="color: #212529; font-weight: bold;">9.6%</td>
+            <td data-value="17.074" style="color: #212529; font-weight: bold;">17.1%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786560300"><b>12/08/2026 18:45</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Nottingham Forest vs Bayer 04 Leverkusen</td>
-            <td data-value="47.943999999999996" style="color: #212529; font-weight: bold;">47.9%</td>
-            <td data-value="52.966" style="color: #212529; font-weight: bold;">53.0%</td>
+            <td data-value="48.024" style="color: #212529; font-weight: bold;">48.0%</td>
+            <td data-value="53.025999999999996" style="color: #212529; font-weight: bold;">53.0%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786561200"><b>12/08/2026 19:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>SSC Napoli vs Aris Thessaloniki</td>
-            <td data-value="48.054" style="color: #212529; font-weight: bold;">48.1%</td>
-            <td data-value="52.738" style="color: #212529; font-weight: bold;">52.7%</td>
+            <td data-value="48.544" style="color: #212529; font-weight: bold;">48.5%</td>
+            <td data-value="53.002" style="color: #212529; font-weight: bold;">53.0%</td>
         </tr>
         
         <tr data-liga="Tercera RFEF" data-data="12/08/2026">
             <td data-value="1786561200"><b>12/08/2026 19:00</b></td>
             <td><span class="badge-liga">Tercera RFEF</span></td>
             <td>Deportivo de A Coruña vs Real Madrid</td>
-            <td data-value="6.787999999999999" style="color: #212529; font-weight: bold;">6.8%</td>
-            <td data-value="13.761999999999999" style="color: #212529; font-weight: bold;">13.8%</td>
+            <td data-value="6.7059999999999995" style="color: #212529; font-weight: bold;">6.7%</td>
+            <td data-value="13.741999999999999" style="color: #212529; font-weight: bold;">13.7%</td>
         </tr>
         
         <tr data-liga="Liga ID 33" data-data="12/08/2026">
             <td data-value="1786572000"><b>12/08/2026 22:00</b></td>
             <td><span class="badge-liga">Liga ID 33</span></td>
             <td>Red Bull Bragantino vs Atlético Mineiro</td>
-            <td data-value="36.403999999999996" style="color: #212529; font-weight: bold;">36.4%</td>
-            <td data-value="43.266" style="color: #212529; font-weight: bold;">43.3%</td>
+            <td data-value="36.472" style="color: #212529; font-weight: bold;">36.5%</td>
+            <td data-value="43.326" style="color: #212529; font-weight: bold;">43.3%</td>
         </tr>
         
         <tr data-liga="Liga ID 33" data-data="12/08/2026">
             <td data-value="1786572000"><b>12/08/2026 22:00</b></td>
             <td><span class="badge-liga">Liga ID 33</span></td>
             <td>Tigre vs Montevideo City Torque</td>
-            <td data-value="48.408" style="color: #212529; font-weight: bold;">48.4%</td>
-            <td data-value="52.94" style="color: #212529; font-weight: bold;">52.9%</td>
+            <td data-value="48.258" style="color: #212529; font-weight: bold;">48.3%</td>
+            <td data-value="52.858000000000004" style="color: #212529; font-weight: bold;">52.9%</td>
         </tr>
         
         <tr data-liga="Liga ID 32" data-data="12/08/2026">
             <td data-value="1786572000"><b>12/08/2026 22:00</b></td>
             <td><span class="badge-liga">Liga ID 32</span></td>
             <td>Club Atlético Platense vs Coquimbo Unido</td>
-            <td data-value="48.102000000000004" style="color: #212529; font-weight: bold;">48.1%</td>
-            <td data-value="52.946000000000005" style="color: #212529; font-weight: bold;">52.9%</td>
+            <td data-value="48.204" style="color: #212529; font-weight: bold;">48.2%</td>
+            <td data-value="52.808" style="color: #212529; font-weight: bold;">52.8%</td>
         </tr>
         
         <tr data-liga="Liga ID 32" data-data="12/08/2026">
             <td data-value="1786572000"><b>12/08/2026 22:00</b></td>
             <td><span class="badge-liga">Liga ID 32</span></td>
             <td>Palmeiras vs Cerro Porteño</td>
-            <td data-value="40.37" style="color: #212529; font-weight: bold;">40.4%</td>
-            <td data-value="47.004000000000005" style="color: #212529; font-weight: bold;">47.0%</td>
+            <td data-value="40.186" style="color: #212529; font-weight: bold;">40.2%</td>
+            <td data-value="46.583999999999996" style="color: #212529; font-weight: bold;">46.6%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 33" data-data="13/08/2026">
+            <td data-value="1786581000"><b>13/08/2026 00:30</b></td>
+            <td><span class="badge-liga">Liga ID 33</span></td>
+            <td>Independiente Santa Fe vs River Plate</td>
+            <td data-value="7.996" style="color: #212529; font-weight: bold;">8.0%</td>
+            <td data-value="15.526000000000002" style="color: #212529; font-weight: bold;">15.5%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 32" data-data="13/08/2026">
+            <td data-value="1786581000"><b>13/08/2026 00:30</b></td>
+            <td><span class="badge-liga">Liga ID 32</span></td>
+            <td>Cruzeiro vs Flamengo</td>
+            <td data-value="19.056" style="color: #212529; font-weight: bold;">19.1%</td>
+            <td data-value="27.748" style="color: #212529; font-weight: bold;">27.7%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 81" data-data="13/08/2026">
+            <td data-value="1786582800"><b>13/08/2026 01:00</b></td>
+            <td><span class="badge-liga">Liga ID 81</span></td>
+            <td>Deportivo Cali vs Atlético Nacional</td>
+            <td data-value="38.29" style="color: #212529; font-weight: bold;">38.3%</td>
+            <td data-value="45.194" style="color: #212529; font-weight: bold;">45.2%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786633200"><b>13/08/2026 15:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FC Tobol vs FK Partizan</td>
+            <td data-value="57.382" style="color: #212529; font-weight: bold;">57.4%</td>
+            <td data-value="60.42999999999999" style="color: #28a745; font-weight: bold;">60.4%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786636800"><b>13/08/2026 16:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Flora Tallinn vs Inter Club d'Escaldes</td>
+            <td data-value="32.403999999999996" style="color: #212529; font-weight: bold;">32.4%</td>
+            <td data-value="39.952" style="color: #212529; font-weight: bold;">40.0%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786636800"><b>13/08/2026 16:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Qarabağ FK vs Dynamo Kyiv</td>
+            <td data-value="7.962" style="color: #212529; font-weight: bold;">8.0%</td>
+            <td data-value="15.608" style="color: #212529; font-weight: bold;">15.6%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786636800"><b>13/08/2026 16:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Ilves vs HNK Rijeka</td>
+            <td data-value="7.88" style="color: #212529; font-weight: bold;">7.9%</td>
+            <td data-value="15.054" style="color: #212529; font-weight: bold;">15.1%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 17" data-data="13/08/2026">
+            <td data-value="1786637700"><b>13/08/2026 16:15</b></td>
+            <td><span class="badge-liga">Liga ID 17</span></td>
+            <td>Abha vs Al-Hazem</td>
+            <td data-value="53.94799999999999" style="color: #212529; font-weight: bold;">53.9%</td>
+            <td data-value="57.647999999999996" style="color: #212529; font-weight: bold;">57.6%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786638600"><b>13/08/2026 16:30</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>RFS vs FK Jablonec</td>
+            <td data-value="32.486" style="color: #212529; font-weight: bold;">32.5%</td>
+            <td data-value="40.168" style="color: #212529; font-weight: bold;">40.2%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FC Midtjylland vs Bohemian FC</td>
+            <td data-value="32.212" style="color: #212529; font-weight: bold;">32.2%</td>
+            <td data-value="39.594" style="color: #212529; font-weight: bold;">39.6%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>ML Vitebsk vs FK Borac Banja Luka</td>
+            <td data-value="8.256" style="color: #212529; font-weight: bold;">8.3%</td>
+            <td data-value="15.501999999999999" style="color: #212529; font-weight: bold;">15.5%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FC Nordsjælland vs Valur Reykjavík</td>
+            <td data-value="32.406" style="color: #212529; font-weight: bold;">32.4%</td>
+            <td data-value="40.192" style="color: #212529; font-weight: bold;">40.2%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Tromsø IL vs CFR 1907 Cluj</td>
+            <td data-value="87.64" style="color: #28a745; font-weight: bold;">87.6%</td>
+            <td data-value="84.224" style="color: #28a745; font-weight: bold;">84.2%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Dinamo Minsk vs Sporting Braga</td>
+            <td data-value="7.782" style="color: #212529; font-weight: bold;">7.8%</td>
+            <td data-value="15.278" style="color: #212529; font-weight: bold;">15.3%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Hammarby IF vs Raków Częstochowa</td>
+            <td data-value="37.791999999999994" style="color: #212529; font-weight: bold;">37.8%</td>
+            <td data-value="43.924" style="color: #212529; font-weight: bold;">43.9%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>DAC 1904 vs FC Twente</td>
+            <td data-value="93.896" style="color: #28a745; font-weight: bold;">93.9%</td>
+            <td data-value="90.446" style="color: #28a745; font-weight: bold;">90.4%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Beşiktaş JK vs FC Hradec Králové</td>
+            <td data-value="7.878" style="color: #212529; font-weight: bold;">7.9%</td>
+            <td data-value="15.486" style="color: #212529; font-weight: bold;">15.5%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Omonia Nicosia vs Lincoln Red Imps</td>
+            <td data-value="32.182" style="color: #212529; font-weight: bold;">32.2%</td>
+            <td data-value="39.796" style="color: #212529; font-weight: bold;">39.8%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Universitatea Craiova vs Kuopion Palloseura</td>
+            <td data-value="32.47" style="color: #212529; font-weight: bold;">32.5%</td>
+            <td data-value="39.513999999999996" style="color: #212529; font-weight: bold;">39.5%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Górnik Zabrze vs Ferencváros TC</td>
+            <td data-value="8.076" style="color: #212529; font-weight: bold;">8.1%</td>
+            <td data-value="15.501999999999999" style="color: #212529; font-weight: bold;">15.5%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786640400"><b>13/08/2026 17:00</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Pafos FC vs Red Bull Salzburg</td>
+            <td data-value="8.222" style="color: #212529; font-weight: bold;">8.2%</td>
+            <td data-value="15.61" style="color: #212529; font-weight: bold;">15.6%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786642200"><b>13/08/2026 17:30</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>NSÍ Runavík vs FC Lugano</td>
+            <td data-value="32.138" style="color: #212529; font-weight: bold;">32.1%</td>
+            <td data-value="39.908" style="color: #212529; font-weight: bold;">39.9%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786642200"><b>13/08/2026 17:30</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FC Vaduz vs Inter Turku</td>
+            <td data-value="57.928000000000004" style="color: #212529; font-weight: bold;">57.9%</td>
+            <td data-value="60.804" style="color: #28a745; font-weight: bold;">60.8%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786642200"><b>13/08/2026 17:30</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Víkingur Reykjavík vs FC Thun</td>
+            <td data-value="57.752" style="color: #212529; font-weight: bold;">57.8%</td>
+            <td data-value="59.984" style="color: #212529; font-weight: bold;">60.0%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786642200"><b>13/08/2026 17:30</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Klaksvíkar Ítróttarfelag vs Lech Poznań</td>
+            <td data-value="8.008" style="color: #212529; font-weight: bold;">8.0%</td>
+            <td data-value="15.379999999999999" style="color: #212529; font-weight: bold;">15.4%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786644000"><b>13/08/2026 18:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FC St. Gallen 1879 vs Sheriff Tiraspol</td>
+            <td data-value="75.888" style="color: #28a745; font-weight: bold;">75.9%</td>
+            <td data-value="74.404" style="color: #28a745; font-weight: bold;">74.4%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786644000"><b>13/08/2026 18:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>KF Shkëndija vs Hibernian</td>
+            <td data-value="57.864000000000004" style="color: #212529; font-weight: bold;">57.9%</td>
+            <td data-value="60.694" style="color: #28a745; font-weight: bold;">60.7%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786644000"><b>13/08/2026 18:00</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>CSKA Sofia vs Maccabi Tel Aviv</td>
+            <td data-value="57.26599999999999" style="color: #212529; font-weight: bold;">57.3%</td>
+            <td data-value="59.726" style="color: #212529; font-weight: bold;">59.7%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786644000"><b>13/08/2026 18:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FC Drita vs SP Tre Fiori</td>
+            <td data-value="87.29599999999999" style="color: #28a745; font-weight: bold;">87.3%</td>
+            <td data-value="84.24000000000001" style="color: #28a745; font-weight: bold;">84.2%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 17" data-data="13/08/2026">
+            <td data-value="1786644000"><b>13/08/2026 18:00</b></td>
+            <td><span class="badge-liga">Liga ID 17</span></td>
+            <td>Al-Shabab vs Al-Qadsiah</td>
+            <td data-value="32.456" style="color: #212529; font-weight: bold;">32.5%</td>
+            <td data-value="39.98" style="color: #212529; font-weight: bold;">40.0%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 17" data-data="13/08/2026">
+            <td data-value="1786644000"><b>13/08/2026 18:00</b></td>
+            <td><span class="badge-liga">Liga ID 17</span></td>
+            <td>Al Diriyah vs Al-Ahli</td>
+            <td data-value="48.193999999999996" style="color: #212529; font-weight: bold;">48.2%</td>
+            <td data-value="52.681999999999995" style="color: #212529; font-weight: bold;">52.7%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786644900"><b>13/08/2026 18:15</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FC Sion vs FC Noah</td>
+            <td data-value="76.276" style="color: #28a745; font-weight: bold;">76.3%</td>
+            <td data-value="74.636" style="color: #28a745; font-weight: bold;">74.6%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786645800"><b>13/08/2026 18:30</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>FK Austria Wien vs Beitar Jerusalem</td>
+            <td data-value="57.354000000000006" style="color: #212529; font-weight: bold;">57.4%</td>
+            <td data-value="60.228" style="color: #28a745; font-weight: bold;">60.2%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786645800"><b>13/08/2026 18:30</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>KAA Gent vs IFK Göteborg</td>
+            <td data-value="8.146" style="color: #212529; font-weight: bold;">8.1%</td>
+            <td data-value="15.751999999999999" style="color: #212529; font-weight: bold;">15.8%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786645800"><b>13/08/2026 18:30</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Motherwell vs HJK</td>
+            <td data-value="32.251999999999995" style="color: #212529; font-weight: bold;">32.3%</td>
+            <td data-value="39.954" style="color: #212529; font-weight: bold;">40.0%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786645800"><b>13/08/2026 18:30</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>ETO FC Győr vs Riga FC</td>
+            <td data-value="8.136000000000001" style="color: #212529; font-weight: bold;">8.1%</td>
+            <td data-value="15.616" style="color: #212529; font-weight: bold;">15.6%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786645800"><b>13/08/2026 18:30</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>RSC Anderlecht vs PAOK</td>
+            <td data-value="8.046000000000001" style="color: #212529; font-weight: bold;">8.0%</td>
+            <td data-value="15.492" style="color: #212529; font-weight: bold;">15.5%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786645800"><b>13/08/2026 18:30</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Rangers vs Jagiellonia Białystok</td>
+            <td data-value="57.76" style="color: #212529; font-weight: bold;">57.8%</td>
+            <td data-value="60.524" style="color: #28a745; font-weight: bold;">60.5%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786646700"><b>13/08/2026 18:45</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>Heart of Midlothian vs Benfica</td>
+            <td data-value="97.154" style="color: #28a745; font-weight: bold;">97.2%</td>
+            <td data-value="94.32000000000001" style="color: #28a745; font-weight: bold;">94.3%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786646700"><b>13/08/2026 18:45</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Shelbourne vs AFC Ajax</td>
+            <td data-value="76.08" style="color: #28a745; font-weight: bold;">76.1%</td>
+            <td data-value="74.618" style="color: #28a745; font-weight: bold;">74.6%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786647600"><b>13/08/2026 19:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>HNK Hajduk Split vs FK Žalgiris</td>
+            <td data-value="97.00999999999999" style="color: #28a745; font-weight: bold;">97.0%</td>
+            <td data-value="94.026" style="color: #28a745; font-weight: bold;">94.0%</td>
+        </tr>
+        
+        <tr data-liga="UEFA Conference League" data-data="13/08/2026">
+            <td data-value="1786647600"><b>13/08/2026 19:00</b></td>
+            <td><span class="badge-liga">UEFA Conference League</span></td>
+            <td>Dinamo City vs FK Auda</td>
+            <td data-value="7.951999999999999" style="color: #212529; font-weight: bold;">8.0%</td>
+            <td data-value="15.524" style="color: #212529; font-weight: bold;">15.5%</td>
+        </tr>
+        
+        <tr data-liga="Premier League" data-data="13/08/2026">
+            <td data-value="1786647600"><b>13/08/2026 19:00</b></td>
+            <td><span class="badge-liga">Premier League</span></td>
+            <td>KF Egnatia vs Shamrock Rovers</td>
+            <td data-value="76.184" style="color: #28a745; font-weight: bold;">76.2%</td>
+            <td data-value="74.70599999999999" style="color: #28a745; font-weight: bold;">74.7%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 81" data-data="13/08/2026">
+            <td data-value="1786654800"><b>13/08/2026 21:00</b></td>
+            <td><span class="badge-liga">Liga ID 81</span></td>
+            <td>Internacional de Bogotá vs Real Cundinamarca</td>
+            <td data-value="48.086" style="color: #212529; font-weight: bold;">48.1%</td>
+            <td data-value="52.834" style="color: #212529; font-weight: bold;">52.8%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 33" data-data="13/08/2026">
+            <td data-value="1786658400"><b>13/08/2026 22:00</b></td>
+            <td><span class="badge-liga">Liga ID 33</span></td>
+            <td>Vasco da Gama vs Olimpia</td>
+            <td data-value="67.706" style="color: #28a745; font-weight: bold;">67.7%</td>
+            <td data-value="68.15" style="color: #28a745; font-weight: bold;">68.2%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 33" data-data="13/08/2026">
+            <td data-value="1786658400"><b>13/08/2026 22:00</b></td>
+            <td><span class="badge-liga">Liga ID 33</span></td>
+            <td>Santos vs Macará</td>
+            <td data-value="48.04" style="color: #212529; font-weight: bold;">48.0%</td>
+            <td data-value="52.738" style="color: #212529; font-weight: bold;">52.7%</td>
+        </tr>
+        
+        <tr data-liga="Liga ID 32" data-data="13/08/2026">
+            <td data-value="1786658400"><b>13/08/2026 22:00</b></td>
+            <td><span class="badge-liga">Liga ID 32</span></td>
+            <td>Mirassol vs LDU</td>
+            <td data-value="32.507999999999996" style="color: #212529; font-weight: bold;">32.5%</td>
+            <td data-value="40.074" style="color: #212529; font-weight: bold;">40.1%</td>
         </tr>
         
                 </tbody>
