@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 import numpy as np
 import requests
 from datetime import datetime, timezone, timedelta
@@ -10,6 +12,14 @@ HEADERS = {
     "Authorization": f"Token {API_TOKEN}",
     "Accept": "application/json"
 }
+
+MAX_TENTATIVAS_API = 2
+ESPERA_RETRY_SEGUNDOS = 5
+
+
+class ErroObtencaoJogos(Exception):
+    """Falha ao obter jogos da API (timeout, HTTP != 200, excecao de rede) --
+    distinta de uma resposta 200 legitima com 0 jogos."""
 
 LEAGUE_MAP = {
     1: "Premier League",
@@ -111,40 +121,67 @@ def obter_jogos_proximos_dias():
     todos_jogos = []
     print(f"A solicitar API: {url} | Params: {params}")
 
-    try:
-        while url and len(todos_jogos) < 600:
-            # Timeout aumentado de 15 para 45 segundos
-            res = requests.get(url, headers=HEADERS, params=params, timeout=45)
-            params = None
-            
-            if res.status_code == 200:
-                data = res.json()
-                if isinstance(data, dict):
-                    matches = data.get('results', data.get('data', []))
-                    url = data.get('next')
-                elif isinstance(data, list):
-                    matches = data
-                    url = None
-                else:
-                    break
+    while url and len(todos_jogos) < 600:
+        ultimo_erro = None
+        res = None
 
-                todos_jogos.extend(matches)
-                if not matches or not url:
-                    break
+        for tentativa in range(1, MAX_TENTATIVAS_API + 1):
+            try:
+                # Timeout aumentado de 15 para 45 segundos
+                res = requests.get(url, headers=HEADERS, params=params, timeout=45)
+            except Exception as e:
+                ultimo_erro = e
+                res = None
             else:
-                print(f"❌ Erro HTTP {res.status_code}: {res.text}")
-                break
+                if res.status_code == 200:
+                    break
+                ultimo_erro = f"HTTP {res.status_code}: {res.text[:300]}"
+                res = None
 
-        print(f"✅ {len(todos_jogos)} jogos obtidos no total (com paginação).")
-        return todos_jogos
-    except Exception as e:
-        print(f"❌ Erro na ligação: {e}")
+            if tentativa < MAX_TENTATIVAS_API:
+                print(f"⚠️ Tentativa {tentativa}/{MAX_TENTATIVAS_API} falhou ({ultimo_erro}), "
+                      f"a repetir em {ESPERA_RETRY_SEGUNDOS}s...")
+                time.sleep(ESPERA_RETRY_SEGUNDOS)
 
-    return []
+        if res is None:
+            raise ErroObtencaoJogos(
+                f"falha ao obter jogos apos {MAX_TENTATIVAS_API} tentativas: {ultimo_erro}"
+            )
+
+        params = None
+
+        try:
+            data = res.json()
+        except Exception as e:
+            raise ErroObtencaoJogos(f"JSON invalido na resposta: {e}") from e
+
+        if isinstance(data, dict):
+            matches = data.get('results', data.get('data', []))
+            url = data.get('next')
+        elif isinstance(data, list):
+            matches = data
+            url = None
+        else:
+            break
+
+        todos_jogos.extend(matches)
+        if not matches or not url:
+            break
+
+    print(f"✅ {len(todos_jogos)} jogos obtidos no total (com paginação).")
+    return todos_jogos
 
 def analisar():
     init_db()
-    matches = obter_jogos_proximos_dias()
+
+    try:
+        matches = obter_jogos_proximos_dias()
+    except ErroObtencaoJogos as e:
+        print(f"❌ ERRO: {e}")
+        print("A manter o dashboard e a base de dados como estao -- "
+              "nao vou substituir por um vazio.")
+        sys.exit(1)
+
     agora_utc = datetime.now(timezone.utc)
 
     jogos_processados = []
