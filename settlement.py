@@ -32,6 +32,8 @@ HEADERS = {
 }
 
 RATE_LIMIT_BACKOFF = [2, 4, 8]  # segundos, por tentativa de retry apos 429
+MAX_REDIRECIONAMENTOS = 5  # limite de saltos em cadeias de replaced_by
+STALE_APOS_HORAS = 48  # 'notstarted' com event_date mais antigo que isto -> stale
 
 
 class RateLimitPersistente(Exception):
@@ -48,6 +50,8 @@ STATUS_NAO_JOGADO = {
     "cancelled", "canceled", "postponed", "abandoned",
     "suspended", "awarded", "walkover", "interrupted", "deleted",
 }
+
+STATUS_NAO_INICIADO = {"notstarted"}
 
 
 def init_db():
@@ -171,10 +175,31 @@ def _extrair_golos(data):
     return None, None
 
 
-def consultar_resultado_api(match_id, motivos):
+def _extrair_replaced_by(data):
+    """
+    A BSD por vezes substitui um evento por outro (ex: reagendamento com novo
+    id). O payload do evento antigo traz 'replaced_by' com o id do novo.
+    """
+    val = data.get("replaced_by")
+
+    if isinstance(val, dict):
+        val = val.get("id") or val.get("match_id") or val.get("event_id")
+
+    if val is None:
+        return None
+
+    return str(val)
+
+
+def _obter_payload(match_id, motivos):
+    """
+    Faz o pedido a API para um match_id, com pausa fixa e retry/backoff em
+    429. Devolve o payload (dict, envelope ja desembrulhado) ou None se
+    falhar -- o motivo da falha fica registado em `motivos`.
+    """
     if not str(match_id).isdigit():
         motivos["id_nao_numerico"] += 1
-        return None, None, None
+        return None
 
     url = f"{BASE_URL}/events/{match_id}/"
 
@@ -187,7 +212,7 @@ def consultar_resultado_api(match_id, motivos):
         except Exception as e:
             motivos["excecao_rede"] += 1
             print(f"AVISO {match_id}: erro de rede: {e}")
-            return None, None, None
+            return None
 
         if res.status_code != 429:
             break
@@ -214,13 +239,13 @@ def consultar_resultado_api(match_id, motivos):
 
     if res.status_code != 200:
         motivos[f"http_{res.status_code}"] += 1
-        return None, None, None
+        return None
 
     try:
         data = res.json()
     except Exception:
         motivos["json_invalido"] += 1
-        return None, None, None
+        return None
 
     # A API pode devolver o evento dentro de um envelope
     if isinstance(data, dict) and isinstance(data.get("data"), dict):
@@ -228,28 +253,54 @@ def consultar_resultado_api(match_id, motivos):
     if isinstance(data, dict) and isinstance(data.get("result"), dict) and "status" not in data:
         data = data["result"]
 
-    status = _extrair_status(data)
+    return data
 
-    if DEBUG:
-        print(f"DEBUG {match_id}: status='{status}' keys={sorted(data.keys())}")
-        print(f"DEBUG {match_id}: payload={json.dumps(data, ensure_ascii=False)[:1200]}")
 
-    if status in STATUS_NAO_JOGADO:
-        motivos["nao_jogado"] += 1
-        return None, None, status
+def consultar_resultado_api(match_id, motivos, redirecionamentos=None):
+    id_original = str(match_id)
+    id_atual = id_original
 
-    if status not in STATUS_FINAL:
-        motivos[f"status_desconhecido:{status or 'vazio'}"] += 1
-        return None, None, status
+    for _ in range(MAX_REDIRECIONAMENTOS):
+        data = _obter_payload(id_atual, motivos)
+        if data is None:
+            return None, None, None
 
-    home_s, away_s = _extrair_golos(data)
+        etiqueta = id_atual if id_atual == id_original else f"{id_original}->{id_atual}"
 
-    if home_s is None or away_s is None:
-        motivos["golos_nao_encontrados"] += 1
-        print(f"AVISO {match_id}: status final '{status}' mas sem golos. keys={sorted(data.keys())}")
-        return None, None, status
+        replaced_by = _extrair_replaced_by(data)
+        if replaced_by and replaced_by != id_atual:
+            print(f"INFO {etiqueta}: evento substituido (replaced_by) -> a seguir para {replaced_by}")
+            if redirecionamentos is not None:
+                redirecionamentos[id_original] = replaced_by
+            id_atual = replaced_by
+            continue
 
-    return home_s, away_s, status
+        status = _extrair_status(data)
+
+        if DEBUG:
+            print(f"DEBUG {etiqueta}: status='{status}' keys={sorted(data.keys())}")
+            print(f"DEBUG {etiqueta}: payload={json.dumps(data, ensure_ascii=False)[:1200]}")
+
+        if status in STATUS_NAO_JOGADO:
+            motivos["nao_jogado"] += 1
+            return None, None, status
+
+        if status not in STATUS_FINAL:
+            motivos[f"status_desconhecido:{status or 'vazio'}"] += 1
+            return None, None, status
+
+        home_s, away_s = _extrair_golos(data)
+
+        if home_s is None or away_s is None:
+            motivos["golos_nao_encontrados"] += 1
+            print(f"AVISO {etiqueta}: status final '{status}' mas sem golos. keys={sorted(data.keys())}")
+            return None, None, status
+
+        return home_s, away_s, status
+
+    motivos["cadeia_replaced_by_excedida"] += 1
+    print(f"AVISO {id_original}: cadeia de replaced_by excedeu {MAX_REDIRECIONAMENTOS} saltos, a desistir.")
+    return None, None, None
 
 
 def resolver_jogos():
@@ -270,14 +321,19 @@ def resolver_jogos():
     cursor = conn.cursor()
 
     motivos = Counter()
+    redirecionamentos = {}
     resolvidos = 0
     marcados_void = 0
+    marcados_stale = 0
     verificados = 0
     interrompido_por_rate_limit = False
+    agora_ts = int(datetime.now(timezone.utc).timestamp())
 
-    for match_id, home, away, _ts in pendentes:
+    for match_id, home, away, ts in pendentes:
         try:
-            home_score, away_score, status = consultar_resultado_api(match_id, motivos)
+            home_score, away_score, status = consultar_resultado_api(
+                match_id, motivos, redirecionamentos
+            )
         except RateLimitPersistente:
             interrompido_por_rate_limit = True
             print(
@@ -318,11 +374,31 @@ def resolver_jogos():
             )
             marcados_void += 1
 
+        elif (
+            status in STATUS_NAO_INICIADO
+            and ts is not None
+            and (agora_ts - ts) > STALE_APOS_HORAS * 3600
+        ):
+            # 'notstarted' com event_date ja passado ha muito nunca vai
+            # liquidar sozinho -- distinto de void (nao e um adiamento real).
+            cursor.execute(
+                "UPDATE predictions SET status = 'stale' WHERE match_id = ?",
+                (str(match_id),),
+            )
+            marcados_stale += 1
+
     conn.commit()
     conn.close()
 
     print(f"\nConcluido: {resolvidos} liquidados, {marcados_void} anulados, "
-          f"de {verificados} verificados (de {len(pendentes)} elegiveis).")
+          f"{marcados_stale} marcados stale (nao iniciados ha mais de "
+          f"{STALE_APOS_HORAS}h), de {verificados} verificados "
+          f"(de {len(pendentes)} elegiveis).")
+
+    if redirecionamentos:
+        print(f"Redirecionamentos seguidos (replaced_by): {len(redirecionamentos)}")
+        for original, destino in redirecionamentos.items():
+            print(f"  {original} -> {destino}")
 
     if interrompido_por_rate_limit:
         por_verificar = len(pendentes) - verificados
@@ -334,11 +410,11 @@ def resolver_jogos():
         for motivo, n in motivos.most_common():
             print(f"  {motivo}: {n}")
 
-    # Invariante: se nada liquidou e nada foi anulado, o pipeline esta partido.
-    # Mantem-se mesmo que a causa tenha sido rate limit persistente: se ja
-    # houve liquidacoes ou anulacoes antes da interrupcao, este bloco nao
-    # dispara e o script sai 0 normalmente.
-    if resolvidos == 0 and marcados_void == 0:
+    # Invariante: se nada liquidou, nada foi anulado e nada foi marcado
+    # stale, o pipeline esta partido. Mantem-se mesmo que a causa tenha sido
+    # rate limit persistente: se ja houve algum progresso antes da
+    # interrupcao, este bloco nao dispara e o script sai 0 normalmente.
+    if resolvidos == 0 and marcados_void == 0 and marcados_stale == 0:
         print("\nERRO: 0 jogos liquidados em {} tentativas. "
               "Correr com SETTLEMENT_DEBUG=1 para ver o payload real."
               .format(len(pendentes)))
