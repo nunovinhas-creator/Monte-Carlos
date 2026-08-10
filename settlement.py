@@ -14,6 +14,7 @@ import os
 import sqlite3
 import sys
 import json
+import time
 from collections import Counter
 from datetime import datetime, timezone, timedelta
 
@@ -23,11 +24,19 @@ API_TOKEN = os.getenv("BSD_API_TOKEN")
 BASE_URL = "https://sports.bzzoiro.com/api/v2"
 DB_NAME = os.getenv("PREDICTIONS_DB", "predictions.db")
 DEBUG = os.getenv("SETTLEMENT_DEBUG", "0") == "1"
+DELAY = float(os.getenv("SETTLEMENT_DELAY", "0.4"))
 
 HEADERS = {
     "Authorization": f"Token {API_TOKEN}",
     "Accept": "application/json",
 }
+
+RATE_LIMIT_BACKOFF = [2, 4, 8]  # segundos, por tentativa de retry apos 429
+
+
+class RateLimitPersistente(Exception):
+    """429 persistiu apos todas as tentativas de backoff."""
+
 
 STATUS_FINAL = {
     "finished", "ft", "ended", "completed", "complete", "closed",
@@ -169,12 +178,39 @@ def consultar_resultado_api(match_id, motivos):
 
     url = f"{BASE_URL}/events/{match_id}/"
 
-    try:
-        res = requests.get(url, headers=HEADERS, timeout=30)
-    except Exception as e:
-        motivos["excecao_rede"] += 1
-        print(f"AVISO {match_id}: erro de rede: {e}")
-        return None, None, None
+    time.sleep(DELAY)
+
+    tentativa = 0
+    while True:
+        try:
+            res = requests.get(url, headers=HEADERS, timeout=30)
+        except Exception as e:
+            motivos["excecao_rede"] += 1
+            print(f"AVISO {match_id}: erro de rede: {e}")
+            return None, None, None
+
+        if res.status_code != 429:
+            break
+
+        if tentativa >= len(RATE_LIMIT_BACKOFF):
+            motivos["http_429"] += 1
+            raise RateLimitPersistente(match_id)
+
+        retry_after = res.headers.get("Retry-After")
+        if retry_after is not None:
+            try:
+                espera = float(retry_after)
+            except ValueError:
+                espera = RATE_LIMIT_BACKOFF[tentativa]
+        else:
+            espera = RATE_LIMIT_BACKOFF[tentativa]
+
+        print(
+            f"AVISO {match_id}: HTTP 429 (tentativa {tentativa + 1}/"
+            f"{len(RATE_LIMIT_BACKOFF)}), a aguardar {espera}s..."
+        )
+        time.sleep(espera)
+        tentativa += 1
 
     if res.status_code != 200:
         motivos[f"http_{res.status_code}"] += 1
@@ -236,9 +272,22 @@ def resolver_jogos():
     motivos = Counter()
     resolvidos = 0
     marcados_void = 0
+    verificados = 0
+    interrompido_por_rate_limit = False
 
     for match_id, home, away, _ts in pendentes:
-        home_score, away_score, status = consultar_resultado_api(match_id, motivos)
+        try:
+            home_score, away_score, status = consultar_resultado_api(match_id, motivos)
+        except RateLimitPersistente:
+            interrompido_por_rate_limit = True
+            print(
+                f"\nAVISO: HTTP 429 persistente em {match_id} apos "
+                f"{len(RATE_LIMIT_BACKOFF)} tentativas de backoff. "
+                "A interromper o ciclo para nao continuar a queimar chamadas."
+            )
+            break
+
+        verificados += 1
 
         if home_score is not None and away_score is not None:
             res_o25 = 1 if (home_score + away_score) > 2.5 else 0
@@ -273,7 +322,12 @@ def resolver_jogos():
     conn.close()
 
     print(f"\nConcluido: {resolvidos} liquidados, {marcados_void} anulados, "
-          f"de {len(pendentes)} verificados.")
+          f"de {verificados} verificados (de {len(pendentes)} elegiveis).")
+
+    if interrompido_por_rate_limit:
+        por_verificar = len(pendentes) - verificados
+        print(f"AVISO: ciclo interrompido por rate limit persistente. "
+              f"{por_verificar} jogos ficaram por verificar nesta corrida.")
 
     if motivos:
         print("Motivos de nao-liquidacao:")
@@ -281,6 +335,9 @@ def resolver_jogos():
             print(f"  {motivo}: {n}")
 
     # Invariante: se nada liquidou e nada foi anulado, o pipeline esta partido.
+    # Mantem-se mesmo que a causa tenha sido rate limit persistente: se ja
+    # houve liquidacoes ou anulacoes antes da interrupcao, este bloco nao
+    # dispara e o script sai 0 normalmente.
     if resolvidos == 0 and marcados_void == 0:
         print("\nERRO: 0 jogos liquidados em {} tentativas. "
               "Correr com SETTLEMENT_DEBUG=1 para ver o payload real."
