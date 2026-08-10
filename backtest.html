@@ -22,13 +22,13 @@
             <a href="index.html" class="btn btn-outline-primary">Ver Previsoes</a>
         </div>
 
-        <div class="alert alert-warning mb-4"><strong>Amostra vazia.</strong> 538 previsoes na base, 0 com status 'finished', 0 com resultado liquidado. O settlement nao esta a resolver jogos &mdash; ver logs do workflow.</div>
+        <div class="alert alert-info mb-4"><strong>Amostra:</strong> 139 jogos liquidados (de 538 previsoes registadas).</div>
 
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Mais de 2.5 Golos</h5>
-                    <p class="small text-muted mb-3"><span class="text-muted">sem amostra</span></p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2713</strong> | baseline 0.2471 | <span class="text-danger">skill -9.8%</span> (n=139)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -41,7 +41,55 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td colspan="5" class="text-center text-muted py-3">Sem jogos liquidados.</td></tr>
+                                
+        <tr>
+            <td><strong>0% - 39%</strong></td>
+            <td>43</td>
+            <td>17</td>
+            <td>25.8%</td>
+            <td><span class="badge bg-success">39.5% (+13.7)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>40% - 49%</strong></td>
+            <td>69</td>
+            <td>32</td>
+            <td>47.8%</td>
+            <td><span class="badge bg-success">46.4% (-1.4)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>50% - 59%</strong></td>
+            <td>14</td>
+            <td>6</td>
+            <td>57.6%</td>
+            <td><span class="badge bg-secondary">42.9% (-14.8)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>60% - 69%</strong></td>
+            <td>2</td>
+            <td>1</td>
+            <td>63.0%</td>
+            <td><span class="badge bg-secondary">50.0% (-13.0)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>70% - 79%</strong></td>
+            <td>5</td>
+            <td>2</td>
+            <td>75.1%</td>
+            <td><span class="badge bg-secondary">40.0% (-35.1)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>80%+</strong></td>
+            <td>6</td>
+            <td>4</td>
+            <td>90.3%</td>
+            <td><span class="badge bg-secondary">66.7% (-23.7)</span></td>
+        </tr>
+        
                             </tbody>
                         </table>
                     </div>
@@ -51,7 +99,7 @@
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Ambas Marcam (BTTS)</h5>
-                    <p class="small text-muted mb-3"><span class="text-muted">sem amostra</span></p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2567</strong> | baseline 0.2499 | <span class="text-danger">skill -2.7%</span> (n=139)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -64,7 +112,55 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td colspan="5" class="text-center text-muted py-3">Sem jogos liquidados.</td></tr>
+                                
+        <tr>
+            <td><strong>0% - 39%</strong></td>
+            <td>26</td>
+            <td>11</td>
+            <td>26.8%</td>
+            <td><span class="badge bg-secondary">42.3% (+15.5)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>40% - 49%</strong></td>
+            <td>19</td>
+            <td>8</td>
+            <td>43.5%</td>
+            <td><span class="badge bg-secondary">42.1% (-1.4)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>50% - 59%</strong></td>
+            <td>67</td>
+            <td>34</td>
+            <td>52.8%</td>
+            <td><span class="badge bg-success">50.7% (-2.0)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>60% - 69%</strong></td>
+            <td>16</td>
+            <td>11</td>
+            <td>60.9%</td>
+            <td><span class="badge bg-secondary">68.8% (+7.9)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>70% - 79%</strong></td>
+            <td>6</td>
+            <td>4</td>
+            <td>74.9%</td>
+            <td><span class="badge bg-secondary">66.7% (-8.2)</span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>80%+</strong></td>
+            <td>5</td>
+            <td>3</td>
+            <td>88.6%</td>
+            <td><span class="badge bg-secondary">60.0% (-28.6)</span></td>
+        </tr>
+        
                             </tbody>
                         </table>
                     </div>
