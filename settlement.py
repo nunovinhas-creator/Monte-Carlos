@@ -199,6 +199,8 @@ def _obter_payload(match_id, motivos):
     """
     if not str(match_id).isdigit():
         motivos["id_nao_numerico"] += 1
+        if DEBUG:
+            print(f"DEBUG {match_id}: id nao numerico, pedido nao foi feito.")
         return None
 
     url = f"{BASE_URL}/events/{match_id}/"
@@ -239,12 +241,16 @@ def _obter_payload(match_id, motivos):
 
     if res.status_code != 200:
         motivos[f"http_{res.status_code}"] += 1
+        if DEBUG:
+            print(f"DEBUG {match_id}: HTTP {res.status_code}, body={res.text[:500]!r}")
         return None
 
     try:
         data = res.json()
     except Exception:
         motivos["json_invalido"] += 1
+        if DEBUG:
+            print(f"DEBUG {match_id}: JSON invalido, body={res.text[:500]!r}")
         return None
 
     # A API pode devolver o evento dentro de um envelope
@@ -266,6 +272,14 @@ def consultar_resultado_api(match_id, motivos, redirecionamentos=None):
             return None, None, None
 
         etiqueta = id_atual if id_atual == id_original else f"{id_original}->{id_atual}"
+        status = _extrair_status(data)
+
+        # DEBUG dump ANTES do desvio por replaced_by: cada payload obtido em
+        # cada salto da cadeia fica registado, incluindo o evento original
+        # substituido (senao o seu payload nunca era visto no log).
+        if DEBUG:
+            print(f"DEBUG {etiqueta}: status='{status}' keys={sorted(data.keys())}")
+            print(f"DEBUG {etiqueta}: payload={json.dumps(data, ensure_ascii=False)[:1200]}")
 
         replaced_by = _extrair_replaced_by(data)
         if replaced_by and replaced_by != id_atual:
@@ -275,18 +289,18 @@ def consultar_resultado_api(match_id, motivos, redirecionamentos=None):
             id_atual = replaced_by
             continue
 
-        status = _extrair_status(data)
-
-        if DEBUG:
-            print(f"DEBUG {etiqueta}: status='{status}' keys={sorted(data.keys())}")
-            print(f"DEBUG {etiqueta}: payload={json.dumps(data, ensure_ascii=False)[:1200]}")
-
         if status in STATUS_NAO_JOGADO:
             motivos["nao_jogado"] += 1
             return None, None, status
 
         if status not in STATUS_FINAL:
-            motivos[f"status_desconhecido:{status or 'vazio'}"] += 1
+            if status in STATUS_NAO_INICIADO:
+                # Estado normal, nao e falha: o jogo ainda nao comecou
+                # segundo a API (atraso de kickoff, fuso, etc.). So passa a
+                # 'stale' se o event_date for muito antigo (ver resolver_jogos).
+                motivos["ainda_nao_comecou"] += 1
+            else:
+                motivos[f"status_desconhecido:{status or 'vazio'}"] += 1
             return None, None, status
 
         home_s, away_s = _extrair_golos(data)
@@ -410,11 +424,23 @@ def resolver_jogos():
         for motivo, n in motivos.most_common():
             print(f"  {motivo}: {n}")
 
-    # Invariante: se nada liquidou, nada foi anulado e nada foi marcado
-    # stale, o pipeline esta partido. Mantem-se mesmo que a causa tenha sido
-    # rate limit persistente: se ja houve algum progresso antes da
-    # interrupcao, este bloco nao dispara e o script sai 0 normalmente.
+    # Invariante: se nada liquidou, nada foi anulado, nada foi marcado stale
+    # E existe pelo menos um motivo que nao seja "ainda_nao_comecou", o
+    # pipeline esta partido (erro de rede, HTTP, JSON, status realmente
+    # desconhecido, etc.). Uma corrida onde todos os pendentes estao
+    # legitimamente 'notstarted' (kickoff atrasado, ainda dentro das 48h)
+    # nao e uma falha -- e apenas nao haver nada para liquidar ainda.
+    motivos_duros = sum(
+        n for motivo, n in motivos.items() if motivo != "ainda_nao_comecou"
+    )
+
     if resolvidos == 0 and marcados_void == 0 and marcados_stale == 0:
+        if motivos_duros == 0:
+            print("\nNenhuma liquidacao nesta corrida: todos os pendentes "
+                  "ainda estao 'notstarted' (sem sinal de erro). "
+                  "A tentar novamente na proxima corrida.")
+            return
+
         print("\nERRO: 0 jogos liquidados em {} tentativas. "
               "Correr com SETTLEMENT_DEBUG=1 para ver o payload real."
               .format(len(pendentes)))

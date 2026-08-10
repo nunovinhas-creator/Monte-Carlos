@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Ativar SETTLEMENT_DEBUG=1 so nesta corrida'
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -31,7 +36,7 @@ jobs:
       - name: Liquidar Resultados Pendentes (settlement.py)
         env:
           BSD_API_TOKEN: ${{ secrets.BSD_API_TOKEN }}
-          SETTLEMENT_DEBUG: ${{ vars.SETTLEMENT_DEBUG || '0' }}
+          SETTLEMENT_DEBUG: ${{ (github.event_name == 'workflow_dispatch' && inputs.debug && '1') || vars.SETTLEMENT_DEBUG || '0' }}
         run: python settlement.py
 
       - name: Gerar Relatório de Backtest (backtest.py)
