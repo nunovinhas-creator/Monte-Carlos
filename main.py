@@ -165,11 +165,19 @@ def analisar():
         data_dia = dt_obj.strftime('%d/%m/%Y')
         timestamp = int(dt_obj.timestamp())
 
-        h2h = match.get('head_to_head', {})
-        avg_goals = h2h.get('avg_total_goals', 2.4) / 2.0 if h2h else 1.3
-        
-        xg_home = match.get('home_xg', avg_goals)
-        xg_away = match.get('away_xg', avg_goals)
+        h2h = match.get('head_to_head') or {}
+        n_h2h = (h2h.get('home_wins') or 0) + (h2h.get('draws') or 0) + (h2h.get('away_wins') or 0)
+
+        if n_h2h > 0:
+            golos_h2h = (h2h.get('home_goals') or 0) + (h2h.get('away_goals') or 0)
+            media_h2h = golos_h2h / n_h2h
+        else:
+            media_h2h = 2.6
+
+        avg_goals = media_h2h / 2.0
+
+        xg_home = avg_goals
+        xg_away = avg_goals
 
         p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
 
