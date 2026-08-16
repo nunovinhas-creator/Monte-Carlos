@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import sqlite3
 import numpy as np
 import requests
 from datetime import datetime, timezone, timedelta
@@ -15,6 +16,12 @@ HEADERS = {
 
 MAX_TENTATIVAS_API = 2
 ESPERA_RETRY_SEGUNDOS = 5
+
+MEDIA_GOLOS_DEFAULT = 2.6
+LIGA_MIN_JOGOS = 15
+LIGA_MEDIA_MIN = 1.8
+LIGA_MEDIA_MAX = 3.6
+K_ENCOLHIMENTO = 3
 
 
 class ErroObtencaoJogos(Exception):
@@ -43,7 +50,7 @@ LEAGUE_MAP = {
     201: "Serie A"
 }
 
-from database import init_db, salvar_previsoes_db
+from database import init_db, salvar_previsoes_db, DB_NAME
 
 def monte_carlo_sim(lambda_home, lambda_away, simulations=50000):
     lambda_home = max(float(lambda_home or 1.2), 0.2)
@@ -171,8 +178,105 @@ def obter_jogos_proximos_dias():
     print(f"✅ {len(todos_jogos)} jogos obtidos no total (com paginação).")
     return todos_jogos
 
+def calcular_medias_liga():
+    """
+    Le os jogos ja liquidados na predictions.db e devolve:
+    - medias_por_liga: dict liga -> media de golos totais (home+away),
+      so para ligas com >= LIGA_MIN_JOGOS liquidados, limitada a
+      [LIGA_MEDIA_MIN, LIGA_MEDIA_MAX].
+    - media_global: media de golos totais de todos os jogos liquidados
+      (fallback para ligas com poucos jogos), ou MEDIA_GOLOS_DEFAULT se
+      a base ainda nao tiver nenhum jogo liquidado.
+    """
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT league, AVG(home_score + away_score), COUNT(*)
+        FROM predictions
+        WHERE status = 'finished' AND home_score IS NOT NULL
+        GROUP BY league
+    """)
+    por_liga = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT AVG(home_score + away_score), COUNT(*)
+        FROM predictions
+        WHERE status = 'finished' AND home_score IS NOT NULL
+    """)
+    media_global_bruta, total_global = cursor.fetchone()
+    conn.close()
+
+    medias_por_liga = {}
+    for liga, media, n in por_liga:
+        if n >= LIGA_MIN_JOGOS and media is not None:
+            medias_por_liga[liga] = max(LIGA_MEDIA_MIN, min(LIGA_MEDIA_MAX, media))
+
+    if not total_global:
+        media_global = MEDIA_GOLOS_DEFAULT
+    else:
+        media_global = media_global_bruta
+
+    return medias_por_liga, media_global
+
+
+def obter_match_ids_existentes():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT match_id FROM predictions")
+    ids = {row[0] for row in cursor.fetchall()}
+    conn.close()
+    return ids
+
+
+def garantir_colunas_auditoria_h2h():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(predictions)")
+    colunas = {row[1] for row in cursor.fetchall()}
+
+    for nome, tipo in (
+        ("n_h2h", "INTEGER"),
+        ("media_h2h_bruta", "REAL"),
+        ("media_liga_usada", "REAL"),
+    ):
+        if nome not in colunas:
+            cursor.execute(f"ALTER TABLE predictions ADD COLUMN {nome} {tipo}")
+
+    conn.commit()
+    conn.close()
+
+
+def gravar_auditoria_h2h(jogos, ids_ja_existentes):
+    """
+    Preenche n_h2h/media_h2h_bruta/media_liga_usada so para previsoes
+    novas nesta corrida (match_id que nao existia antes do
+    salvar_previsoes_db). Linhas ja existentes ficam intocadas.
+    """
+    novos = [j for j in jogos if j["match_id"] not in ids_ja_existentes]
+    if not novos:
+        return
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.executemany(
+        """
+        UPDATE predictions
+        SET n_h2h = ?, media_h2h_bruta = ?, media_liga_usada = ?
+        WHERE match_id = ?
+        """,
+        [
+            (j["n_h2h"], j["media_h2h_bruta"], j["media_liga_usada"], j["match_id"])
+            for j in novos
+        ],
+    )
+    conn.commit()
+    conn.close()
+
+
 def analisar():
     init_db()
+    garantir_colunas_auditoria_h2h()
 
     try:
         matches = obter_jogos_proximos_dias()
@@ -183,6 +287,9 @@ def analisar():
         sys.exit(1)
 
     agora_utc = datetime.now(timezone.utc)
+
+    medias_por_liga, media_global = calcular_medias_liga()
+    ids_ja_existentes = obter_match_ids_existentes()
 
     jogos_processados = []
 
@@ -197,7 +304,7 @@ def analisar():
         home_name = extrair_nome_equipa(match, 'home_team')
         away_name = extrair_nome_equipa(match, 'away_team')
         liga_name = extrair_nome_liga(match)
-        
+
         data_str = dt_obj.strftime('%d/%m/%Y %H:%M')
         data_dia = dt_obj.strftime('%d/%m/%Y')
         timestamp = int(dt_obj.timestamp())
@@ -205,21 +312,30 @@ def analisar():
         h2h = match.get('head_to_head') or {}
         n_h2h = (h2h.get('home_wins') or 0) + (h2h.get('draws') or 0) + (h2h.get('away_wins') or 0)
 
+        media_liga_usada = medias_por_liga.get(liga_name, media_global)
+
         if n_h2h > 0:
             golos_h2h = (h2h.get('home_goals') or 0) + (h2h.get('away_goals') or 0)
-            media_h2h = golos_h2h / n_h2h
+            media_h2h_bruta = golos_h2h / n_h2h
+            media_final = (
+                n_h2h * media_h2h_bruta + K_ENCOLHIMENTO * media_liga_usada
+            ) / (n_h2h + K_ENCOLHIMENTO)
         else:
-            media_h2h = 2.6
+            media_h2h_bruta = None
+            media_final = media_liga_usada
 
-        avg_goals = media_h2h / 2.0
+        avg_goals = media_final / 2.0
 
         xg_home = avg_goals
         xg_away = avg_goals
 
         p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
 
+        match_id = str(match.get('id') or f"{home_name}_{away_name}_{timestamp}")
+
         jogos_processados.append({
             'id': match.get('id'),
+            'match_id': match_id,
             'data_str': data_str,
             'data_dia': data_dia,
             'timestamp': timestamp,
@@ -230,12 +346,16 @@ def analisar():
             'xg_home': xg_home,
             'xg_away': xg_away,
             'o25': p_o25,
-            'btts': p_btts
+            'btts': p_btts,
+            'n_h2h': n_h2h,
+            'media_h2h_bruta': media_h2h_bruta,
+            'media_liga_usada': media_liga_usada
         })
 
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
     salvar_previsoes_db(jogos_processados)
+    gravar_auditoria_h2h(jogos_processados, ids_ja_existentes)
     gerar_dashboard_html(jogos_processados)
     print(f"✅ Dashboard gerado com {len(jogos_processados)} jogos próximos!")
 
