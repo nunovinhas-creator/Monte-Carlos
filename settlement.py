@@ -33,7 +33,8 @@ HEADERS = {
 
 RATE_LIMIT_BACKOFF = [2, 4, 8]  # segundos, por tentativa de retry apos 429
 MAX_REDIRECIONAMENTOS = 5  # limite de saltos em cadeias de replaced_by
-STALE_APOS_HORAS = 48  # 'notstarted' com event_date mais antigo que isto -> stale
+STALE_APOS_HORAS = 48  # 'notstarted'/'unresolved' com event_date mais antigo que isto -> stale
+IDADE_AVISO_HORAS = 72  # pendente sem progresso ha mais de isto -> AVISO de saude
 
 
 class RateLimitPersistente(Exception):
@@ -53,16 +54,26 @@ STATUS_NAO_JOGADO = {
 
 STATUS_NAO_INICIADO = {"notstarted"}
 
-# Motivos de nao-liquidacao que sao benignos: o jogo simplesmente ainda nao
-# aconteceu, nao e um sinal de pipeline partido.
-MOTIVOS_BENIGNOS = {"ainda_nao_comecou"}
+# 'unresolved': API respondeu 200 mas sem period/minuto/golos -- visto em
+# jogos cujo event_date ja passou ha muito e que nunca vao ganhar dados
+# (ex: 219704 Fulham-VfB Stuttgart, 587661 Marseille-Atletico Madrid).
+# Tratado como STATUS_NAO_INICIADO para efeitos de "envelhece -> stale":
+# recente pode ainda resolver-se, antigo nunca mais vai.
+STATUS_UNRESOLVED = {"unresolved"}
 
-# Motivos de nao-liquidacao que sao sinal de erro real (rede, HTTP, parsing).
-# So estes disparam o sys.exit(1) final. Qualquer motivo fora desta lista e
-# fora de MOTIVOS_BENIGNOS (ex: status_desconhecido:* ainda nao classificado)
-# fica registado no Counter mas nao interrompe o workflow sozinho.
+# Motivos de nao-liquidacao que sao benignos: o jogo simplesmente ainda nao
+# aconteceu (ou ainda nao tem resultado disponivel), nao e um sinal de
+# pipeline partido.
+MOTIVOS_BENIGNOS = {"ainda_nao_comecou", "por_resolver"}
+
+# Motivos de nao-liquidacao que sao sinal de erro real (rede, HTTP, parsing,
+# cadeia replaced_by anomala/circular). So estes disparam o sys.exit(1)
+# final. Qualquer motivo fora desta lista e fora de MOTIVOS_BENIGNOS (ex:
+# status_desconhecido:* ainda nao classificado) fica registado no Counter
+# mas nao interrompe o workflow sozinho.
 MOTIVOS_DUROS_FIXOS = {
     "excecao_rede", "json_invalido", "golos_nao_encontrados", "id_nao_numerico",
+    "cadeia_replaced_by_excedida",
 }
 
 
@@ -319,6 +330,10 @@ def consultar_resultado_api(match_id, motivos, redirecionamentos=None):
                 # segundo a API (atraso de kickoff, fuso, etc.). So passa a
                 # 'stale' se o event_date for muito antigo (ver resolver_jogos).
                 motivos["ainda_nao_comecou"] += 1
+            elif status in STATUS_UNRESOLVED:
+                # Sem period/minuto/golos ainda. Recente pode resolver-se
+                # mais tarde; antigo passa a 'stale' (ver resolver_jogos).
+                motivos["por_resolver"] += 1
             else:
                 motivos[f"status_desconhecido:{status or 'vazio'}"] += 1
             return None, None, status
@@ -360,6 +375,7 @@ def resolver_jogos():
     marcados_void = 0
     marcados_stale = 0
     verificados = 0
+    pendentes_envelhecidos = 0
     interrompido_por_rate_limit = False
     agora_ts = int(datetime.now(timezone.utc).timestamp())
 
@@ -409,17 +425,23 @@ def resolver_jogos():
             marcados_void += 1
 
         elif (
-            status in STATUS_NAO_INICIADO
-            and ts is not None
-            and (agora_ts - ts) > STALE_APOS_HORAS * 3600
-        ):
-            # 'notstarted' com event_date ja passado ha muito nunca vai
-            # liquidar sozinho -- distinto de void (nao e um adiamento real).
+            status in STATUS_NAO_INICIADO or status in STATUS_UNRESOLVED
+        ) and ts is not None and (agora_ts - ts) > STALE_APOS_HORAS * 3600:
+            # 'notstarted'/'unresolved' com event_date ja passado ha muito
+            # nunca vai liquidar sozinho -- distinto de void (nao e um
+            # adiamento real).
             cursor.execute(
                 "UPDATE predictions SET status = 'stale' WHERE match_id = ?",
                 (str(match_id),),
             )
             marcados_stale += 1
+
+        elif ts is not None and (agora_ts - ts) > IDADE_AVISO_HORAS * 3600:
+            # Nao liquidou, nao foi void, nao foi (ainda) marcado stale, mas
+            # ja passou bastante mais tempo que o limiar de stale -- sinal
+            # de saude a vigiar (ex: API a devolver 'notstarted'/'unresolved'
+            # para tudo e o pipeline silenciosamente parado).
+            pendentes_envelhecidos += 1
 
     conn.commit()
     conn.close()
@@ -443,6 +465,12 @@ def resolver_jogos():
         print("Motivos de nao-liquidacao:")
         for motivo, n in motivos.most_common():
             print(f"  {motivo}: {n}")
+
+    if pendentes_envelhecidos:
+        print(f"AVISO: {pendentes_envelhecidos} pendente(s) com event_date ha "
+              f"mais de {IDADE_AVISO_HORAS}h que nao liquidaram nem foram "
+              f"marcados stale nesta corrida. Vale a pena investigar com "
+              f"SETTLEMENT_DEBUG=1.")
 
     # Invariante: se nada liquidou, nada foi anulado, nada foi marcado stale
     # E existe pelo menos um motivo duro (MOTIVOS_DUROS_FIXOS ou http_*), o
