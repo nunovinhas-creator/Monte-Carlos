@@ -53,6 +53,26 @@ STATUS_NAO_JOGADO = {
 
 STATUS_NAO_INICIADO = {"notstarted"}
 
+# Motivos de nao-liquidacao que sao benignos: o jogo simplesmente ainda nao
+# aconteceu, nao e um sinal de pipeline partido.
+MOTIVOS_BENIGNOS = {"ainda_nao_comecou"}
+
+# Motivos de nao-liquidacao que sao sinal de erro real (rede, HTTP, parsing).
+# So estes disparam o sys.exit(1) final. Qualquer motivo fora desta lista e
+# fora de MOTIVOS_BENIGNOS (ex: status_desconhecido:* ainda nao classificado)
+# fica registado no Counter mas nao interrompe o workflow sozinho.
+MOTIVOS_DUROS_FIXOS = {
+    "excecao_rede", "json_invalido", "golos_nao_encontrados", "id_nao_numerico",
+}
+
+
+def _motivo_e_duro(motivo):
+    if motivo in MOTIVOS_BENIGNOS:
+        return False
+    if motivo in MOTIVOS_DUROS_FIXOS:
+        return True
+    return motivo.startswith("http_")
+
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -425,19 +445,18 @@ def resolver_jogos():
             print(f"  {motivo}: {n}")
 
     # Invariante: se nada liquidou, nada foi anulado, nada foi marcado stale
-    # E existe pelo menos um motivo que nao seja "ainda_nao_comecou", o
-    # pipeline esta partido (erro de rede, HTTP, JSON, status realmente
-    # desconhecido, etc.). Uma corrida onde todos os pendentes estao
-    # legitimamente 'notstarted' (kickoff atrasado, ainda dentro das 48h)
-    # nao e uma falha -- e apenas nao haver nada para liquidar ainda.
-    motivos_duros = sum(
-        n for motivo, n in motivos.items() if motivo != "ainda_nao_comecou"
-    )
+    # E existe pelo menos um motivo duro (MOTIVOS_DUROS_FIXOS ou http_*), o
+    # pipeline esta partido (erro de rede, HTTP, JSON, golos em falta, id
+    # invalido). Motivos benignos (ainda_nao_comecou) ou ainda nao
+    # classificados (ex: status_desconhecido:*) nao contam para isto -- um
+    # backlog limpo, com poucos ou nenhuns jogos elegiveis para liquidar
+    # agora, nao e uma falha do pipeline.
+    motivos_duros = sum(n for motivo, n in motivos.items() if _motivo_e_duro(motivo))
 
     if resolvidos == 0 and marcados_void == 0 and marcados_stale == 0:
         if motivos_duros == 0:
-            print("\nNenhuma liquidacao nesta corrida: todos os pendentes "
-                  "ainda estao 'notstarted' (sem sinal de erro). "
+            print("\nNenhuma liquidacao nesta corrida: nada elegivel para "
+                  "liquidar agora (sem sinal de erro duro). "
                   "A tentar novamente na proxima corrida.")
             return
 
