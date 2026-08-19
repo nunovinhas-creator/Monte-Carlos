@@ -61,10 +61,22 @@ STATUS_NAO_INICIADO = {"notstarted"}
 # recente pode ainda resolver-se, antigo nunca mais vai.
 STATUS_UNRESOLVED = {"unresolved"}
 
+# HTTP 404: resposta valida da API a dizer "este evento nao existe" (id
+# removido, ou nunca chegou a existir) -- nao e uma falha de
+# infraestrutura como um 500/502, por isso tem tratamento proprio,
+# distinto do bloco http_* generico (ver _obter_payload). Sentinela
+# interna devolvida por consultar_resultado_api como "status" para que
+# resolver_jogos aplique a mesma logica de idade que ja usa para
+# notstarted/unresolved.
+STATUS_HTTP_404 = "__http_404__"
+
 # Motivos de nao-liquidacao que sao benignos: o jogo simplesmente ainda nao
 # aconteceu (ou ainda nao tem resultado disponivel), nao e um sinal de
 # pipeline partido.
-MOTIVOS_BENIGNOS = {"ainda_nao_comecou", "por_resolver"}
+MOTIVOS_BENIGNOS = {
+    "ainda_nao_comecou", "por_resolver",
+    "nao_existe_na_api", "ainda_nao_propagado",
+}
 
 # Motivos de nao-liquidacao que sao sinal de erro real (rede, HTTP, parsing,
 # cadeia replaced_by anomala/circular). So estes disparam o sys.exit(1)
@@ -222,11 +234,17 @@ def _extrair_replaced_by(data):
     return str(val)
 
 
-def _obter_payload(match_id, motivos):
+_HTTP_404 = object()  # sentinela devolvida por _obter_payload num 404
+
+
+def _obter_payload(match_id, motivos, ts=None, agora_ts=None):
     """
     Faz o pedido a API para um match_id, com pausa fixa e retry/backoff em
-    429. Devolve o payload (dict, envelope ja desembrulhado) ou None se
-    falhar -- o motivo da falha fica registado em `motivos`.
+    429. Devolve o payload (dict, envelope ja desembrulhado), a sentinela
+    _HTTP_404 num 404, ou None se falhar de outra forma -- o motivo da
+    falha fica registado em `motivos`. `ts`/`agora_ts` (epoch UTC), quando
+    dados, permitem distinguir um 404 recente (id pode nao ter propagado
+    ainda) de um 404 antigo (evento provavelmente removido/nunca existiu).
     """
     if not str(match_id).isdigit():
         motivos["id_nao_numerico"] += 1
@@ -270,6 +288,22 @@ def _obter_payload(match_id, motivos):
         time.sleep(espera)
         tentativa += 1
 
+    if res.status_code == 404:
+        # Resposta valida: "este evento nao existe". Distingue-se dos
+        # outros http_* (esses sao falhas de infraestrutura). A idade do
+        # event_date decide se e so um id que ainda nao propagou (recente,
+        # benigno, fica pending) ou um evento que nunca vai existir
+        # (antigo, marcado stale em resolver_jogos).
+        antigo = (
+            ts is not None and agora_ts is not None
+            and (agora_ts - ts) > STALE_APOS_HORAS * 3600
+        )
+        motivos["nao_existe_na_api" if antigo else "ainda_nao_propagado"] += 1
+        if DEBUG:
+            print(f"DEBUG {match_id}: HTTP 404 ({'antigo' if antigo else 'recente'}), "
+                  f"body={res.text[:500]!r}")
+        return _HTTP_404
+
     if res.status_code != 200:
         motivos[f"http_{res.status_code}"] += 1
         if DEBUG:
@@ -293,12 +327,14 @@ def _obter_payload(match_id, motivos):
     return data
 
 
-def consultar_resultado_api(match_id, motivos, redirecionamentos=None):
+def consultar_resultado_api(match_id, motivos, redirecionamentos=None, ts=None, agora_ts=None):
     id_original = str(match_id)
     id_atual = id_original
 
     for _ in range(MAX_REDIRECIONAMENTOS):
-        data = _obter_payload(id_atual, motivos)
+        data = _obter_payload(id_atual, motivos, ts=ts, agora_ts=agora_ts)
+        if data is _HTTP_404:
+            return None, None, STATUS_HTTP_404
         if data is None:
             return None, None, None
 
@@ -382,7 +418,7 @@ def resolver_jogos():
     for match_id, home, away, ts in pendentes:
         try:
             home_score, away_score, status = consultar_resultado_api(
-                match_id, motivos, redirecionamentos
+                match_id, motivos, redirecionamentos, ts=ts, agora_ts=agora_ts
             )
         except RateLimitPersistente:
             interrompido_por_rate_limit = True
@@ -426,10 +462,11 @@ def resolver_jogos():
 
         elif (
             status in STATUS_NAO_INICIADO or status in STATUS_UNRESOLVED
+            or status == STATUS_HTTP_404
         ) and ts is not None and (agora_ts - ts) > STALE_APOS_HORAS * 3600:
-            # 'notstarted'/'unresolved' com event_date ja passado ha muito
-            # nunca vai liquidar sozinho -- distinto de void (nao e um
-            # adiamento real).
+            # 'notstarted'/'unresolved'/404 com event_date ja passado ha
+            # muito nunca vai liquidar sozinho -- distinto de void (nao e
+            # um adiamento real).
             cursor.execute(
                 "UPDATE predictions SET status = 'stale' WHERE match_id = ?",
                 (str(match_id),),
