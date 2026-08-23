@@ -23,6 +23,9 @@ LIGA_MEDIA_MIN = 1.8
 LIGA_MEDIA_MAX = 3.6
 K_ENCOLHIMENTO = 3
 
+TEAM_STATS_DELAY = float(os.getenv("TEAM_STATS_DELAY", "0.5"))
+TEAM_STATS_MAX_CALLS = int(os.getenv("TEAM_STATS_MAX_CALLS", "120"))
+
 
 class ErroObtencaoJogos(Exception):
     """Falha ao obter jogos da API (timeout, HTTP != 200, excecao de rede) --
@@ -85,8 +88,18 @@ def extrair_nome_equipa(match, campo):
     alt_key = f"{campo}_name"
     if match.get(alt_key):
         return str(match.get(alt_key)).strip()
-        
+
     return 'Desconhecido'
+
+def extrair_team_id(match, campo):
+    equipa = match.get(campo)
+    if isinstance(equipa, dict):
+        tid = equipa.get('id') or equipa.get('team_id')
+        if tid is not None:
+            return tid
+
+    alt_key = f"{campo}_id"
+    return match.get(alt_key)
 
 def extrair_nome_liga(match):
     # Procura em dicionários aninhados
@@ -274,6 +287,118 @@ def gravar_auditoria_h2h(jogos, ids_ja_existentes):
     conn.close()
 
 
+def recolher_estatisticas_equipas(jogos):
+    """
+    Para cada equipa distinta nos jogos desta corrida, chama
+    obter_estatisticas_equipa() so para preencher/renovar a cache em
+    team_stats (database.py) -- o resultado nao e usado em mais nada
+    aqui, so inspecionado para o resumo de cobertura no final. Nao pode
+    impedir o dashboard nem o settlement: qualquer falha fica contida
+    dentro desta funcao.
+
+    obter_estatisticas_equipa() agora devolve None quando a API falhou
+    (distinto de stats com games=0, que e um sucesso legitimo sem
+    historico) -- nesse caso nao escreve nada em team_stats. Aqui
+    contamos os tres casos em separado: dados reais / 0 jogos / falha.
+
+    Reutiliza o padrao de rate limit do settlement.py: pausa entre
+    chamadas reais (TEAM_STATS_DELAY) e um tecto de chamadas reais por
+    corrida (TEAM_STATS_MAX_CALLS) -- o retry em 429 com Retry-After
+    fica em api.py (_get), reutilizado por baixo de obter_equipa_fixtures.
+    Ao atingir o tecto, para o ciclo: a cache de 24h apanha o resto na
+    corrida seguinte.
+    """
+    inicio = time.time()
+
+    try:
+        from team_stats import obter_estatisticas_equipa
+        from database import team_stats_expiradas
+    except Exception as e:
+        print(f"⚠️ AVISO: recolha de estatisticas de equipa desativada (import falhou): {e}")
+        return
+
+    equipas = {}
+    for j in jogos:
+        for tid, nome in (
+            (j.get('home_team_id'), j['home']),
+            (j.get('away_team_id'), j['away']),
+        ):
+            if tid is not None and tid not in equipas:
+                equipas[tid] = nome
+
+    if not equipas:
+        print("ℹ️ Recolha de estatisticas de equipa: nenhuma equipa com id valido nesta corrida.")
+        return
+
+    print(f"ℹ️ Recolha de estatisticas de equipa: {len(equipas)} equipas distintas "
+          f"(pausa={TEAM_STATS_DELAY}s, tecto={TEAM_STATS_MAX_CALLS} chamadas reais).")
+
+    com_dados_reais = 0
+    com_zero_jogos = 0
+    falhas = 0
+    em_cache = 0
+    chamadas_feitas = 0
+    tecto_atingido = False
+    por_processar = []
+
+    itens = list(equipas.items())
+    for idx, (team_id, team_name) in enumerate(itens):
+        try:
+            if not team_stats_expiradas(team_id):
+                em_cache += 1
+                obter_estatisticas_equipa(team_id, team_name)
+                continue
+
+            if chamadas_feitas >= TEAM_STATS_MAX_CALLS:
+                tecto_atingido = True
+                por_processar = [nome for _, nome in itens[idx:]]
+                break
+
+            time.sleep(TEAM_STATS_DELAY)
+            stats = obter_estatisticas_equipa(team_id, team_name)
+            chamadas_feitas += 1
+
+            if stats is None:
+                falhas += 1
+            elif stats.get('games', 0) > 0:
+                com_dados_reais += 1
+            else:
+                com_zero_jogos += 1
+
+        except Exception as e:
+            falhas += 1
+            print(f"⚠️ AVISO: falha ao obter estatisticas de '{team_name}' (id={team_id}): {e}")
+
+    duracao = time.time() - inicio
+
+    resumo = (
+        f"📊 Estatisticas de equipa: {com_dados_reais} com dados reais, "
+        f"{com_zero_jogos} com 0 jogos, {falhas} falharam, {em_cache} em cache, "
+        f"{duracao:.1f}s."
+    )
+    if tecto_atingido:
+        resumo += (
+            f" Tecto de {TEAM_STATS_MAX_CALLS} chamadas reais atingido -- "
+            f"{len(por_processar)} equipa(s) por processar, apanhadas na proxima "
+            f"corrida via cache de 24h."
+        )
+    print(resumo)
+
+    if chamadas_feitas > 0:
+        problematicas = falhas + com_zero_jogos
+        taxa = problematicas / chamadas_feitas
+        if taxa > 0.5:
+            print("=" * 70)
+            print(
+                f"🚨 AVISO: {problematicas}/{chamadas_feitas} chamadas reais "
+                f"({taxa * 100:.0f}%) falharam ou vieram com 0 jogos. Sinal "
+                f"provavel de que o filtro team_id em /events/ nao funciona "
+                f"como esperado -- confirmar antes de usar team_stats para "
+                f"seja o que for."
+            )
+            print("=" * 70)
+
+
 def analisar():
     init_db()
     garantir_colunas_auditoria_h2h()
@@ -304,6 +429,8 @@ def analisar():
         home_name = extrair_nome_equipa(match, 'home_team')
         away_name = extrair_nome_equipa(match, 'away_team')
         liga_name = extrair_nome_liga(match)
+        home_team_id = extrair_team_id(match, 'home_team')
+        away_team_id = extrair_team_id(match, 'away_team')
 
         data_str = dt_obj.strftime('%d/%m/%Y %H:%M')
         data_dia = dt_obj.strftime('%d/%m/%Y')
@@ -343,6 +470,8 @@ def analisar():
             'liga': liga_name,
             'home': home_name,
             'away': away_name,
+            'home_team_id': home_team_id,
+            'away_team_id': away_team_id,
             'xg_home': xg_home,
             'xg_away': xg_away,
             'o25': p_o25,
@@ -356,6 +485,12 @@ def analisar():
 
     salvar_previsoes_db(jogos_processados)
     gravar_auditoria_h2h(jogos_processados, ids_ja_existentes)
+
+    try:
+        recolher_estatisticas_equipas(jogos_processados)
+    except Exception as e:
+        print(f"⚠️ AVISO: passo de recolha de estatisticas de equipa falhou (nao fatal): {e}")
+
     gerar_dashboard_html(jogos_processados)
     print(f"✅ Dashboard gerado com {len(jogos_processados)} jogos próximos!")
 

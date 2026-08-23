@@ -14,6 +14,8 @@ HEADERS = {
 CACHE = {}
 CACHE_TIME = 300
 
+RATE_LIMIT_BACKOFF = [2, 4, 8]  # segundos, por tentativa de retry apos 429
+
 
 def _get(endpoint, params=None):
 
@@ -25,32 +27,48 @@ def _get(endpoint, params=None):
         if now - CACHE[key]["time"] < CACHE_TIME:
             return CACHE[key]["data"]
 
-    try:
+    tentativa = 0
 
-        r = requests.get(
-            BASE_URL + endpoint,
-            headers=HEADERS,
-            params=params,
-            timeout=15
-        )
+    while True:
+        try:
 
-        if r.status_code != 200:
-            print(f"Erro BSD {r.status_code}: {endpoint}")
+            r = requests.get(
+                BASE_URL + endpoint,
+                headers=HEADERS,
+                params=params,
+                timeout=15
+            )
+
+            if r.status_code == 429 and tentativa < len(RATE_LIMIT_BACKOFF):
+                retry_after = r.headers.get("Retry-After")
+                try:
+                    espera = float(retry_after) if retry_after is not None else RATE_LIMIT_BACKOFF[tentativa]
+                except ValueError:
+                    espera = RATE_LIMIT_BACKOFF[tentativa]
+
+                print(f"Aviso BSD 429: {endpoint} (tentativa {tentativa + 1}/"
+                      f"{len(RATE_LIMIT_BACKOFF)}), a aguardar {espera}s...")
+                time.sleep(espera)
+                tentativa += 1
+                continue
+
+            if r.status_code != 200:
+                print(f"Erro BSD {r.status_code}: {endpoint}")
+                return None
+
+            data = r.json()
+
+            CACHE[key] = {
+                "time": now,
+                "data": data
+            }
+
+            return data
+
+        except Exception as e:
+
+            print("Erro API:", e)
             return None
-
-        data = r.json()
-
-        CACHE[key] = {
-            "time": now,
-            "data": data
-        }
-
-        return data
-
-    except Exception as e:
-
-        print("Erro API:", e)
-        return None
 
 
 ####################################################
@@ -72,6 +90,11 @@ def obter_eventos(params):
 ####################################################
 
 def obter_equipa_fixtures(team_id, limit=10):
+    """
+    Devolve None se o pedido falhou (erro de rede, HTTP != 200, JSON
+    invalido -- ver _get) -- distinto de [] quando o pedido teve sucesso
+    mas a equipa nao tem jogos 'finished' nesse periodo.
+    """
 
     data = _get("/events/", {
         "team_id": team_id,
@@ -79,8 +102,8 @@ def obter_equipa_fixtures(team_id, limit=10):
         "limit": limit
     })
 
-    if not data:
-        return []
+    if data is None:
+        return None
 
     return data.get("results", [])
 
