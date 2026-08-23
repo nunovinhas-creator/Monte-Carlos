@@ -54,7 +54,8 @@ LEAGUE_MAP = {
     201: "Serie A"
 }
 
-from database import init_db, salvar_previsoes_db, DB_NAME
+from database import init_db, salvar_previsoes_db, DB_NAME, carregar_team_stats
+from adjusted_xg import calcular_adjusted_xg
 
 def monte_carlo_sim(lambda_home, lambda_away, simulations=50000):
     lambda_home = max(float(lambda_home or 1.2), 0.2)
@@ -288,6 +289,43 @@ def gravar_auditoria_h2h(jogos, ids_ja_existentes):
     conn.close()
 
 
+def garantir_coluna_origem_xg():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(predictions)")
+    colunas = {row[1] for row in cursor.fetchall()}
+
+    if "origem_xg" not in colunas:
+        cursor.execute("ALTER TABLE predictions ADD COLUMN origem_xg TEXT")
+
+    conn.commit()
+    conn.close()
+
+
+def gravar_origem_xg(jogos, ids_ja_existentes):
+    """
+    Preenche origem_xg ('adjusted' ou 'h2h') so para previsoes novas
+    nesta corrida -- mesmo criterio e mesma forma que
+    gravar_auditoria_h2h. Linhas ja existentes ficam intocadas.
+    """
+    novos = [j for j in jogos if j["match_id"] not in ids_ja_existentes]
+    if not novos:
+        return
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.executemany(
+        """
+        UPDATE predictions
+        SET origem_xg = ?
+        WHERE match_id = ?
+        """,
+        [(j["origem_xg"], j["match_id"]) for j in novos],
+    )
+    conn.commit()
+    conn.close()
+
+
 def recolher_estatisticas_equipas(jogos):
     """
     Para cada equipa distinta nos jogos desta corrida, chama
@@ -416,6 +454,7 @@ def recolher_estatisticas_equipas(jogos):
 def analisar():
     init_db()
     garantir_colunas_auditoria_h2h()
+    garantir_coluna_origem_xg()
 
     try:
         matches = obter_jogos_proximos_dias()
@@ -467,8 +506,27 @@ def analisar():
 
         avg_goals = media_final / 2.0
 
-        xg_home = avg_goals
-        xg_away = avg_goals
+        home_stats = carregar_team_stats(home_team_id) if home_team_id is not None else None
+        away_stats = carregar_team_stats(away_team_id) if away_team_id is not None else None
+
+        if home_stats is not None and away_stats is not None:
+            try:
+                xg_home, xg_away = calcular_adjusted_xg(
+                    home_stats, away_stats,
+                    home_xg_api=avg_goals,
+                    away_xg_api=avg_goals,
+                )
+                origem_xg = 'adjusted'
+            except Exception as e:
+                print(f"⚠️ AVISO: calcular_adjusted_xg falhou para {home_name} vs "
+                      f"{away_name} (a manter o caminho H2H): {e}")
+                xg_home = avg_goals
+                xg_away = avg_goals
+                origem_xg = 'h2h'
+        else:
+            xg_home = avg_goals
+            xg_away = avg_goals
+            origem_xg = 'h2h'
 
         p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
 
@@ -488,6 +546,7 @@ def analisar():
             'away_team_id': away_team_id,
             'xg_home': xg_home,
             'xg_away': xg_away,
+            'origem_xg': origem_xg,
             'o25': p_o25,
             'btts': p_btts,
             'n_h2h': n_h2h,
@@ -499,6 +558,13 @@ def analisar():
 
     salvar_previsoes_db(jogos_processados)
     gravar_auditoria_h2h(jogos_processados, ids_ja_existentes)
+    gravar_origem_xg(jogos_processados, ids_ja_existentes)
+
+    n_adjusted = sum(1 for j in jogos_processados if j['origem_xg'] == 'adjusted')
+    n_h2h_path = len(jogos_processados) - n_adjusted
+    print(f"🎯 Origem do xG: {n_adjusted} jogo(s) com adjusted_xg (stats de ambas as "
+          f"equipas em cache), {n_h2h_path} jogo(s) com o caminho H2H/liga (stats em "
+          f"falta para uma ou ambas).")
 
     try:
         recolher_estatisticas_equipas(jogos_processados)
