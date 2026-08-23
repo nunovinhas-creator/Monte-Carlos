@@ -5,6 +5,8 @@ from database import (
     team_stats_expiradas
 )
 
+CAP_GOLOS_POR_JOGO = 4
+
 
 def obter_estatisticas_equipa(team_id, team_name=""):
     """
@@ -51,6 +53,7 @@ def calcular_estatisticas_equipa(team_id):
     btts = 0
     pontos = 0
     jogos_validos = 0
+    jogos_truncados = 0
 
     for jogo in jogos:
 
@@ -83,8 +86,18 @@ def calcular_estatisticas_equipa(team_id):
             elif ag == hg:
                 pontos += 1
 
-        golos_marcados += marcados
-        golos_sofridos += sofridos
+        # Cap por jogo so para attack/defense -- um resultado tipo 8-0 na
+        # Taca contra um amador nao deve dominar a media de forca da
+        # equipa. btts/over25/form usam os golos reais (sao sobre o
+        # resultado do jogo, nao sobre estimativa de forca ofensiva).
+        marcados_capados = min(marcados, CAP_GOLOS_POR_JOGO)
+        sofridos_capados = min(sofridos, CAP_GOLOS_POR_JOGO)
+
+        if marcados_capados != marcados or sofridos_capados != sofridos:
+            jogos_truncados += 1
+
+        golos_marcados += marcados_capados
+        golos_sofridos += sofridos_capados
 
         if marcados > 0 and sofridos > 0:
             btts += 1
@@ -107,7 +120,8 @@ def calcular_estatisticas_equipa(team_id):
         "over25": round(over25 * 100 / jogos_validos, 1),
         "btts": round(btts * 100 / jogos_validos, 1),
         "form": round(pontos / (jogos_validos * 3), 2),
-        "origem": "api"
+        "origem": "api",
+        "jogos_truncados": jogos_truncados
     }
 
 
@@ -121,5 +135,6 @@ def stats_default():
         "over25": 50.0,
         "btts": 50.0,
         "form": 0.50,
-        "origem": "default"
+        "origem": "default",
+        "jogos_truncados": 0
     }
