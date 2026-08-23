@@ -25,6 +25,7 @@ K_ENCOLHIMENTO = 3
 
 TEAM_STATS_DELAY = float(os.getenv("TEAM_STATS_DELAY", "0.5"))
 TEAM_STATS_MAX_CALLS = int(os.getenv("TEAM_STATS_MAX_CALLS", "120"))
+TEAM_STATS_JANELA_HORAS = 36
 
 
 class ErroObtencaoJogos(Exception):
@@ -301,6 +302,14 @@ def recolher_estatisticas_equipas(jogos):
     historico) -- nesse caso nao escreve nada em team_stats. Aqui
     contamos os tres casos em separado: dados reais / 0 jogos / falha.
 
+    O universo de equipas fica limitado aos jogos que se realizam nas
+    proximas TEAM_STATS_JANELA_HORAS (36h) -- jogos_processados cobre uma
+    janela de dias para as previsoes, mas isso da ~515 equipas distintas,
+    o que nunca fecha contra o tecto de chamadas reais por corrida (a
+    cache de 24h expira antes de as apanhar todas). 36h da uma equipas
+    ~100-150, que cabe no tecto. Isto so filtra QUEM entra na recolha de
+    team_stats -- jogos_processados (previsoes/dashboard) fica intocado.
+
     Reutiliza o padrao de rate limit do settlement.py: pausa entre
     chamadas reais (TEAM_STATS_DELAY) e um tecto de chamadas reais por
     corrida (TEAM_STATS_MAX_CALLS) -- o retry em 429 com Retry-After
@@ -317,8 +326,11 @@ def recolher_estatisticas_equipas(jogos):
         print(f"⚠️ AVISO: recolha de estatisticas de equipa desativada (import falhou): {e}")
         return
 
+    limite = datetime.now(timezone.utc) + timedelta(hours=TEAM_STATS_JANELA_HORAS)
+    jogos_na_janela = [j for j in jogos if j['dt_obj'] <= limite]
+
     equipas = {}
-    for j in jogos:
+    for j in jogos_na_janela:
         for tid, nome in (
             (j.get('home_team_id'), j['home']),
             (j.get('away_team_id'), j['away']),
@@ -327,11 +339,13 @@ def recolher_estatisticas_equipas(jogos):
                 equipas[tid] = nome
 
     if not equipas:
-        print("ℹ️ Recolha de estatisticas de equipa: nenhuma equipa com id valido nesta corrida.")
+        print(f"ℹ️ Recolha de estatisticas de equipa: nenhuma equipa com id valido nas "
+              f"proximas {TEAM_STATS_JANELA_HORAS}h.")
         return
 
-    print(f"ℹ️ Recolha de estatisticas de equipa: {len(equipas)} equipas distintas "
-          f"(pausa={TEAM_STATS_DELAY}s, tecto={TEAM_STATS_MAX_CALLS} chamadas reais).")
+    print(f"ℹ️ Recolha de estatisticas de equipa: {len(equipas)} equipas distintas nas "
+          f"proximas {TEAM_STATS_JANELA_HORAS}h (de {len(jogos_na_janela)}/{len(jogos)} "
+          f"jogos) (pausa={TEAM_STATS_DELAY}s, tecto={TEAM_STATS_MAX_CALLS} chamadas reais).")
 
     com_dados_reais = 0
     com_zero_jogos = 0

@@ -50,8 +50,13 @@ def init_db():
 
     cursor.execute("PRAGMA table_info(team_stats)")
     colunas_team_stats = {row[1] for row in cursor.fetchall()}
-    if "origem" not in colunas_team_stats:
-        cursor.execute("ALTER TABLE team_stats ADD COLUMN origem TEXT")
+    for nome, tipo in (
+        ("origem", "TEXT"),
+        ("games", "INTEGER"),
+        ("jogos_truncados", "INTEGER"),
+    ):
+        if nome not in colunas_team_stats:
+            cursor.execute(f"ALTER TABLE team_stats ADD COLUMN {nome} {tipo}")
 
     conn.commit()
     conn.close()
@@ -93,8 +98,9 @@ def guardar_team_stats(team_id, team_name, stats):
         INSERT OR REPLACE INTO team_stats (
             team_id, team_name, attack, defense,
             goals_for, goals_against,
-            over25, btts, form, updated_at, origem
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            over25, btts, form, updated_at, origem,
+            games, jogos_truncados
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         team_id,
         team_name,
@@ -106,7 +112,9 @@ def guardar_team_stats(team_id, team_name, stats):
         stats["btts"],
         stats["form"],
         datetime.now(timezone.utc).isoformat(),
-        stats.get("origem", "default")
+        stats.get("origem", "default"),
+        stats.get("games", 0),
+        stats.get("jogos_truncados", 0)
     ))
 
     conn.commit()
