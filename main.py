@@ -302,14 +302,16 @@ def garantir_coluna_origem_xg():
     conn.close()
 
 
-def gravar_origem_xg(jogos, ids_ja_existentes):
+def gravar_origem_xg(jogos):
     """
-    Preenche origem_xg ('adjusted' ou 'h2h') so para previsoes novas
-    nesta corrida -- mesmo criterio e mesma forma que
-    gravar_auditoria_h2h. Linhas ja existentes ficam intocadas.
+    Preenche origem_xg ('adjusted' ou 'h2h') para todas as previsoes
+    processadas nesta corrida cuja coluna ainda esteja NULL -- inclui
+    tanto match_id novos como pendentes de corridas anteriores a esta
+    coluna ter sido introduzida (backfill unico, idempotente: o WHERE
+    origem_xg IS NULL garante que uma linha ja preenchida nunca e
+    reescrita, so avancamos NULL -> valor).
     """
-    novos = [j for j in jogos if j["match_id"] not in ids_ja_existentes]
-    if not novos:
+    if not jogos:
         return
 
     conn = sqlite3.connect(DB_NAME)
@@ -318,9 +320,9 @@ def gravar_origem_xg(jogos, ids_ja_existentes):
         """
         UPDATE predictions
         SET origem_xg = ?
-        WHERE match_id = ?
+        WHERE match_id = ? AND origem_xg IS NULL
         """,
-        [(j["origem_xg"], j["match_id"]) for j in novos],
+        [(j["origem_xg"], j["match_id"]) for j in jogos],
     )
     conn.commit()
     conn.close()
@@ -339,11 +341,16 @@ def garantir_coluna_baixa_confianca():
     conn.close()
 
 
-def gravar_baixa_confianca(jogos, ids_ja_existentes):
+def gravar_baixa_confianca(jogos):
     """
-    Preenche baixa_confianca (0/1) so para previsoes novas nesta corrida
-    -- mesmo criterio e mesma forma que gravar_origem_xg. Linhas ja
-    existentes ficam intocadas.
+    Preenche baixa_confianca (0/1) para todas as previsoes processadas
+    nesta corrida cuja coluna ainda esteja NULL -- mesmo padrao de
+    backfill unico e idempotente de gravar_origem_xg (WHERE
+    baixa_confianca IS NULL: uma linha ja marcada 0 ou 1 nunca e
+    reescrita). Isto e o que permite comparar no backtest, mais tarde,
+    o skill dos jogos marcados como baixa confianca contra os
+    restantes -- sem backfill, os ~209 jogos ja pendentes antes desta
+    coluna existir ficavam para sempre com NULL.
 
     baixa_confianca = 1 quando n_h2h == 0 (nunca se defrontaram) E
     origem_xg == 'h2h' (nenhuma das equipas tinha stats em cache, o
@@ -351,8 +358,7 @@ def gravar_baixa_confianca(jogos, ids_ja_existentes):
     stats, o modelo nao tem sinal nenhum sobre o nivel competitivo do
     jogo (ex.: clube profissional vs equipa universitaria em taca).
     """
-    novos = [j for j in jogos if j["match_id"] not in ids_ja_existentes]
-    if not novos:
+    if not jogos:
         return
 
     conn = sqlite3.connect(DB_NAME)
@@ -361,9 +367,9 @@ def gravar_baixa_confianca(jogos, ids_ja_existentes):
         """
         UPDATE predictions
         SET baixa_confianca = ?
-        WHERE match_id = ?
+        WHERE match_id = ? AND baixa_confianca IS NULL
         """,
-        [(j["baixa_confianca"], j["match_id"]) for j in novos],
+        [(j["baixa_confianca"], j["match_id"]) for j in jogos],
     )
     conn.commit()
     conn.close()
@@ -605,8 +611,8 @@ def analisar():
 
     salvar_previsoes_db(jogos_processados)
     gravar_auditoria_h2h(jogos_processados, ids_ja_existentes)
-    gravar_origem_xg(jogos_processados, ids_ja_existentes)
-    gravar_baixa_confianca(jogos_processados, ids_ja_existentes)
+    gravar_origem_xg(jogos_processados)
+    gravar_baixa_confianca(jogos_processados)
 
     n_adjusted = sum(1 for j in jogos_processados if j['origem_xg'] == 'adjusted')
     n_h2h_path = len(jogos_processados) - n_adjusted
