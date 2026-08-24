@@ -302,14 +302,16 @@ def garantir_coluna_origem_xg():
     conn.close()
 
 
-def gravar_origem_xg(jogos, ids_ja_existentes):
+def gravar_origem_xg(jogos):
     """
-    Preenche origem_xg ('adjusted' ou 'h2h') so para previsoes novas
-    nesta corrida -- mesmo criterio e mesma forma que
-    gravar_auditoria_h2h. Linhas ja existentes ficam intocadas.
+    Preenche origem_xg ('adjusted' ou 'h2h') para todas as previsoes
+    processadas nesta corrida cuja coluna ainda esteja NULL -- inclui
+    tanto match_id novos como pendentes de corridas anteriores a esta
+    coluna ter sido introduzida (backfill unico, idempotente: o WHERE
+    origem_xg IS NULL garante que uma linha ja preenchida nunca e
+    reescrita, so avancamos NULL -> valor).
     """
-    novos = [j for j in jogos if j["match_id"] not in ids_ja_existentes]
-    if not novos:
+    if not jogos:
         return
 
     conn = sqlite3.connect(DB_NAME)
@@ -318,9 +320,56 @@ def gravar_origem_xg(jogos, ids_ja_existentes):
         """
         UPDATE predictions
         SET origem_xg = ?
-        WHERE match_id = ?
+        WHERE match_id = ? AND origem_xg IS NULL
         """,
-        [(j["origem_xg"], j["match_id"]) for j in novos],
+        [(j["origem_xg"], j["match_id"]) for j in jogos],
+    )
+    conn.commit()
+    conn.close()
+
+
+def garantir_coluna_baixa_confianca():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(predictions)")
+    colunas = {row[1] for row in cursor.fetchall()}
+
+    if "baixa_confianca" not in colunas:
+        cursor.execute("ALTER TABLE predictions ADD COLUMN baixa_confianca INTEGER")
+
+    conn.commit()
+    conn.close()
+
+
+def gravar_baixa_confianca(jogos):
+    """
+    Preenche baixa_confianca (0/1) para todas as previsoes processadas
+    nesta corrida cuja coluna ainda esteja NULL -- mesmo padrao de
+    backfill unico e idempotente de gravar_origem_xg (WHERE
+    baixa_confianca IS NULL: uma linha ja marcada 0 ou 1 nunca e
+    reescrita). Isto e o que permite comparar no backtest, mais tarde,
+    o skill dos jogos marcados como baixa confianca contra os
+    restantes -- sem backfill, os ~209 jogos ja pendentes antes desta
+    coluna existir ficavam para sempre com NULL.
+
+    baixa_confianca = 1 quando n_h2h == 0 (nunca se defrontaram) E
+    origem_xg == 'h2h' (nenhuma das equipas tinha stats em cache, o
+    lambda caiu no fallback simetrico da media da liga). Sem H2H e sem
+    stats, o modelo nao tem sinal nenhum sobre o nivel competitivo do
+    jogo (ex.: clube profissional vs equipa universitaria em taca).
+    """
+    if not jogos:
+        return
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.executemany(
+        """
+        UPDATE predictions
+        SET baixa_confianca = ?
+        WHERE match_id = ? AND baixa_confianca IS NULL
+        """,
+        [(j["baixa_confianca"], j["match_id"]) for j in jogos],
     )
     conn.commit()
     conn.close()
@@ -455,6 +504,7 @@ def analisar():
     init_db()
     garantir_colunas_auditoria_h2h()
     garantir_coluna_origem_xg()
+    garantir_coluna_baixa_confianca()
 
     try:
         matches = obter_jogos_proximos_dias()
@@ -530,6 +580,8 @@ def analisar():
 
         p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
 
+        baixa_confianca = 1 if (n_h2h == 0 and origem_xg == 'h2h') else 0
+
         match_id = str(match.get('id') or f"{home_name}_{away_name}_{timestamp}")
 
         jogos_processados.append({
@@ -551,20 +603,26 @@ def analisar():
             'btts': p_btts,
             'n_h2h': n_h2h,
             'media_h2h_bruta': media_h2h_bruta,
-            'media_liga_usada': media_liga_usada
+            'media_liga_usada': media_liga_usada,
+            'baixa_confianca': baixa_confianca
         })
 
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
     salvar_previsoes_db(jogos_processados)
     gravar_auditoria_h2h(jogos_processados, ids_ja_existentes)
-    gravar_origem_xg(jogos_processados, ids_ja_existentes)
+    gravar_origem_xg(jogos_processados)
+    gravar_baixa_confianca(jogos_processados)
 
     n_adjusted = sum(1 for j in jogos_processados if j['origem_xg'] == 'adjusted')
     n_h2h_path = len(jogos_processados) - n_adjusted
     print(f"🎯 Origem do xG: {n_adjusted} jogo(s) com adjusted_xg (stats de ambas as "
           f"equipas em cache), {n_h2h_path} jogo(s) com o caminho H2H/liga (stats em "
           f"falta para uma ou ambas).")
+
+    n_baixa_confianca = sum(1 for j in jogos_processados if j['baixa_confianca'])
+    print(f"⚠️ {n_baixa_confianca} previsao(oes) marcada(s) como baixa confianca "
+          f"(sem H2H e sem stats de ambas as equipas).")
 
     try:
         recolher_estatisticas_equipas(jogos_processados)
@@ -589,14 +647,26 @@ def gerar_dashboard_html(jogos):
 
     linhas_tabela = ""
     for j in jogos:
-        cor_o25 = "#28a745" if j['o25'] >= 60 else "#212529"
-        cor_btts = "#28a745" if j['btts'] >= 60 else "#212529"
+        baixa_confianca = j.get('baixa_confianca', 0)
+
+        if baixa_confianca:
+            cor_o25 = "#6c757d"
+            cor_btts = "#6c757d"
+        else:
+            cor_o25 = "#28a745" if j['o25'] >= 60 else "#212529"
+            cor_btts = "#28a745" if j['btts'] >= 60 else "#212529"
+
+        tag_baixa_confianca = (
+            '<span class="tag-baixa-confianca" '
+            'title="Sem histórico entre as equipas e sem estatísticas de ambas — '
+            'previsão pouco fiável">⚠️ sem dados</span>'
+        ) if baixa_confianca else ""
 
         linhas_tabela += f"""
-        <tr data-liga="{j['liga']}" data-data="{j['data_dia']}">
+        <tr data-liga="{j['liga']}" data-data="{j['data_dia']}" data-baixa-confianca="{baixa_confianca}">
             <td data-value="{j['timestamp']}"><b>{j['data_str']}</b></td>
             <td><span class="badge-liga">{j['liga']}</span></td>
-            <td>{j['home']} vs {j['away']}</td>
+            <td>{j['home']} vs {j['away']} {tag_baixa_confianca}</td>
             <td data-value="{j['o25']}" style="color: {cor_o25}; font-weight: bold;">{j['o25']:.1f}%</td>
             <td data-value="{j['btts']}" style="color: {cor_btts}; font-weight: bold;">{j['btts']:.1f}%</td>
         </tr>
@@ -641,6 +711,16 @@ def gerar_dashboard_html(jogos):
 
             tr:nth-child(even) {{ background: #f9f9f9; }}
             .badge-liga {{ background: #e9ecef; color: #495057; padding: 3px 6px; border-radius: 4px; font-size: 0.8em; font-weight: 500; }}
+
+            .tag-baixa-confianca {{
+                display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 10px;
+                background: #e9ecef; color: #6c757d; font-size: 0.78em; font-weight: 600;
+                border: 1px solid #ced4da; cursor: help; white-space: nowrap;
+            }}
+
+            .checkbox-container {{ display: flex; align-items: center; gap: 6px; flex: 1; min-width: 220px; font-size: 0.9em; color: #495057; }}
+            .checkbox-container input {{ flex: none; width: auto; padding: 0; }}
+            .checkbox-container label {{ cursor: pointer; user-select: none; }}
         </style>
     </head>
     <body>
@@ -662,6 +742,10 @@ def gerar_dashboard_html(jogos):
                 {options_ligas}
             </select>
             <input type="text" id="searchFilter" onkeyup="filtrarTabela()" placeholder="Filtrar equipa...">
+            <div class="checkbox-container">
+                <input type="checkbox" id="ocultarBaixaConfiancaFilter" onchange="filtrarTabela()">
+                <label for="ocultarBaixaConfiancaFilter">Ocultar previsões de baixa confiança</label>
+            </div>
         </div>
 
         <div class="table-container">
@@ -686,18 +770,21 @@ def gerar_dashboard_html(jogos):
                 var dataSelec = document.getElementById("dataFilter").value.toLowerCase();
                 var ligaSelec = document.getElementById("ligaFilter").value.toLowerCase();
                 var termoBusca = document.getElementById("searchFilter").value.toLowerCase();
+                var ocultarBaixaConfianca = document.getElementById("ocultarBaixaConfiancaFilter").checked;
                 var rows = document.querySelectorAll("#matchesTable tbody tr");
 
                 rows.forEach(function(row) {{
                     var dataRow = (row.getAttribute("data-data") || "").toLowerCase();
                     var ligaRow = (row.getAttribute("data-liga") || "").toLowerCase();
                     var textoRow = row.innerText.toLowerCase();
+                    var baixaConfiancaRow = row.getAttribute("data-baixa-confianca") === "1";
 
                     var bateData = (dataSelec === "" || dataRow === dataSelec);
                     var bateLiga = (ligaSelec === "" || ligaRow === ligaSelec);
                     var bateBusca = (termoBusca === "" || textoRow.includes(termoBusca));
+                    var bateConfianca = (!ocultarBaixaConfianca || !baixaConfiancaRow);
 
-                    if (bateData && bateLiga && bateBusca) {{
+                    if (bateData && bateLiga && bateBusca && bateConfianca) {{
                         row.style.display = "";
                     }} else {{
                         row.style.display = "none";
