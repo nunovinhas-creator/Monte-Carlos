@@ -219,21 +219,22 @@ def obter_jogos_proximos_dias():
 def calcular_medias_liga():
     """
     Le os jogos ja liquidados na predictions.db e devolve:
-    - medias_por_liga: dict liga -> media de golos totais (home+away),
-      so para ligas com >= LIGA_MIN_JOGOS liquidados, limitada a
-      [LIGA_MEDIA_MIN, LIGA_MEDIA_MAX].
+    - medias_por_liga: dict league_id (int) -> media de golos totais
+      (home+away), so para ligas com >= LIGA_MIN_JOGOS liquidados,
+      limitada a [LIGA_MEDIA_MIN, LIGA_MEDIA_MAX].
     - media_global: media de golos totais de todos os jogos liquidados
-      (fallback para ligas com poucos jogos), ou MEDIA_GOLOS_DEFAULT se
-      a base ainda nao tiver nenhum jogo liquidado.
+      (fallback para ligas com poucos jogos, ou sem league_id), ou
+      MEDIA_GOLOS_DEFAULT se a base ainda nao tiver nenhum jogo
+      liquidado.
     """
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT league, AVG(home_score + away_score), COUNT(*)
+        SELECT league_id, AVG(home_score + away_score), COUNT(*)
         FROM predictions
-        WHERE status = 'finished' AND home_score IS NOT NULL
-        GROUP BY league
+        WHERE status = 'finished' AND home_score IS NOT NULL AND league_id IS NOT NULL
+        GROUP BY league_id
     """)
     por_liga = cursor.fetchall()
 
@@ -246,9 +247,9 @@ def calcular_medias_liga():
     conn.close()
 
     medias_por_liga = {}
-    for liga, media, n in por_liga:
+    for league_id, media, n in por_liga:
         if n >= LIGA_MIN_JOGOS and media is not None:
-            medias_por_liga[liga] = max(LIGA_MEDIA_MIN, min(LIGA_MEDIA_MAX, media))
+            medias_por_liga[int(league_id)] = max(LIGA_MEDIA_MIN, min(LIGA_MEDIA_MAX, media))
 
     if not total_global:
         media_global = MEDIA_GOLOS_DEFAULT
@@ -566,7 +567,7 @@ def analisar():
         h2h = match.get('head_to_head') or {}
         n_h2h = (h2h.get('home_wins') or 0) + (h2h.get('draws') or 0) + (h2h.get('away_wins') or 0)
 
-        media_liga_usada = medias_por_liga.get(liga_name, media_global)
+        media_liga_usada = medias_por_liga.get(league_id, media_global)
 
         if n_h2h > 0:
             golos_h2h = (h2h.get('home_goals') or 0) + (h2h.get('away_goals') or 0)
