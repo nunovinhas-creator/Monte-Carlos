@@ -33,6 +33,16 @@ def init_db():
         )
     """)
 
+    cursor.execute("PRAGMA table_info(predictions)")
+    colunas_predictions = {row[1] for row in cursor.fetchall()}
+    if "league_id" not in colunas_predictions:
+        cursor.execute("ALTER TABLE predictions ADD COLUMN league_id INTEGER")
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_predictions_league_id
+        ON predictions (league_id)
+    """)
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS team_stats (
             team_id INTEGER PRIMARY KEY,
@@ -75,12 +85,12 @@ def salvar_previsoes_db(jogos):
 
         cursor.execute("""
             INSERT OR IGNORE INTO predictions (
-                match_id,event_date,timestamp,league,home_team,away_team,
+                match_id,event_date,timestamp,league,league_id,home_team,away_team,
                 xg_home,xg_away,prob_o25,prob_btts,created_at,status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
         """, (
-            match_id, j["data_str"], j["timestamp"], j["liga"],
+            match_id, j["data_str"], j["timestamp"], j["liga"], j.get("league_id"),
             j["home"], j["away"], j["xg_home"], j["xg_away"],
             round(j["o25"], 2), round(j["btts"], 2), agora_iso
         ))

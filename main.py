@@ -106,7 +106,28 @@ def extrair_team_id(match, campo):
     alt_key = f"{campo}_id"
     return match.get(alt_key)
 
-def extrair_nome_liga(match):
+def extrair_league_id(match):
+    valor = match.get('league_id')
+    if valor is None:
+        valor = match.get('competition_id')
+    if valor is None:
+        league_obj = match.get('league')
+        if isinstance(league_obj, dict):
+            valor = league_obj.get('id')
+
+    if valor is None:
+        return None
+
+    try:
+        return int(valor)
+    except (TypeError, ValueError):
+        return None
+
+def extrair_nome_liga(match, league_id):
+    # Prioridade absoluta: ID de liga conhecido no LEAGUE_MAP
+    if league_id is not None and league_id in LEAGUE_MAP:
+        return LEAGUE_MAP[league_id]
+
     # Procura em dicionários aninhados
     for key in ['league', 'competition', 'tournament', 'category']:
         obj = match.get(key)
@@ -123,10 +144,9 @@ def extrair_nome_liga(match):
         if val and isinstance(val, str) and val.strip():
             return val.strip()
 
-    # Mapeamento via ID
-    league_id = match.get('league_id') or match.get('competition_id')
-    if league_id:
-        return LEAGUE_MAP.get(league_id, f"Liga ID {league_id}")
+    # Sem nome disponivel, mas com ID desconhecido no LEAGUE_MAP
+    if league_id is not None:
+        return f"Liga ID {league_id}"
 
     return "Outras Ligas"
 
@@ -199,21 +219,22 @@ def obter_jogos_proximos_dias():
 def calcular_medias_liga():
     """
     Le os jogos ja liquidados na predictions.db e devolve:
-    - medias_por_liga: dict liga -> media de golos totais (home+away),
-      so para ligas com >= LIGA_MIN_JOGOS liquidados, limitada a
-      [LIGA_MEDIA_MIN, LIGA_MEDIA_MAX].
+    - medias_por_liga: dict league_id (int) -> media de golos totais
+      (home+away), so para ligas com >= LIGA_MIN_JOGOS liquidados,
+      limitada a [LIGA_MEDIA_MIN, LIGA_MEDIA_MAX].
     - media_global: media de golos totais de todos os jogos liquidados
-      (fallback para ligas com poucos jogos), ou MEDIA_GOLOS_DEFAULT se
-      a base ainda nao tiver nenhum jogo liquidado.
+      (fallback para ligas com poucos jogos, ou sem league_id), ou
+      MEDIA_GOLOS_DEFAULT se a base ainda nao tiver nenhum jogo
+      liquidado.
     """
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT league, AVG(home_score + away_score), COUNT(*)
+        SELECT league_id, AVG(home_score + away_score), COUNT(*)
         FROM predictions
-        WHERE status = 'finished' AND home_score IS NOT NULL
-        GROUP BY league
+        WHERE status = 'finished' AND home_score IS NOT NULL AND league_id IS NOT NULL
+        GROUP BY league_id
     """)
     por_liga = cursor.fetchall()
 
@@ -226,9 +247,9 @@ def calcular_medias_liga():
     conn.close()
 
     medias_por_liga = {}
-    for liga, media, n in por_liga:
+    for league_id, media, n in por_liga:
         if n >= LIGA_MIN_JOGOS and media is not None:
-            medias_por_liga[liga] = max(LIGA_MEDIA_MIN, min(LIGA_MEDIA_MAX, media))
+            medias_por_liga[int(league_id)] = max(LIGA_MEDIA_MIN, min(LIGA_MEDIA_MAX, media))
 
     if not total_global:
         media_global = MEDIA_GOLOS_DEFAULT
@@ -534,7 +555,8 @@ def analisar():
 
         home_name = extrair_nome_equipa(match, 'home_team')
         away_name = extrair_nome_equipa(match, 'away_team')
-        liga_name = extrair_nome_liga(match)
+        league_id = extrair_league_id(match)
+        liga_name = extrair_nome_liga(match, league_id)
         home_team_id = extrair_team_id(match, 'home_team')
         away_team_id = extrair_team_id(match, 'away_team')
 
@@ -545,7 +567,7 @@ def analisar():
         h2h = match.get('head_to_head') or {}
         n_h2h = (h2h.get('home_wins') or 0) + (h2h.get('draws') or 0) + (h2h.get('away_wins') or 0)
 
-        media_liga_usada = medias_por_liga.get(liga_name, media_global)
+        media_liga_usada = medias_por_liga.get(league_id, media_global)
 
         if n_h2h > 0:
             golos_h2h = (h2h.get('home_goals') or 0) + (h2h.get('away_goals') or 0)
@@ -595,6 +617,7 @@ def analisar():
             'timestamp': timestamp,
             'dt_obj': dt_obj,
             'liga': liga_name,
+            'league_id': league_id,
             'home': home_name,
             'away': away_name,
             'home_team_id': home_team_id,
