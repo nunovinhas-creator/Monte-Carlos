@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    concurrency:
+      group: repo-writes
+      cancel-in-progress: false
 
     steps:
       - name: Checkout do Repositório
