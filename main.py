@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import time
@@ -32,7 +33,9 @@ class ErroObtencaoJogos(Exception):
     """Falha ao obter jogos da API (timeout, HTTP != 200, excecao de rede) --
     distinta de uma resposta 200 legitima com 0 jogos."""
 
-LEAGUE_MAP = {
+# Mapa codificado (id -> nome) usado apenas como fallback, quando
+# ligas_bsd.json nao existe ou esta corrompido -- ver _carregar_league_map.
+LEAGUE_MAP_FALLBACK = {
     1: "Premier League", 2: "Liga Portugal Betclic", 3: "La Liga",
     4: "Serie A", 5: "Bundesliga", 6: "Ligue 1", 7: "Champions League",
     8: "Europa League", 9: "Brasileirao Serie A", 10: "Eredivisie",
@@ -56,6 +59,36 @@ LEAGUE_MAP = {
     94: "2. Bundesliga", 95: "Campeonato de Portugal",
     96: "Austrian Bundesliga", 97: "Challenger Pro League",
 }
+
+LIGAS_BSD_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ligas_bsd.json")
+
+
+def _carregar_league_map(caminho=LIGAS_BSD_JSON):
+    """Constroi o mapa id -> nome a partir de ligas_bsd.json (gerado por
+    ligas_bsd.py). Se o ficheiro nao existir, estiver corrompido ou nao
+    tiver ligas validas, usa o LEAGUE_MAP_FALLBACK codificado."""
+    try:
+        with open(caminho, "r", encoding="utf-8") as f:
+            ligas = json.load(f)
+
+        mapa = {}
+        for liga in ligas:
+            lid = liga.get("id")
+            nome = liga.get("name")
+            if lid is None or not nome:
+                continue
+            mapa[int(lid)] = str(nome).strip()
+
+        if not mapa:
+            raise ValueError("ligas_bsd.json nao contem nenhuma liga valida")
+
+        return mapa
+    except Exception as e:
+        print(f"⚠️ Nao foi possivel carregar LEAGUE_MAP de {caminho} ({e}); a usar mapa codificado.")
+        return LEAGUE_MAP_FALLBACK
+
+
+LEAGUE_MAP = _carregar_league_map()
 
 from database import init_db, salvar_previsoes_db, DB_NAME, carregar_team_stats
 from adjusted_xg import calcular_adjusted_xg

@@ -1,0 +1,442 @@
+[
+  {
+    "id": 1,
+    "name": "Premier League",
+    "country": "England"
+  },
+  {
+    "id": 2,
+    "name": "Liga Portugal Betclic",
+    "country": "Portugal"
+  },
+  {
+    "id": 3,
+    "name": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 4,
+    "name": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 5,
+    "name": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 6,
+    "name": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 7,
+    "name": "Champions League",
+    "country": "Europe"
+  },
+  {
+    "id": 8,
+    "name": "Europa League",
+    "country": "Europe"
+  },
+  {
+    "id": 9,
+    "name": "Brasileirão Serie A",
+    "country": "Brazil"
+  },
+  {
+    "id": 10,
+    "name": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 11,
+    "name": "Trendyol Super Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 12,
+    "name": "Championship",
+    "country": "England"
+  },
+  {
+    "id": 13,
+    "name": "Scottish Premiership",
+    "country": "Scotland"
+  },
+  {
+    "id": 14,
+    "name": "Pro League",
+    "country": "Belgium"
+  },
+  {
+    "id": 15,
+    "name": "Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 17,
+    "name": "Saudi Pro League",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 18,
+    "name": "MLS",
+    "country": "USA"
+  },
+  {
+    "id": 19,
+    "name": "Liga MX Apertura",
+    "country": "Mexico"
+  },
+  {
+    "id": 20,
+    "name": "Liga MX Clausura",
+    "country": "Mexico"
+  },
+  {
+    "id": 22,
+    "name": "Parva Liga",
+    "country": "Bulgaria"
+  },
+  {
+    "id": 23,
+    "name": "Superliga",
+    "country": "Romania"
+  },
+  {
+    "id": 24,
+    "name": "Stoiximan Super League",
+    "country": "Greece"
+  },
+  {
+    "id": 25,
+    "name": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 26,
+    "name": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 27,
+    "name": "World Cup 2026",
+    "country": "International"
+  },
+  {
+    "id": 28,
+    "name": "Nigeria Premier Football League",
+    "country": "Nigeria"
+  },
+  {
+    "id": 29,
+    "name": "CAF Champions League",
+    "country": "Africa"
+  },
+  {
+    "id": 30,
+    "name": "Africa Cup of Nations 2023",
+    "country": "Africa"
+  },
+  {
+    "id": 31,
+    "name": "International Friendly Games",
+    "country": "International"
+  },
+  {
+    "id": 32,
+    "name": "Copa Libertadores",
+    "country": "South America"
+  },
+  {
+    "id": 33,
+    "name": "Copa Sudamericana",
+    "country": "South America"
+  },
+  {
+    "id": 34,
+    "name": "Brasileirão Serie B",
+    "country": "Brazil"
+  },
+  {
+    "id": 35,
+    "name": "Copa do Brasil",
+    "country": "Brazil"
+  },
+  {
+    "id": 36,
+    "name": "Liga F",
+    "country": "Spain"
+  },
+  {
+    "id": 38,
+    "name": "Segunda División",
+    "country": "Spain"
+  },
+  {
+    "id": 39,
+    "name": "FA Cup",
+    "country": "England"
+  },
+  {
+    "id": 40,
+    "name": "Carabao Cup",
+    "country": "England"
+  },
+  {
+    "id": 41,
+    "name": "Copa del Rey",
+    "country": "Spain"
+  },
+  {
+    "id": 42,
+    "name": "Coppa Italia",
+    "country": "Italy"
+  },
+  {
+    "id": 43,
+    "name": "DFB Pokal",
+    "country": "Germany"
+  },
+  {
+    "id": 44,
+    "name": "Coupe de France",
+    "country": "France"
+  },
+  {
+    "id": 46,
+    "name": "Puchar Polski",
+    "country": "Poland"
+  },
+  {
+    "id": 47,
+    "name": "Tunisian Ligue Professionnelle 1",
+    "country": "Tunisia"
+  },
+  {
+    "id": 48,
+    "name": "Coupe de Tunisie",
+    "country": "Tunisia"
+  },
+  {
+    "id": 49,
+    "name": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 50,
+    "name": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 51,
+    "name": "Emperor Cup",
+    "country": "Japan"
+  },
+  {
+    "id": 52,
+    "name": "Chinese Super League",
+    "country": "China"
+  },
+  {
+    "id": 53,
+    "name": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 54,
+    "name": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 55,
+    "name": "Veikkausliiga",
+    "country": "Finland"
+  },
+  {
+    "id": 56,
+    "name": "Suomen Cup",
+    "country": "Finland"
+  },
+  {
+    "id": 57,
+    "name": "USL Championship",
+    "country": "USA"
+  },
+  {
+    "id": 58,
+    "name": "World Cup Qualification UEFA",
+    "country": "Europe"
+  },
+  {
+    "id": 59,
+    "name": "World Cup Qualification CONMEBOL",
+    "country": "South America"
+  },
+  {
+    "id": 60,
+    "name": "World Cup Qualification CAF",
+    "country": "Africa"
+  },
+  {
+    "id": 61,
+    "name": "World Cup Qualification AFC",
+    "country": "Asia"
+  },
+  {
+    "id": 62,
+    "name": "World Cup Qualification CONCACAF",
+    "country": "North America"
+  },
+  {
+    "id": 63,
+    "name": "World Cup Qualification OFC",
+    "country": "Oceania"
+  },
+  {
+    "id": 64,
+    "name": "UEFA Nations League",
+    "country": "Europe"
+  },
+  {
+    "id": 65,
+    "name": "CONCACAF Nations League",
+    "country": "North America"
+  },
+  {
+    "id": 66,
+    "name": "UEFA Euro 2024",
+    "country": "Europe"
+  },
+  {
+    "id": 67,
+    "name": "Copa America 2024",
+    "country": "South America"
+  },
+  {
+    "id": 68,
+    "name": "AFC Asian Cup 2023",
+    "country": "Asia"
+  },
+  {
+    "id": 69,
+    "name": "CONCACAF Gold Cup 2025",
+    "country": "North America"
+  },
+  {
+    "id": 70,
+    "name": "NPL Queensland",
+    "country": "Australia"
+  },
+  {
+    "id": 71,
+    "name": "UEFA European U19 Championship",
+    "country": "Europe"
+  },
+  {
+    "id": 72,
+    "name": "NWSL",
+    "country": "USA"
+  },
+  {
+    "id": 79,
+    "name": "Club Friendlies",
+    "country": "World"
+  },
+  {
+    "id": 80,
+    "name": "Categoría Primera A",
+    "country": "Colombia"
+  },
+  {
+    "id": 81,
+    "name": "Copa Colombia",
+    "country": "Colombia"
+  },
+  {
+    "id": 82,
+    "name": "Liga 3",
+    "country": "Portugal"
+  },
+  {
+    "id": 83,
+    "name": "Conference League",
+    "country": "Europe"
+  },
+  {
+    "id": 84,
+    "name": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 85,
+    "name": "Liga Profesional de Fútbol",
+    "country": "Argentina"
+  },
+  {
+    "id": 86,
+    "name": "League One",
+    "country": "England"
+  },
+  {
+    "id": 87,
+    "name": "League Two",
+    "country": "England"
+  },
+  {
+    "id": 88,
+    "name": "Liga Portugal 2",
+    "country": "Portugal"
+  },
+  {
+    "id": 89,
+    "name": "Ligue 2",
+    "country": "France"
+  },
+  {
+    "id": 90,
+    "name": "UEFA Super Cup",
+    "country": "Europe"
+  },
+  {
+    "id": 91,
+    "name": "National League",
+    "country": "England"
+  },
+  {
+    "id": 92,
+    "name": "Taça de Portugal",
+    "country": "Portugal"
+  },
+  {
+    "id": 93,
+    "name": "Taça da Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 94,
+    "name": "2. Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 95,
+    "name": "Campeonato de Portugal",
+    "country": "Portugal"
+  },
+  {
+    "id": 96,
+    "name": "Austrian Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 97,
+    "name": "Challenger Pro League",
+    "country": "Belgium"
+  },
+  {
+    "id": 98,
+    "name": "Girabola",
+    "country": "Angola"
+  }
+]
