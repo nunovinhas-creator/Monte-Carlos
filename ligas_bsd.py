@@ -3,11 +3,12 @@ Consulta o endpoint /leagues/ da API da BSD, percorre toda a
 paginacao (limit/offset), grava o resultado em ligas_bsd.json e
 imprime uma tabela ordenada (id, nome, pais).
 
-Depois compara os IDs/nomes devolvidos pela API com o LEAGUE_MAP
+Depois compara os IDs/nomes devolvidos pela API com o
+LEAGUE_MAP_FALLBACK (o dicionario codificado, usado como fallback)
 definido em main.py e mostra tres listas:
-  - IDs onde o nome diverge entre a API e o LEAGUE_MAP
-  - IDs que existem na API mas faltam no LEAGUE_MAP
-  - IDs que existem no LEAGUE_MAP mas ja nao existem na API
+  - IDs onde o nome diverge entre a API e o LEAGUE_MAP_FALLBACK
+  - IDs que existem na API mas faltam no LEAGUE_MAP_FALLBACK
+  - IDs que existem no LEAGUE_MAP_FALLBACK mas ja nao existem na API
 
 Nao altera main.py. Requer o token em BSD_API_TOKEN (mesma variavel
 de ambiente e mesmos headers que main.py usa).
@@ -21,7 +22,7 @@ import sys
 
 import requests
 
-from main import LEAGUE_MAP
+from main import LEAGUE_MAP_FALLBACK
 
 API_TOKEN = os.getenv("BSD_API_TOKEN")
 BASE_URL = "https://sports.bzzoiro.com/api/v2"
@@ -116,33 +117,33 @@ def comparar_com_league_map(ligas):
         api_por_id[int(lid)] = liga.get("name") or ""
 
     ids_api = set(api_por_id)
-    ids_mapa = set(LEAGUE_MAP)
+    ids_mapa = set(LEAGUE_MAP_FALLBACK)
 
     nomes_divergentes = sorted(
         lid for lid in (ids_api & ids_mapa)
-        if api_por_id[lid].strip() != LEAGUE_MAP[lid].strip()
+        if api_por_id[lid].strip() != LEAGUE_MAP_FALLBACK[lid].strip()
     )
     faltam_no_mapa = sorted(ids_api - ids_mapa)
     ja_nao_existem_na_api = sorted(ids_mapa - ids_api)
 
-    print("\n=== IDs onde o nome diverge (API vs LEAGUE_MAP) ===")
+    print("\n=== IDs onde o nome diverge (API vs LEAGUE_MAP_FALLBACK) ===")
     if nomes_divergentes:
         for lid in nomes_divergentes:
-            print(f"  {lid}: API={api_por_id[lid]!r}  LEAGUE_MAP={LEAGUE_MAP[lid]!r}")
+            print(f"  {lid}: API={api_por_id[lid]!r}  LEAGUE_MAP_FALLBACK={LEAGUE_MAP_FALLBACK[lid]!r}")
     else:
         print("  (nenhum)")
 
-    print("\n=== IDs na API mas em falta no LEAGUE_MAP ===")
+    print("\n=== IDs na API mas em falta no LEAGUE_MAP_FALLBACK ===")
     if faltam_no_mapa:
         for lid in faltam_no_mapa:
             print(f"  {lid}: {api_por_id[lid]!r}")
     else:
         print("  (nenhum)")
 
-    print("\n=== IDs no LEAGUE_MAP que ja nao existem na API ===")
+    print("\n=== IDs no LEAGUE_MAP_FALLBACK que ja nao existem na API ===")
     if ja_nao_existem_na_api:
         for lid in ja_nao_existem_na_api:
-            print(f"  {lid}: {LEAGUE_MAP[lid]!r}")
+            print(f"  {lid}: {LEAGUE_MAP_FALLBACK[lid]!r}")
     else:
         print("  (nenhum)")
 
