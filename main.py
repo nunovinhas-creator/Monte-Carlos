@@ -106,7 +106,28 @@ def extrair_team_id(match, campo):
     alt_key = f"{campo}_id"
     return match.get(alt_key)
 
-def extrair_nome_liga(match):
+def extrair_league_id(match):
+    valor = match.get('league_id')
+    if valor is None:
+        valor = match.get('competition_id')
+    if valor is None:
+        league_obj = match.get('league')
+        if isinstance(league_obj, dict):
+            valor = league_obj.get('id')
+
+    if valor is None:
+        return None
+
+    try:
+        return int(valor)
+    except (TypeError, ValueError):
+        return None
+
+def extrair_nome_liga(match, league_id):
+    # Prioridade absoluta: ID de liga conhecido no LEAGUE_MAP
+    if league_id is not None and league_id in LEAGUE_MAP:
+        return LEAGUE_MAP[league_id]
+
     # Procura em dicionários aninhados
     for key in ['league', 'competition', 'tournament', 'category']:
         obj = match.get(key)
@@ -123,10 +144,9 @@ def extrair_nome_liga(match):
         if val and isinstance(val, str) and val.strip():
             return val.strip()
 
-    # Mapeamento via ID
-    league_id = match.get('league_id') or match.get('competition_id')
-    if league_id:
-        return LEAGUE_MAP.get(league_id, f"Liga ID {league_id}")
+    # Sem nome disponivel, mas com ID desconhecido no LEAGUE_MAP
+    if league_id is not None:
+        return f"Liga ID {league_id}"
 
     return "Outras Ligas"
 
@@ -534,7 +554,8 @@ def analisar():
 
         home_name = extrair_nome_equipa(match, 'home_team')
         away_name = extrair_nome_equipa(match, 'away_team')
-        liga_name = extrair_nome_liga(match)
+        league_id = extrair_league_id(match)
+        liga_name = extrair_nome_liga(match, league_id)
         home_team_id = extrair_team_id(match, 'home_team')
         away_team_id = extrair_team_id(match, 'away_team')
 
@@ -595,6 +616,7 @@ def analisar():
             'timestamp': timestamp,
             'dt_obj': dt_obj,
             'liga': liga_name,
+            'league_id': league_id,
             'home': home_name,
             'away': away_name,
             'home_team_id': home_team_id,
