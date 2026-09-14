@@ -18,7 +18,7 @@ import sqlite3
 import sys
 from collections import Counter, defaultdict
 
-from database import DB_NAME
+from database import DB_NAME, init_db
 from main import LEAGUE_MAP
 
 BACKUP_NAME = DB_NAME + ".bak"
@@ -435,18 +435,10 @@ def main():
     )
     args = parser.parse_args()
 
+    init_db()
+
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("PRAGMA table_info(predictions)")
-    colunas = {row[1] for row in cursor.fetchall()}
-    if "league_id" not in colunas:
-        print(
-            "❌ ERRO: a coluna league_id nao existe em predictions. "
-            "Corre init_db() (database.py) antes de migrar."
-        )
-        conn.close()
-        sys.exit(1)
-
     cursor.execute("SELECT match_id, league, home_team, away_team, league_id FROM predictions")
     linhas = cursor.fetchall()
     conn.close()
