@@ -196,67 +196,79 @@ def build_table_rows(brackets):
     return html
 
 
-def linha_liga(nome, pares):
+def celulas_mercado(pares):
     brier, base, n = brier_stats(pares)
     if brier is None:
-        return ""
+        vazio = '<span class="text-muted">&mdash;</span>'
+        return vazio, vazio, vazio
 
     skill = (1 - brier / base) * 100 if base and base > 0 else 0.0
     cor = "text-success" if skill > 0 else "text-danger"
 
+    return f"{brier:.4f}", f"{base:.4f}", f'<span class="{cor}">{skill:+.1f}%</span>'
+
+
+def linha_liga(nome, n_jogos, pares_o25, pares_btts):
+    brier_o25, base_o25, skill_o25 = celulas_mercado(pares_o25)
+    brier_btts, base_btts, skill_btts = celulas_mercado(pares_btts)
+
     return f"""
     <tr>
         <td>{escape_html(nome)}</td>
-        <td>{n}</td>
-        <td>{brier:.4f}</td>
-        <td>{base:.4f}</td>
-        <td><span class="{cor}">{skill:+.1f}%</span></td>
+        <td>{n_jogos}</td>
+        <td>{brier_o25}</td>
+        <td>{base_o25}</td>
+        <td>{skill_o25}</td>
+        <td>{brier_btts}</td>
+        <td>{base_btts}</td>
+        <td>{skill_btts}</td>
     </tr>
     """
 
 
 def build_liga_rows(rows, league_map, min_n=LIGA_MIN_N):
     """
-    Agrega prob_o25/result_o25 e prob_btts/result_btts por league_id
-    (index 5 nas rows), ordenado por n descendente. Ligas com n abaixo
-    de min_n sao somadas numa linha "Outras".
+    Agrega por league_id (index 5 nas rows), mantendo os mercados
+    Over 2.5 e BTTS separados. O n de cada liga e o numero de jogos
+    liquidados (nao o numero de observacoes prob/resultado, que seria
+    o dobro). Ordenado por n descendente; ligas com n abaixo de min_n
+    sao somadas numa linha "Outras".
     """
     por_liga = {}
 
     for row in rows:
         league_id = row[5]
-        pares = []
+        grupo = por_liga.setdefault(league_id, {"n": 0, "o25": [], "btts": []})
+        grupo["n"] += 1
+
         if row[0] is not None and row[2] is not None:
-            pares.append((float(row[0]) / 100.0, int(row[2])))
+            grupo["o25"].append((float(row[0]) / 100.0, int(row[2])))
         if row[1] is not None and row[3] is not None:
-            pares.append((float(row[1]) / 100.0, int(row[3])))
-
-        if not pares:
-            continue
-
-        por_liga.setdefault(league_id, []).extend(pares)
+            grupo["btts"].append((float(row[1]) / 100.0, int(row[3])))
 
     principais = []
-    outras_pares = []
+    outras = {"n": 0, "o25": [], "btts": []}
 
-    for league_id, pares in por_liga.items():
-        if len(pares) >= min_n:
-            principais.append((league_id, pares))
+    for league_id, grupo in por_liga.items():
+        if grupo["n"] >= min_n:
+            principais.append((league_id, grupo))
         else:
-            outras_pares.extend(pares)
+            outras["n"] += grupo["n"]
+            outras["o25"].extend(grupo["o25"])
+            outras["btts"].extend(grupo["btts"])
 
-    principais.sort(key=lambda item: len(item[1]), reverse=True)
+    principais.sort(key=lambda item: item[1]["n"], reverse=True)
 
     html = ""
-    for league_id, pares in principais:
+    for league_id, grupo in principais:
         if league_id is None:
             nome = "Sem liga atribuida"
         else:
             nome = league_map.get(league_id, f"Liga ID {league_id}")
-        html += linha_liga(nome, pares)
+        html += linha_liga(nome, grupo["n"], grupo["o25"], grupo["btts"])
 
-    if outras_pares:
-        html += linha_liga("Outras", outras_pares)
+    if outras["n"] > 0:
+        html += linha_liga("Outras", outras["n"], outras["o25"], outras["btts"])
 
     return html
 
@@ -340,7 +352,7 @@ def render_bloco(titulo, rows, league_map, destaque=False):
         "Sem jogos liquidados.</td></tr>"
     )
     liga_vazio = (
-        '<tr><td colspan="5" class="text-center text-muted py-3">'
+        '<tr><td colspan="8" class="text-center text-muted py-3">'
         "Sem ligas com dados suficientes.</td></tr>"
     )
 
@@ -407,15 +419,24 @@ def render_bloco(titulo, rows, league_map, destaque=False):
         <div class="card p-3 mt-4">
             <h5 class="card-title fw-bold text-primary mb-1">Resultados por Liga</h5>
             <p class="small text-muted mb-3">
-                Brier, baseline e skill combinam Over 2.5 e BTTS por liga (league_id).
-                So ligas com n &ge; {LIGA_MIN_N}; as restantes somam-se em "Outras".
+                Brier, baseline e skill por liga (league_id), com Over 2.5 e BTTS em
+                colunas separadas. N e o numero de jogos liquidados na liga (nao
+                duplicado por mercado). So ligas com n &ge; {LIGA_MIN_N}; as
+                restantes somam-se em "Outras".
             </p>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Liga</th>
-                            <th>N</th>
+                            <th rowspan="2" class="align-middle">Liga</th>
+                            <th rowspan="2" class="align-middle">N</th>
+                            <th colspan="3" class="text-center">Over 2.5</th>
+                            <th colspan="3" class="text-center">BTTS</th>
+                        </tr>
+                        <tr>
+                            <th>Brier</th>
+                            <th>Baseline</th>
+                            <th>Skill</th>
                             <th>Brier</th>
                             <th>Baseline</th>
                             <th>Skill</th>
