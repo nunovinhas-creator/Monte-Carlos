@@ -298,6 +298,54 @@ def pares_comparativo(rows, idx_prob, idx_result, idx_trivial):
     return pares_atual, pares_trivial
 
 
+def teste_emparelhado(pares_atual, pares_trivial):
+    """
+    Teste t emparelhado sobre o erro quadratico por jogo, modelo
+    actual vs. modelo trivial: d_i = erro_actual_i - erro_trivial_i.
+    Media positiva de d significa que o actual erra mais em media
+    (o trivial e melhor); negativa significa o contrario.
+
+    Devolve (media, erro_padrao, t, n), ou None se n < 2 (sem
+    variancia calculavel).
+    """
+    n = len(pares_atual)
+    if n < 2:
+        return None
+
+    diffs = [
+        (p_a - y) ** 2 - (p_t - y) ** 2
+        for (p_a, y), (p_t, _) in zip(pares_atual, pares_trivial)
+    ]
+
+    media = sum(diffs) / n
+    variancia = sum((d - media) ** 2 for d in diffs) / (n - 1)
+    erro_padrao = math.sqrt(variancia / n)
+    t = media / erro_padrao if erro_padrao > 0 else 0.0
+
+    return media, erro_padrao, t, n
+
+
+def teste_emparelhado_texto(pares_atual, pares_trivial):
+    teste = teste_emparelhado(pares_atual, pares_trivial)
+    if teste is None:
+        return '<p class="small text-muted mb-0">Teste emparelhado: amostra insuficiente (n &lt; 2).</p>'
+
+    media, erro_padrao, t, n = teste
+    significativo = abs(t) >= 2
+    rotulo = "significativo" if significativo else "nao significativo (|t| &lt; 2)"
+    cor = "text-dark" if significativo else "text-muted"
+
+    return f"""
+    <p class="small mb-0">
+        Teste emparelhado (erro quadratico actual &minus; trivial, n={n}):
+        diferenca media <strong>{media:+.4f}</strong> |
+        erro padrao {erro_padrao:.4f} |
+        t = <strong>{t:+.2f}</strong>
+        <span class="{cor}">({rotulo})</span>
+    </p>
+    """
+
+
 def comparativo_global_texto(nome, pares_atual, pares_trivial):
     brier_a, base, n = brier_stats(pares_atual)
 
@@ -314,6 +362,8 @@ def comparativo_global_texto(nome, pares_atual, pares_trivial):
     cor_a = "text-success" if skill_a > 0 else "text-danger"
     cor_t = "text-success" if skill_t > 0 else "text-danger"
 
+    teste_html = teste_emparelhado_texto(pares_atual, pares_trivial)
+
     return f"""
     <p class="mb-1"><strong>{escape_html(nome)}</strong>
         <span class="text-muted">(n={n}, baseline {base:.4f})</span></p>
@@ -321,10 +371,11 @@ def comparativo_global_texto(nome, pares_atual, pares_trivial):
         Modelo actual &nbsp; Brier <strong>{brier_a:.4f}</strong> |
         <span class="{cor_a}">skill {skill_a:+.1f}%</span>
     </p>
-    <p class="small mb-3">
+    <p class="small mb-1">
         Trivial (taxa base da liga) &nbsp; Brier <strong>{brier_t:.4f}</strong> |
         <span class="{cor_t}">skill {skill_t:+.1f}%</span>
     </p>
+    {teste_html}
     """
 
 
