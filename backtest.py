@@ -29,6 +29,7 @@ REQUIRED_COLS = [
     "status",
     "result_o25",
     "result_btts",
+    "timestamp",
 ]
 
 BRACKETS = [
@@ -273,6 +274,164 @@ def build_liga_rows(rows, league_map, min_n=LIGA_MIN_N):
     return html
 
 
+def pares_comparativo(rows, idx_prob, idx_result, idx_trivial):
+    """
+    Extrai, em paralelo, os pares (prob, resultado) do modelo actual
+    e do modelo trivial (walk-forward), so para jogos onde a
+    previsao trivial existe (isto e, ja havia historico da liga).
+    """
+    pares_atual = []
+    pares_trivial = []
+
+    for r in rows:
+        trivial = r[idx_trivial]
+        prob = r[idx_prob]
+        result = r[idx_result]
+
+        if trivial is None or prob is None or result is None:
+            continue
+
+        y = int(result)
+        pares_atual.append((float(prob) / 100.0, y))
+        pares_trivial.append((float(trivial), y))
+
+    return pares_atual, pares_trivial
+
+
+def comparativo_global_texto(nome, pares_atual, pares_trivial):
+    brier_a, base, n = brier_stats(pares_atual)
+
+    if brier_a is None:
+        return (
+            f'<p class="small text-muted mb-3"><strong>{escape_html(nome)}</strong>: '
+            "sem jogos com historico previo na liga para avaliar o modelo trivial.</p>"
+        )
+
+    brier_t, _, _ = brier_stats(pares_trivial)
+
+    skill_a = (1 - brier_a / base) * 100 if base and base > 0 else 0.0
+    skill_t = (1 - brier_t / base) * 100 if base and base > 0 else 0.0
+    cor_a = "text-success" if skill_a > 0 else "text-danger"
+    cor_t = "text-success" if skill_t > 0 else "text-danger"
+
+    return f"""
+    <p class="mb-1"><strong>{escape_html(nome)}</strong>
+        <span class="text-muted">(n={n}, baseline {base:.4f})</span></p>
+    <p class="small mb-1">
+        Modelo actual &nbsp; Brier <strong>{brier_a:.4f}</strong> |
+        <span class="{cor_a}">skill {skill_a:+.1f}%</span>
+    </p>
+    <p class="small mb-3">
+        Trivial (taxa base da liga) &nbsp; Brier <strong>{brier_t:.4f}</strong> |
+        <span class="{cor_t}">skill {skill_t:+.1f}%</span>
+    </p>
+    """
+
+
+def formatar_brier_skill(pares, base):
+    brier, _, n = brier_stats(pares)
+    if brier is None or base is None:
+        vazio = '<span class="text-muted">&mdash;</span>'
+        return vazio, vazio
+
+    skill = (1 - brier / base) * 100 if base > 0 else 0.0
+    cor = "text-success" if skill > 0 else "text-danger"
+    return f"{brier:.4f}", f'<span class="{cor}">{skill:+.1f}%</span>'
+
+
+def linha_comparativo(nome, grupo):
+    _, base_o25, _ = brier_stats(grupo["o25_atual"])
+    brier_o25_a, skill_o25_a = formatar_brier_skill(grupo["o25_atual"], base_o25)
+    brier_o25_t, skill_o25_t = formatar_brier_skill(grupo["o25_trivial"], base_o25)
+
+    _, base_btts, _ = brier_stats(grupo["btts_atual"])
+    brier_btts_a, skill_btts_a = formatar_brier_skill(grupo["btts_atual"], base_btts)
+    brier_btts_t, skill_btts_t = formatar_brier_skill(grupo["btts_trivial"], base_btts)
+
+    vazio = '<span class="text-muted">&mdash;</span>'
+    base_o25_str = f"{base_o25:.4f}" if base_o25 is not None else vazio
+    base_btts_str = f"{base_btts:.4f}" if base_btts is not None else vazio
+
+    return f"""
+    <tr>
+        <td>{escape_html(nome)}</td>
+        <td>{grupo['n']}</td>
+        <td>{base_o25_str}</td>
+        <td>{brier_o25_a}</td>
+        <td>{skill_o25_a}</td>
+        <td>{brier_o25_t}</td>
+        <td>{skill_o25_t}</td>
+        <td>{base_btts_str}</td>
+        <td>{brier_btts_a}</td>
+        <td>{skill_btts_a}</td>
+        <td>{brier_btts_t}</td>
+        <td>{skill_btts_t}</td>
+    </tr>
+    """
+
+
+def build_comparativo_liga_rows(rows, league_map, min_n=LIGA_MIN_N):
+    """
+    Por liga: compara o modelo actual com o modelo trivial (taxa base
+    da liga, walk-forward), mercados Over 2.5 e BTTS separados. Usa
+    so jogos com previsao trivial disponivel (isto e, com pelo menos
+    um jogo anterior na liga). N e esse subconjunto, nao o total de
+    jogos liquidados na liga. So ligas com n >= min_n; as restantes
+    somam-se em "Outras".
+    """
+    por_liga = {}
+
+    for row in rows:
+        league_id = row[5]
+        trivial_o25 = row[7]
+        trivial_btts = row[8]
+
+        if trivial_o25 is None and trivial_btts is None:
+            continue
+
+        grupo = por_liga.setdefault(
+            league_id,
+            {"n": 0, "o25_atual": [], "o25_trivial": [], "btts_atual": [], "btts_trivial": []},
+        )
+        grupo["n"] += 1
+
+        if trivial_o25 is not None and row[0] is not None and row[2] is not None:
+            y = int(row[2])
+            grupo["o25_atual"].append((float(row[0]) / 100.0, y))
+            grupo["o25_trivial"].append((float(trivial_o25), y))
+
+        if trivial_btts is not None and row[1] is not None and row[3] is not None:
+            y = int(row[3])
+            grupo["btts_atual"].append((float(row[1]) / 100.0, y))
+            grupo["btts_trivial"].append((float(trivial_btts), y))
+
+    principais = []
+    outras = {"n": 0, "o25_atual": [], "o25_trivial": [], "btts_atual": [], "btts_trivial": []}
+
+    for league_id, grupo in por_liga.items():
+        if grupo["n"] >= min_n:
+            principais.append((league_id, grupo))
+        else:
+            outras["n"] += grupo["n"]
+            for chave in ("o25_atual", "o25_trivial", "btts_atual", "btts_trivial"):
+                outras[chave].extend(grupo[chave])
+
+    principais.sort(key=lambda item: item[1]["n"], reverse=True)
+
+    html = ""
+    for league_id, grupo in principais:
+        if league_id is None:
+            nome = "Sem liga atribuida"
+        else:
+            nome = league_map.get(league_id, f"Liga ID {league_id}")
+        html += linha_comparativo(nome, grupo)
+
+    if outras["n"] > 0:
+        html += linha_comparativo("Outras", outras)
+
+    return html
+
+
 def carregar_dados():
     if not os.path.exists(DB_NAME):
         print(f"ERRO: base de dados '{DB_NAME}' nao encontrada.")
@@ -304,17 +463,57 @@ def carregar_dados():
 
     cursor.execute(
         """
-        SELECT prob_o25, prob_btts, result_o25, result_btts, created_at, league_id
+        SELECT prob_o25, prob_btts, result_o25, result_btts, created_at, league_id, timestamp
         FROM predictions
         WHERE status = 'finished'
           AND result_o25 IS NOT NULL
           AND result_btts IS NOT NULL
+        ORDER BY timestamp ASC
         """
     )
     rows = cursor.fetchall()
     conn.close()
 
     return rows, total_registos, total_finished
+
+
+def calcular_trivial_walk_forward(rows):
+    """
+    Para cada jogo (rows ja ordenadas por timestamp ascendente -- ver
+    carregar_dados), calcula a previsao trivial = taxa de acerto
+    historica da liga (Over 2.5 e BTTS, em separado), usando SO jogos
+    anteriores dessa liga. Walk-forward, sem look-ahead: o primeiro
+    jogo de cada liga fica sem previsao trivial (None), porque ainda
+    nao ha historico.
+
+    Devolve uma nova lista de tuplos: cada row original com dois
+    campos extra no fim -- (trivial_o25, trivial_btts) -- cada um
+    None ou um float em [0, 1].
+    """
+    estado = {}
+    saida = []
+
+    for row in rows:
+        league_id = row[5]
+        s = estado.setdefault(
+            league_id, {"o25_hits": 0, "o25_n": 0, "btts_hits": 0, "btts_n": 0}
+        )
+
+        trivial_o25 = s["o25_hits"] / s["o25_n"] if s["o25_n"] > 0 else None
+        trivial_btts = s["btts_hits"] / s["btts_n"] if s["btts_n"] > 0 else None
+
+        saida.append(row + (trivial_o25, trivial_btts))
+
+        result_o25 = row[2]
+        result_btts = row[3]
+        if result_o25 is not None:
+            s["o25_n"] += 1
+            s["o25_hits"] += int(result_o25)
+        if result_btts is not None:
+            s["btts_n"] += 1
+            s["btts_hits"] += int(result_btts)
+
+    return saida
 
 
 def bloco_brier(rows, idx_prob, idx_res):
@@ -355,12 +554,22 @@ def render_bloco(titulo, rows, league_map, destaque=False):
         '<tr><td colspan="8" class="text-center text-muted py-3">'
         "Sem ligas com dados suficientes.</td></tr>"
     )
+    comparativo_vazio = (
+        '<tr><td colspan="12" class="text-center text-muted py-3">'
+        "Sem ligas com dados suficientes.</td></tr>"
+    )
 
     over25_rows = build_table_rows(calculate_brackets(rows, 0, 2))
     btts_rows = build_table_rows(calculate_brackets(rows, 1, 3))
     brier_o25 = bloco_brier(rows, 0, 2)
     brier_btts = bloco_brier(rows, 1, 3)
     liga_rows = build_liga_rows(rows, league_map)
+
+    pares_o25_atual, pares_o25_trivial = pares_comparativo(rows, 0, 2, 7)
+    pares_btts_atual, pares_btts_trivial = pares_comparativo(rows, 1, 3, 8)
+    comparativo_o25_texto = comparativo_global_texto("Over 2.5", pares_o25_atual, pares_o25_trivial)
+    comparativo_btts_texto = comparativo_global_texto("BTTS", pares_btts_atual, pares_btts_trivial)
+    comparativo_liga_rows = build_comparativo_liga_rows(rows, league_map)
 
     return f"""
     <div class="mb-5">
@@ -448,12 +657,59 @@ def render_bloco(titulo, rows, league_map, destaque=False):
                 </table>
             </div>
         </div>
+
+        <div class="card p-3 mt-4">
+            <h5 class="card-title fw-bold text-primary mb-1">Modelo Actual vs. Trivial (taxa base da liga)</h5>
+            <p class="small text-muted mb-3">
+                O modelo trivial ignora as equipas e preve sempre a taxa de acerto
+                historica da propria liga, em walk-forward: para cada jogo usa so
+                jogos anteriores dessa liga (sem olhar para o futuro). Jogos sem
+                historico previo (o primeiro de cada liga) ficam de fora da
+                comparacao -- por isso o n aqui pode ser menor que o das outras
+                tabelas. So ligas com n &ge; {LIGA_MIN_N}; as restantes somam-se
+                em "Outras".
+            </p>
+
+            <div class="row g-3 mb-2">
+                <div class="col-md-6">{comparativo_o25_texto}</div>
+                <div class="col-md-6">{comparativo_btts_texto}</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th rowspan="2" class="align-middle">Liga</th>
+                            <th rowspan="2" class="align-middle">N</th>
+                            <th colspan="5" class="text-center">Over 2.5</th>
+                            <th colspan="5" class="text-center">BTTS</th>
+                        </tr>
+                        <tr>
+                            <th>Baseline</th>
+                            <th>Brier actual</th>
+                            <th>Skill actual</th>
+                            <th>Brier trivial</th>
+                            <th>Skill trivial</th>
+                            <th>Baseline</th>
+                            <th>Brier actual</th>
+                            <th>Skill actual</th>
+                            <th>Brier trivial</th>
+                            <th>Skill trivial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {comparativo_liga_rows if comparativo_liga_rows else comparativo_vazio}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     """
 
 
 def main():
     rows, total_registos, total_finished = carregar_dados()
+    rows = calcular_trivial_walk_forward(rows)
     league_map = carregar_league_map()
 
     n = len(rows)
