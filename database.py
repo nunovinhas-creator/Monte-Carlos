@@ -72,13 +72,35 @@ def init_db():
     conn.close()
 
 
+# Colunas opcionais (criadas por main.py) que tambem sao reescritas quando
+# uma previsao pending e recalculada.
+COLUNAS_EXTRA_UPDATE = (
+    "origem_xg", "baixa_confianca", "media_liga_usada", "n_h2h", "media_h2h_bruta",
+)
+
+
 def salvar_previsoes_db(jogos):
+    """
+    INSERT para match_id novo; UPDATE de xG/probs (e colunas extra, se
+    existirem) para match_id ja existente que ainda esteja pending, sem
+    resultado e cujo jogo ainda nao comecou. Linhas finished/void/stale
+    ou com result_o25/result_btts preenchidos nunca sao alteradas.
+    created_at nao e alterado.
+    """
     if not jogos:
         return
 
     conn = get_connection()
     cursor = conn.cursor()
-    agora_iso = datetime.now(timezone.utc).isoformat()
+    agora = datetime.now(timezone.utc)
+    agora_iso = agora.isoformat()
+    agora_ts = int(agora.timestamp())
+
+    cursor.execute("PRAGMA table_info(predictions)")
+    colunas = {row[1] for row in cursor.fetchall()}
+    extras = [c for c in COLUNAS_EXTRA_UPDATE if c in colunas]
+
+    n_inseridas = n_actualizadas = n_intocadas = 0
 
     for j in jogos:
         match_id = str(j.get("id") or f"{j['home']}_{j['away']}_{j['timestamp']}")
@@ -94,10 +116,34 @@ def salvar_previsoes_db(jogos):
             j["home"], j["away"], j["xg_home"], j["xg_away"],
             round(j["o25"], 2), round(j["btts"], 2), agora_iso
         ))
+        if cursor.rowcount:
+            n_inseridas += 1
+            continue
+
+        extras_jogo = [c for c in extras if c in j]
+        sets = ["xg_home = ?", "xg_away = ?", "prob_o25 = ?", "prob_btts = ?"]
+        sets += [f"{c} = ?" for c in extras_jogo]
+        valores = [j["xg_home"], j["xg_away"], round(j["o25"], 2), round(j["btts"], 2)]
+        valores += [j[c] for c in extras_jogo]
+
+        cursor.execute(f"""
+            UPDATE predictions
+            SET {", ".join(sets)}
+            WHERE match_id = ?
+              AND (status = 'pending' OR status IS NULL)
+              AND result_o25 IS NULL AND result_btts IS NULL
+              AND timestamp > ?
+        """, (*valores, match_id, agora_ts))
+        if cursor.rowcount:
+            n_actualizadas += 1
+        else:
+            n_intocadas += 1
 
     conn.commit()
     conn.close()
-    print(f"💾 Registos guardados em '{DB_NAME}'.")
+    print(f"💾 Registos guardados em '{DB_NAME}': {n_inseridas} inserida(s), "
+          f"{n_actualizadas} pending actualizada(s) com o modelo actual, "
+          f"{n_intocadas} intocada(s) (ja comecou/liquidada/void/stale).")
 
 
 def guardar_team_stats(team_id, team_name, stats):
