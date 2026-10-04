@@ -19,5 +19,6 @@
     "b": -0.028604004357534758,
     "iteracoes": 5,
     "avaliacao": null
-  }
+  },
+  "nota": "Para aplicar Platt em previsoes novas: export APPLY_RECAL=1 ou ponha aplicado=true apos validar skill fora de amostra."
 }

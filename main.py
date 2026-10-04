@@ -18,11 +18,11 @@ HEADERS = {
 MAX_TENTATIVAS_API = 2
 ESPERA_RETRY_SEGUNDOS = 5
 
-MEDIA_GOLOS_DEFAULT = 2.6
+MEDIA_GOLOS_DEFAULT = 2.85
 LIGA_MIN_JOGOS = 15
-LIGA_MEDIA_MIN = 1.8
+LIGA_MEDIA_MIN = 2.0
 LIGA_MEDIA_MAX = 3.6
-K_ENCOLHIMENTO = 3
+K_ENCOLHIMENTO = 4
 
 TEAM_STATS_DELAY = float(os.getenv("TEAM_STATS_DELAY", "0.5"))
 TEAM_STATS_MAX_CALLS = int(os.getenv("TEAM_STATS_MAX_CALLS", "120"))
@@ -93,18 +93,7 @@ LEAGUE_MAP = _carregar_league_map()
 from database import init_db, salvar_previsoes_db, DB_NAME, carregar_team_stats
 from adjusted_xg import calcular_adjusted_xg
 
-def monte_carlo_sim(lambda_home, lambda_away, simulations=50000):
-    lambda_home = max(float(lambda_home or 1.2), 0.2)
-    lambda_away = max(float(lambda_away or 1.0), 0.2)
-
-    home_goals = np.random.poisson(lambda_home, simulations)
-    away_goals = np.random.poisson(lambda_away, simulations)
-    total_goals = home_goals + away_goals
-
-    prob_o25 = (np.sum(total_goals > 2.5) / simulations) * 100
-    prob_btts = (np.sum((home_goals > 0) & (away_goals > 0)) / simulations) * 100
-
-    return prob_o25, prob_btts
+from predictor import monte_carlo as monte_carlo_sim, calibrar_probabilidades
 
 def extrair_data_hora(match):
     for campo in ['event_date', 'date', 'starting_at', 'match_date']:
@@ -623,6 +612,7 @@ def analisar():
                     home_stats, away_stats,
                     home_xg_api=avg_goals,
                     away_xg_api=avg_goals,
+                    media_liga=media_liga_usada,
                 )
                 origem_xg = 'adjusted'
             except Exception as e:
@@ -636,7 +626,29 @@ def analisar():
             xg_away = avg_goals
             origem_xg = 'h2h'
 
+        # Caminho H2H sem stats: distribuir a média com vantagem de casa
+        # em vez de lambdas simétricos (melhor discriminação O25/BTTS).
+        if origem_xg == 'h2h':
+            total = max(float(xg_home) + float(xg_away), 1.6)
+            # ~54% dos golos para a casa (vantagem típica)
+            xg_home = round(total * 0.54, 3)
+            xg_away = round(total * 0.46, 3)
+
         p_o25, p_btts = monte_carlo_sim(xg_home, xg_away)
+
+        # Taxa base da liga para shrinkage (aprox. a partir da média de golos)
+        # P(O25) para Poisson(mu) ≈ 1 - F_pois(2; mu); usamos heurística estável.
+        mu = float(media_liga_usada or 2.6)
+        # Aproximação empírica boa para mu em [1.8, 3.6]:
+        base_o25 = max(0.35, min(0.72, 0.20 + 0.14 * mu))
+        base_btts = max(0.35, min(0.68, 0.22 + 0.12 * mu))
+
+        p_o25, p_btts = calibrar_probabilidades(
+            p_o25, p_btts,
+            base_o25=base_o25,
+            base_btts=base_btts,
+            shrink_strength=0.12,
+        )
 
         baixa_confianca = 1 if (n_h2h == 0 and origem_xg == 'h2h') else 0
 
