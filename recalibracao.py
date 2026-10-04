@@ -6,11 +6,19 @@ log-odds das previsoes do modelo, uma por mercado (Over 2.5 e BTTS):
 
     recalibrado = sigmoid(a + b * logit(prob_modelo))
 
-Regra critica: o ajuste (fit) usa SO previsoes com created_at <
-DATA_CORTE; a avaliacao (skill) usa SO previsoes com created_at >=
-DATA_CORTE. Nunca se ajusta e avalia na mesma amostra -- isso daria
+Regra critica: nunca se ajusta e avalia na mesma amostra -- isso daria
 um skill otimista (in-sample) e inutil para decidir se a recalibracao
-generaliza para jogos futuros.
+generaliza para jogos futuros. A separacao treino/teste e, por ordem
+de preferencia:
+
+  1. modelo = 'v2' com N liquidado >= MIN_N_V2_FIT: treino = primeiros
+     70% (cronologico) das previsoes v2, teste = ultimos 30%. E o unico
+     modo cujos coeficientes servem para aplicar ao v2.
+  2. coluna modelo preenchida mas v2 com N baixo: treino = modelo 'v1',
+     teste = modelo 'v2'. Os coeficientes descrevem o v1 -- so
+     diagnostico, NAO aplicar ao v2.
+  3. sem coluna modelo: treino = created_at < DATA_CORTE, teste =
+     created_at >= DATA_CORTE (comportamento antigo).
 
 Este script e so um diagnostico: guarda os coeficientes em
 recalibracao.json e imprime a comparacao de skill, mas NAO altera
@@ -23,13 +31,17 @@ import json
 import math
 from datetime import datetime, timezone
 
-from backtest import DATA_CORTE, brier_stats, carregar_dados
+from backtest import DATA_CORTE, IDX_MODELO, brier_stats, carregar_dados
 
 EPS = 1e-6
 MAX_ITER = 50
 TOL = 1e-8
 
 OUTPUT_JSON = "recalibracao.json"
+
+# N minimo de previsoes v2 liquidadas para ajustar Platt so no v2.
+MIN_N_V2_FIT = 300
+FRACAO_TREINO_V2 = 0.7
 
 
 def logit(p):
@@ -108,7 +120,8 @@ def pares_mercado(rows, idx_prob, idx_res):
     ]
 
 
-def avaliar_mercado(nome, treino_rows, teste_rows, idx_prob, idx_res):
+def avaliar_mercado(nome, treino_rows, teste_rows, idx_prob, idx_res,
+                    desc_treino, desc_teste):
     pares_treino = pares_mercado(treino_rows, idx_prob, idx_res)
     pares_teste = pares_mercado(teste_rows, idx_prob, idx_res)
 
@@ -123,8 +136,8 @@ def avaliar_mercado(nome, treino_rows, teste_rows, idx_prob, idx_res):
     }
 
     print(f"\n=== {nome} ===")
-    print(f"Treino (created_at < {DATA_CORTE}): n={len(pares_treino)}")
-    print(f"Teste  (created_at >= {DATA_CORTE}): n={len(pares_teste)}")
+    print(f"Treino ({desc_treino}): n={len(pares_treino)}")
+    print(f"Teste  ({desc_teste}): n={len(pares_teste)}")
 
     if not pares_treino:
         print("Sem dados de treino -- nao e possivel ajustar coeficientes.")
@@ -138,7 +151,7 @@ def avaliar_mercado(nome, treino_rows, teste_rows, idx_prob, idx_res):
 
     if not pares_teste:
         print(
-            "AVISO: sem previsoes liquidadas desde a data de corte -- "
+            "AVISO: sem previsoes liquidadas na amostra de teste -- "
             "nao ha amostra de avaliacao fora da amostra de treino. "
             "Skill NAO calculado (evita medir em cima do proprio treino)."
         )
@@ -180,18 +193,48 @@ def main():
     if sem_data:
         print(f"AVISO: {len(sem_data)} registo(s) liquidado(s) sem created_at -- excluidos do treino/teste.")
 
-    treino_rows = [r for r in rows if r[4] is not None and r[4] < DATA_CORTE]
-    teste_rows = [r for r in rows if r[4] is not None and r[4] >= DATA_CORTE]
-
     print(f"Amostra liquidada total: {len(rows)} (de {total_registos} previsoes, {total_finished} 'finished')")
     print(f"DATA_CORTE = {DATA_CORTE}")
 
-    resultado_o25 = avaliar_mercado("Over 2.5", treino_rows, teste_rows, 0, 2)
-    resultado_btts = avaliar_mercado("BTTS", treino_rows, teste_rows, 1, 3)
+    tem_modelo = any(r[IDX_MODELO] is not None for r in rows)
+    rows_v2 = [r for r in rows if r[IDX_MODELO] == "v2"]  # ja por timestamp
+
+    if tem_modelo and len(rows_v2) >= MIN_N_V2_FIT:
+        modo = "v2_split"
+        corte = int(len(rows_v2) * FRACAO_TREINO_V2)
+        treino_rows, teste_rows = rows_v2[:corte], rows_v2[corte:]
+        desc_treino = f"modelo='v2', primeiros {FRACAO_TREINO_V2:.0%}"
+        desc_teste = f"modelo='v2', ultimos {1 - FRACAO_TREINO_V2:.0%}"
+    elif tem_modelo:
+        modo = "v1_treino_v2_teste"
+        treino_rows = [r for r in rows if r[IDX_MODELO] == "v1"]
+        teste_rows = rows_v2
+        desc_treino = "modelo='v1'"
+        desc_teste = "modelo='v2'"
+        print(
+            f"AVISO: so {len(rows_v2)} previsoes v2 liquidadas (< {MIN_N_V2_FIT}). "
+            "Nao ha N para ajustar Platt no v2: os coeficientes abaixo sao "
+            "ajustados no v1 e servem so de diagnostico -- NAO os aplique ao v2."
+        )
+    else:
+        modo = "data_corte"
+        treino_rows = [r for r in rows if r[4] is not None and r[4] < DATA_CORTE]
+        teste_rows = [r for r in rows if r[4] is not None and r[4] >= DATA_CORTE]
+        desc_treino = f"created_at < {DATA_CORTE}"
+        desc_teste = f"created_at >= {DATA_CORTE}"
+        print("AVISO: coluna modelo vazia -- a separar por DATA_CORTE.")
+
+    print(f"Modo treino/teste: {modo} (v2 liquidadas: {len(rows_v2)}, minimo para fit v2: {MIN_N_V2_FIT})")
+
+    resultado_o25 = avaliar_mercado("Over 2.5", treino_rows, teste_rows, 0, 2, desc_treino, desc_teste)
+    resultado_btts = avaliar_mercado("BTTS", treino_rows, teste_rows, 1, 3, desc_treino, desc_teste)
 
     saida = {
         "gerado_em": datetime.now(timezone.utc).isoformat(),
         "data_corte": DATA_CORTE,
+        "modo": modo,
+        "n_v2_liquidado": len(rows_v2),
+        "min_n_v2_fit": MIN_N_V2_FIT,
         "aplicado": False,
         "over_25": resultado_o25,
         "btts": resultado_btts,

@@ -1,7 +1,18 @@
+import json
+import os
 import sqlite3
 from datetime import datetime, timezone, timedelta
 
 DB_NAME = "predictions.db"
+
+# Versao do modelo que gera as previsoes gravadas por este codigo.
+MODELO_ACTUAL = "v2"
+# Momento do merge do modelo v2 (UTC). Previsoes criadas antes sao v1.
+DATA_MODELO_V2 = "2026-10-04T13:47:00"
+# match_id criados antes de DATA_MODELO_V2 mas ja reescritos com o v2.
+MODELO_V2_BACKFILL_JSON = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "modelo_v2_backfill.json"
+)
 
 
 def get_connection():
@@ -43,6 +54,10 @@ def init_db():
         ON predictions (league_id)
     """)
 
+    if "modelo" not in colunas_predictions:
+        cursor.execute("ALTER TABLE predictions ADD COLUMN modelo TEXT")
+    _backfill_modelo(cursor)
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS team_stats (
             team_id INTEGER PRIMARY KEY,
@@ -79,10 +94,44 @@ COLUNAS_EXTRA_UPDATE = (
 )
 
 
+def _backfill_modelo(cursor):
+    """
+    Preenche modelo so onde ainda esta NULL (idempotente; nunca toca em
+    xG/probs/resultados):
+      1. match_id listados em modelo_v2_backfill.json -> 'v2' (criados
+         como v1 mas ja reescritos com o v2 antes desta coluna existir);
+      2. created_at < DATA_MODELO_V2 -> 'v1';
+      3. created_at >= DATA_MODELO_V2 -> 'v2'.
+    """
+    cursor.execute("SELECT COUNT(*) FROM predictions WHERE modelo IS NULL")
+    if cursor.fetchone()[0] == 0:
+        return
+
+    try:
+        with open(MODELO_V2_BACKFILL_JSON, encoding="utf-8") as f:
+            ids_v2 = json.load(f).get("match_ids", [])
+    except (OSError, ValueError) as e:
+        print(f"⚠️ AVISO: nao foi possivel ler {MODELO_V2_BACKFILL_JSON} ({e}).")
+        ids_v2 = []
+
+    cursor.executemany(
+        "UPDATE predictions SET modelo = 'v2' WHERE match_id = ? AND modelo IS NULL",
+        [(str(m),) for m in ids_v2],
+    )
+    cursor.execute(
+        "UPDATE predictions SET modelo = 'v1' WHERE modelo IS NULL AND created_at < ?",
+        (DATA_MODELO_V2,),
+    )
+    cursor.execute(
+        "UPDATE predictions SET modelo = 'v2' WHERE modelo IS NULL AND created_at >= ?",
+        (DATA_MODELO_V2,),
+    )
+
+
 def salvar_previsoes_db(jogos):
     """
-    INSERT para match_id novo; UPDATE de xG/probs (e colunas extra, se
-    existirem) para match_id ja existente que ainda esteja pending, sem
+    INSERT para match_id novo; UPDATE de xG/probs/modelo (e colunas extra,
+    se existirem) para match_id ja existente que ainda esteja pending, sem
     resultado e cujo jogo ainda nao comecou. Linhas finished/void/stale
     ou com result_o25/result_btts preenchidos nunca sao alteradas.
     created_at nao e alterado.
@@ -104,26 +153,27 @@ def salvar_previsoes_db(jogos):
 
     for j in jogos:
         match_id = str(j.get("id") or f"{j['home']}_{j['away']}_{j['timestamp']}")
+        modelo = j.get("modelo", MODELO_ACTUAL)
 
         cursor.execute("""
             INSERT OR IGNORE INTO predictions (
                 match_id,event_date,timestamp,league,league_id,home_team,away_team,
-                xg_home,xg_away,prob_o25,prob_btts,created_at,status
+                xg_home,xg_away,prob_o25,prob_btts,created_at,status,modelo
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
         """, (
             match_id, j["data_str"], j["timestamp"], j["liga"], j.get("league_id"),
             j["home"], j["away"], j["xg_home"], j["xg_away"],
-            round(j["o25"], 2), round(j["btts"], 2), agora_iso
+            round(j["o25"], 2), round(j["btts"], 2), agora_iso, modelo
         ))
         if cursor.rowcount:
             n_inseridas += 1
             continue
 
         extras_jogo = [c for c in extras if c in j]
-        sets = ["xg_home = ?", "xg_away = ?", "prob_o25 = ?", "prob_btts = ?"]
+        sets = ["xg_home = ?", "xg_away = ?", "prob_o25 = ?", "prob_btts = ?", "modelo = ?"]
         sets += [f"{c} = ?" for c in extras_jogo]
-        valores = [j["xg_home"], j["xg_away"], round(j["o25"], 2), round(j["btts"], 2)]
+        valores = [j["xg_home"], j["xg_away"], round(j["o25"], 2), round(j["btts"], 2), modelo]
         valores += [j[c] for c in extras_jogo]
 
         cursor.execute(f"""

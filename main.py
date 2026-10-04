@@ -90,7 +90,7 @@ def _carregar_league_map(caminho=LIGAS_BSD_JSON):
 
 LEAGUE_MAP = _carregar_league_map()
 
-from database import init_db, salvar_previsoes_db, DB_NAME, carregar_team_stats
+from database import init_db, salvar_previsoes_db, DB_NAME, carregar_team_stats, MODELO_ACTUAL
 from adjusted_xg import calcular_adjusted_xg
 
 from predictor import monte_carlo as monte_carlo_sim, calibrar_probabilidades
@@ -675,7 +675,8 @@ def analisar():
             'n_h2h': n_h2h,
             'media_h2h_bruta': media_h2h_bruta,
             'media_liga_usada': media_liga_usada,
-            'baixa_confianca': baixa_confianca
+            'baixa_confianca': baixa_confianca,
+            'modelo': MODELO_ACTUAL
         })
 
     jogos_processados.sort(key=lambda x: x['dt_obj'])

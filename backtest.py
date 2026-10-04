@@ -8,8 +8,9 @@ Se as colunas nao existirem ou a query falhar, o script sai com codigo != 0.
 Amostra vazia NAO e erro (e um estado valido no arranque), mas e sinalizada
 de forma explicita no HTML.
 
-O relatorio divide a leitura em dois blocos -- "Desde o corte" (DATA_CORTE)
-e "Historico completo" -- sem nunca filtrar ou apagar dados na base.
+O relatorio divide a leitura em blocos -- "Modelo v2" (modelo = 'v2', o
+skill que importa), "Modelo v1", "Desde o corte" (DATA_CORTE) e "Historico
+completo" -- sem nunca filtrar ou apagar dados na base.
 """
 
 import json
@@ -22,6 +23,11 @@ from html import escape as escape_html
 DB_NAME = os.getenv("PREDICTIONS_DB", "predictions.db")
 
 DATA_CORTE = "2026-10-04T13:47:00"
+
+# Indices dos tuplos devolvidos por carregar_dados (+ trivial no fim).
+IDX_MODELO = 7
+IDX_TRIVIAL_O25 = 8
+IDX_TRIVIAL_BTTS = 9
 
 REQUIRED_COLS = [
     "prob_o25",
@@ -434,8 +440,8 @@ def build_comparativo_liga_rows(rows, league_map, min_n=LIGA_MIN_N):
 
     for row in rows:
         league_id = row[5]
-        trivial_o25 = row[7]
-        trivial_btts = row[8]
+        trivial_o25 = row[IDX_TRIVIAL_O25]
+        trivial_btts = row[IDX_TRIVIAL_BTTS]
 
         if trivial_o25 is None and trivial_btts is None:
             continue
@@ -512,9 +518,11 @@ def carregar_dados():
     cursor.execute("SELECT COUNT(*) FROM predictions WHERE status = 'finished'")
     total_finished = cursor.fetchone()[0]
 
+    col_modelo = "modelo" if "modelo" in columns else "NULL"
     cursor.execute(
-        """
-        SELECT prob_o25, prob_btts, result_o25, result_btts, created_at, league_id, timestamp
+        f"""
+        SELECT prob_o25, prob_btts, result_o25, result_btts, created_at, league_id, timestamp,
+               {col_modelo}
         FROM predictions
         WHERE status = 'finished'
           AND result_o25 IS NOT NULL
@@ -616,8 +624,8 @@ def render_bloco(titulo, rows, league_map, destaque=False):
     brier_btts = bloco_brier(rows, 1, 3)
     liga_rows = build_liga_rows(rows, league_map)
 
-    pares_o25_atual, pares_o25_trivial = pares_comparativo(rows, 0, 2, 7)
-    pares_btts_atual, pares_btts_trivial = pares_comparativo(rows, 1, 3, 8)
+    pares_o25_atual, pares_o25_trivial = pares_comparativo(rows, 0, 2, IDX_TRIVIAL_O25)
+    pares_btts_atual, pares_btts_trivial = pares_comparativo(rows, 1, 3, IDX_TRIVIAL_BTTS)
     comparativo_o25_texto = comparativo_global_texto("Over 2.5", pares_o25_atual, pares_o25_trivial)
     comparativo_btts_texto = comparativo_global_texto("BTTS", pares_btts_atual, pares_btts_trivial)
     comparativo_liga_rows = build_comparativo_liga_rows(rows, league_map)
@@ -782,11 +790,16 @@ def main():
             "</div>"
         )
 
+        rows_v2 = [r for r in rows if r[IDX_MODELO] == "v2"]
+        rows_v1 = [r for r in rows if r[IDX_MODELO] == "v1"]
         rows_corte = [r for r in rows if r[4] is not None and r[4] >= DATA_CORTE]
 
-        blocos_html = render_bloco(
-            f"Desde o corte ({DATA_CORTE})", rows_corte, league_map, destaque=True
-        ) + render_bloco("Historico completo", rows, league_map, destaque=False)
+        blocos_html = (
+            render_bloco("Modelo v2 (modelo = 'v2')", rows_v2, league_map, destaque=True)
+            + render_bloco("Modelo v1 (modelo = 'v1')", rows_v1, league_map, destaque=False)
+            + render_bloco(f"Desde o corte ({DATA_CORTE})", rows_corte, league_map, destaque=False)
+            + render_bloco("Historico completo", rows, league_map, destaque=False)
+        )
 
     html_content = f"""<!DOCTYPE html>
 <html lang="pt">
@@ -820,6 +833,11 @@ def main():
             Verde = desvio dentro de 2 erros padrao (calibrado). Amarelo = desvio
             significativo. Cinzento = amostra abaixo de 30, sem leitura possivel.
             Skill positivo significa que o modelo bate a taxa base da propria amostra.
+        </p>
+        <p class="text-muted small">
+            Skill v2 = so previsoes com <code>modelo = 'v2'</code> (geradas ou reescritas
+            pelo modelo v2 antes do jogo comecar). O bloco "Desde o corte" filtra por
+            <code>created_at</code> e exclui pending v1 reescritas com o v2.
         </p>
     </div>
 </body>
