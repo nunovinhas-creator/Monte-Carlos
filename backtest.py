@@ -21,7 +21,7 @@ from html import escape as escape_html
 
 DB_NAME = os.getenv("PREDICTIONS_DB", "predictions.db")
 
-DATA_CORTE = "2026-10-04"
+DATA_CORTE = "2026-10-04T13:47:00"
 
 REQUIRED_COLS = [
     "prob_o25",
