@@ -122,15 +122,22 @@ def calibrar_probabilidades(
     prob_btts_pct: float,
     base_o25: float | None = None,
     base_btts: float | None = None,
-    shrink_strength: float = 0.15,
+    shrink_strength: float | None = None,
+    shrink_o25: float = 0.18,
+    shrink_btts: float = 0.12,
+    btts_teto_inicio: float = 0.58,
+    btts_teto_declive: float = 0.50,
 ):
     """
     1) Aplica Platt scaling se recalibracao.json estiver activo.
     2) Faz shrinkage suave das probabilidades para a taxa base da liga
        (reduz overconfidence nos extremos).
+    3) BTTS: teto suave acima de btts_teto_inicio
+       (p = inicio + declive * (p - inicio)); não se aplica ao O25.
 
     base_* devem ser taxas 0..1 (ex.: 0.55). Se None, usa 0.52/0.52.
-    shrink_strength: 0 = sem shrink, 0.15 = mistura 15% com a base.
+    shrink_o25 / shrink_btts: 0 = sem shrink, 0.18 = mistura 18% com a base.
+    shrink_strength (legado): se indicado, substitui ambos.
     """
     p_o = max(1.0, min(99.0, float(prob_o25_pct))) / 100.0
     p_b = max(1.0, min(99.0, float(prob_btts_pct))) / 100.0
@@ -148,10 +155,17 @@ def calibrar_probabilidades(
     base_b = float(base_btts) if base_btts is not None else 0.52
     base_o = max(0.30, min(0.75, base_o))
     base_b = max(0.30, min(0.75, base_b))
-    s = max(0.0, min(0.50, float(shrink_strength)))
+    if shrink_strength is not None:
+        shrink_o25 = shrink_btts = shrink_strength
+    s_o = max(0.0, min(0.50, float(shrink_o25)))
+    s_b = max(0.0, min(0.50, float(shrink_btts)))
 
-    p_o = (1.0 - s) * p_o + s * base_o
-    p_b = (1.0 - s) * p_b + s * base_b
+    p_o = (1.0 - s_o) * p_o + s_o * base_o
+    p_b = (1.0 - s_b) * p_b + s_b * base_b
+
+    # Teto suave BTTS: backtest v2 mostra brackets >=60% muito optimistas.
+    if p_b > btts_teto_inicio:
+        p_b = btts_teto_inicio + btts_teto_declive * (p_b - btts_teto_inicio)
 
     return round(p_o * 100.0, 2), round(p_b * 100.0, 2)
 
