@@ -647,7 +647,8 @@ def analisar():
             p_o25, p_btts,
             base_o25=base_o25,
             base_btts=base_btts,
-            shrink_strength=0.12,
+            shrink_o25=0.18,
+            shrink_btts=0.12,
         )
 
         baixa_confianca = 1 if (n_h2h == 0 and origem_xg == 'h2h') else 0
