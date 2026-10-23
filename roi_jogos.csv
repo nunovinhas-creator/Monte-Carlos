@@ -1,1 +1,9 @@
 ﻿match_id,liga,casa,fora,kickoff_utc,prob_o25_base_no_instante_pct,prob_o25_publicada_no_instante_pct,prob_btts_no_instante_pct,baixa_confianca_no_instante,calibracao_id,odd_consenso_bsd,capturado_em_utc,quote_at_utc,resultado_over25,lucro_teorico_1u,ev_modelado_pct,original_over_verde_60,original_over_e_btts_verdes_60,mc_o70,mc_o70_ev5
+222857,Saudi Pro League,Al Faisaly,Al-Nassr,2026-10-23T13:30:00+00:00,63.11,63.11,,,,1.44,2026-10-23T12:37:10.678279+00:00,2026-10-23T12:35:04+00:00,1,0.44,-9.12,N/D,N/D,0,0
+606238,Tunisian Ligue Professionnelle 1,Avenir Sportif De La Marsa,CS Hammam-Lif,2026-10-23T13:30:00+00:00,27.63,27.63,,,,2.91,2026-10-23T12:37:10.992146+00:00,2026-10-23T12:35:04+00:00,0,-1,-19.6,N/D,N/D,0,0
+606239,Tunisian Ligue Professionnelle 1,CA Bizertin,ES Hammam-Sousse,2026-10-23T13:30:00+00:00,22.94,22.94,,,,2.7,2026-10-23T12:37:11.284385+00:00,2026-10-23T12:35:04+00:00,1,1.7,-38.06,N/D,N/D,0,0
+606240,Tunisian Ligue Professionnelle 1,JS Omrane,Olympique Béja,2026-10-23T13:30:00+00:00,30.64,30.64,,,,2.49,2026-10-23T12:37:11.558288+00:00,2026-10-23T12:35:04+00:00,0,-1,-23.71,N/D,N/D,0,0
+606241,Tunisian Ligue Professionnelle 1,US Ben Guerdane,Stade Tunisien,2026-10-23T13:30:00+00:00,27.29,27.29,,,,3.0,2026-10-23T12:37:11.826077+00:00,2026-10-23T12:35:04+00:00,0,-1,-18.13,N/D,N/D,0,0
+603739,CAF Champions League,Atlético Petróleos de Luanda,Scottland FC,2026-10-23T14:30:00+00:00,27.44,27.44,,,,2.07,2026-10-23T12:37:12.108131+00:00,2026-10-23T12:35:04+00:00,1,1.07,-43.2,N/D,N/D,0,0
+214624,Superliga,FC Botoșani,FC Petrolul Ploiești,2026-10-23T15:00:00+00:00,47.98,47.98,,,,1.77,2026-10-23T12:37:12.395029+00:00,2026-10-23T12:35:04+00:00,1,0.77,-15.08,N/D,N/D,0,0
+222861,Saudi Pro League,Al-Ittihad,Diriyah,2026-10-23T15:30:00+00:00,53.88,53.88,,,,1.54,2026-10-23T12:37:12.668226+00:00,2026-10-23T12:35:04+00:00,0,-1,-17.02,N/D,N/D,0,0
