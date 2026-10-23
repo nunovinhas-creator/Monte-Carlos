@@ -1,12 +1,54 @@
 <!doctype html><html lang="pt"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Monte Carlos · ROI O2.5</title>
-    <style>body{font-family:system-ui,sans-serif;max-width:1080px;margin:36px auto;padding:0 18px;background:#f8fafc;color:#17243a}table{border-collapse:collapse;width:100%;background:white}th,td{padding:13px 9px;text-align:left;border-bottom:1px solid #dbe2ec}.notice{padding:15px;border:1px solid #f2cf75;background:#fffaf0;border-radius:8px}a{color:#2050a2}</style></head>
-    <body><nav><a href="index.html">Previsões</a> · <a href="backtest.html">Calibração</a> · <a href="roi_jogos.csv">Exportar CSV</a></nav>
-    <h1>ROI Over 2,5 · registo prospectivo</h1>
-    <p class="notice"><strong>Simulação, não lucro real:</strong> a API BSD gratuita publica odds de <em>consenso</em>, que não garantem execução numa casa. As odds são recolhidas antes do jogo; não se retropreenchem cotações antigas. 1 unidade por evento, sem comissão. Não colocar apostas automaticamente.</p>
-    <p>Snapshots recolhidos: <b>42</b> · com odds válidas: <b>34</b> · jogos já terminados depois do início do registo: <b>0</b> · jogos com odds pré-jogo elegíveis: <b>0</b>.</p>
-    <table><thead><tr><th>Estratégia</th><th>Jogos</th><th>Acertos</th><th>Odd média</th><th>Lucro 1u/jogo</th><th>ROI teórico</th></tr></thead>
-    <tbody><tr><td>Todos com odd</td><td>0</td><td>0</td><td>—</td><td>+0.00u</td><td>Sem amostra</td></tr><tr><td>MC-O70: probabilidade BASE ≥70%</td><td>0</td><td>0</td><td>—</td><td>+0.00u</td><td>Sem amostra</td></tr><tr><td>MC-O70 e EV modelado ≥5%</td><td>0</td><td>0</td><td>—</td><td>+0.00u</td><td>Sem amostra</td></tr></tbody></table>
-    <p>MC-O70 usa a probabilidade <strong>base</strong> do modelo v2, antes da calibração adicional. EV modelado = probabilidade publicada × odd − 1. Uma boa taxa de acerto não implica EV positivo.</p>
-    <p>Relatório UTC: 2026-10-23 12:37.</p></body></html>
+    <title>Monte Carlos · ROI e comparação de estratégias Over 2,5</title>
+    <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:1100px;margin:30px auto;padding:0 18px;background:#f8fafc;color:#17243a;line-height:1.55}
+    h1{font-size:1.85rem;margin-bottom:4px} h2{font-size:1.3rem;margin-top:30px} h3{font-size:1.05rem}
+    .muted{color:#526176} .sub{margin-top:0;color:#526176} nav{display:flex;gap:16px;flex-wrap:wrap;padding-bottom:12px}
+    a{color:#2050a2} .notice{padding:14px 16px;border:1px solid #dcc780;background:#fff9e9;border-radius:8px}
+    .card{background:white;border:1px solid #dce4ee;border-radius:10px;padding:15px 18px;margin:14px 0}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+    .stat{background:white;border:1px solid #dce4ee;border-radius:10px;padding:12px}
+    .stat b{display:block;font-size:1.65rem}.stat span{font-size:.86rem;color:#526176}
+    .scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px;background:white}
+    th,td{padding:12px 9px;text-align:left;border-bottom:1px solid #e0e7ef;vertical-align:top}
+    th{background:#e9eff8;font-size:.9rem}tbody tr:hover{background:#f0f5fa}
+    .hint{font-size:.9rem;color:#495c73}
+    </style></head><body>
+    <nav><a href="index.html">← Previsões</a><a href="backtest.html">Backtest e calibração</a><a href="roi_jogos.csv">Exportar CSV detalhado</a></nav>
+    <h1>ROI Over 2,5 · comparação de critérios</h1>
+    <p class="sub">O modelo Monte Carlos v2 original mantém-se. Esta página acrescenta medição independente dos filtros experimentais, sem substituir as previsões.</p>
+    <div class="notice"><strong>Simulação, não lucro real.</strong> As odds gratuitas BSD são preços de <em>consenso</em>, não ofertas garantidas de uma casa de apostas. O ROI assume uma unidade por jogo, preço registado, sem comissão, e não prova rentabilidade executável. Não existem odds históricas anteriores à recolha.</div>
+    <h2>O que existia e o que foi acrescentado</h2>
+    <div class="card">
+      <h3>Original — destaques verdes de 60%</h3>
+      <p>Na <a href="index.html">tabela de previsões</a>, o <strong>Over 2,5 aparece a verde quando a probabilidade publicada é ≥60%</strong> e o <strong>BTTS aparece a verde quando é ≥60%</strong>. Previsões com aviso «sem dados» ficam cinzentas. Estes destaques eram apenas indicadores visuais, <strong>não uma estratégia de aposta com ROI validado</strong>.</p>
+      <p>Para testar estes destaques como regras de aposta Over 2,5, comparamos «Original: Over verde ≥60%» e «Original: Over e BTTS verdes ≥60%». O segundo exige as duas probabilidades ≥60% e que o jogo não esteja marcado como baixa confiança.</p>
+      <h3>Novo — MC-O70 (experimental)</h3>
+      <p>Seleciona jogos cuja <strong>probabilidade base de Over 2,5 é ≥70%</strong>. Não exige BTTS ≥60% e não aplica o indicador de baixa confiança. É um <strong>filtro de investigação independente</strong>, introduzido depois da análise histórica da v2; não substitui o modelo nem a cor original.</p>
+      <p>A versão «MC-O70 + EV modelado ≥5%» também exige <strong>probabilidade publicada × odd de consenso − 1 ≥0,05</strong>. O EV é uma estimativa do modelo, <strong>não valor de mercado comprovado</strong>.</p>
+      <p class="hint">«Base» = probabilidade v2 antes da recalibração adicional opcional. «Publicada» = probabilidade mostrada no site. A calibração adicional foi mantida desligada por não melhorar a validação temporal; neste estado as duas probabilidades coincidem, mas são guardadas separadamente para preservar o histórico.</p>
+    </div>
+    <h2>Dados recolhidos e resultados</h2>
+    <div class="stats"><div class="stat"><span>Capturas tentadas (acumuladas)</span><b>54</b></div>
+      <div class="stat"><span>Odds válidas (acumuladas)</span><b>38</b></div>
+      <div class="stat"><span>Jogos terminados com odd elegível</span><b>0</b></div>
+      <div class="stat"><span>Liquidados sem BTTS / confiança históricos completos</span><b>0</b></div></div>
+    <div class="scroll"><table><thead><tr><th>Conjunto de jogos / filtro</th><th>Jogos</th><th>Acertos Over</th><th>Taxa</th><th>Odd média</th><th>Lucro (1u/jogo)</th><th>ROI teórico</th></tr></thead><tbody><tr><td>Todos os jogos com odd</td><td>0</td><td>0</td><td>—</td><td>—</td>
+        <td>—</td><td>Sem amostra</td></tr><tr><td>Original: Over verde ≥60%</td><td>0</td><td>0</td><td>—</td><td>—</td>
+        <td>—</td><td>Sem amostra</td></tr><tr><td>Original: Over e BTTS verdes ≥60%</td><td>0</td><td>0</td><td>—</td><td>—</td>
+        <td>—</td><td>Sem amostra</td></tr><tr><td>MC-O70: Over base ≥70%</td><td>0</td><td>0</td><td>—</td><td>—</td>
+        <td>—</td><td>Sem amostra</td></tr><tr><td>MC-O70 + EV modelado ≥5%</td><td>0</td><td>0</td><td>—</td><td>—</td>
+        <td>—</td><td>Sem amostra</td></tr></tbody></table></div>
+    <p class="hint">Cada linha é uma simulação independente sobre os mesmos jogos elegíveis quando as variáveis da regra estão disponíveis. As linhas sobrepõem-se: <strong>não se somam lucros entre estratégias</strong>. «Sem amostra» significa que ainda não existem jogos liquidados aptos para aquela regra; não significa ROI de 0%.</p>
+    <h2>Metodologia e limitações — para analisar mais tarde</h2>
+    <div class="card">
+      <p><strong>Unidade de análise:</strong> um jogo terminado da versão v2, com resultado Over 2,5, odd BSD válida e respetiva probabilidade registadas <em>antes</em> do início. Apenas a primeira odd válida guardada por jogo é utilizada (a recolha deixa de repetir jogos com odd válida). Não se inventam odds anteriores à implementação. A janela é de até 6 horas antes do jogo.</p>
+      <p><strong>Resultado:</strong> Over 2,5 é verdadeiro quando há três ou mais golos. Lucro por uma unidade: <strong>odd − 1</strong> num acerto; <strong>−1</strong> numa falha. ROI = soma dos lucros ÷ número de jogos selecionados × 100. Sem comissão ou custos de execução.</p>
+      <p><strong>Dados em falta:</strong> os primeiros snapshots de outubro de 2026 guardaram Over e odd, mas não congelaram BTTS e o indicador de baixa confiança. Esses jogos <strong>não entram nas linhas «Original»</strong> se estes campos estiverem em falta; continuam disponíveis para «Todos» e MC-O70. Não se usam valores atuais da base de dados para completar snapshots antigos, pois isso introduziria fuga de informação.</p>
+      <p><strong>Validade estatística:</strong> as percentagens históricas que motivaram MC-O70 foram obtidas antes deste registo de odds. Servem para formular uma hipótese, não para demonstrar ROI. Comparar amostras posteriores, cobertura, tamanho da amostra, datas, odds médias e estabilidade ao longo do tempo antes de tirar conclusões.</p>
+      <p><strong>Rastreabilidade:</strong> o <a href="roi_jogos.csv">CSV</a> disponibiliza jogo, liga, hora UTC, probabilidades no instante, odd, data da cotação, resultado, EV e pertença a cada filtro. «N/D» indica que faltava informação capturada para classificar a regra original.</p>
+    </div>
+    <p class="muted">Documentação técnica: <a href="https://github.com/nunovinhas-creator/Monte-Carlos/blob/main/docs/METODOLOGIA_ROI.md">metodologia e critérios</a> · <a href="https://github.com/nunovinhas-creator/Monte-Carlos/blob/main/docs/ALTERACOES_2026-10-23.md">alterações de 23/10/2026</a>.</p>
+    <p class="muted">Última atualização do relatório (UTC): 2026-10-23 12:59.</p>
+    </body></html>
