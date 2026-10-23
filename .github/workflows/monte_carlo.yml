@@ -29,13 +29,20 @@ jobs:
       - name: Instalar Dependências
         run: |
           python -m pip install --upgrade pip
-          pip install numpy requests
+          pip install -r requirements.txt
+          pip install pytest
 
       - name: Executar Previsões Monte Carlo (main.py)
         env:
           BSD_API_TOKEN: ${{ secrets.BSD_API_TOKEN }}
           TEAM_STATS_MAX_CALLS: "200"
         run: python main.py
+
+      - name: Recolher Odds Over 2,5 pré-jogo (consenso BSD)
+        env:
+          BSD_API_TOKEN: ${{ secrets.BSD_API_TOKEN }}
+          ODDS_MAX_CALLS: "80"
+        run: python odds_tracking.py
 
       - name: Liquidar Resultados Pendentes (settlement.py)
         env:
@@ -47,11 +54,18 @@ jobs:
       - name: Gerar Relatório de Backtest (backtest.py)
         run: python backtest.py
 
+      - name: Gerar Relatório de ROI (simulação de consenso)
+        run: python roi_report.py
+
+      - name: Testes offline
+        run: |
+          python -m pytest -q
+
       - name: Commit e Push das Alterações
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add index.html backtest.html predictions.db
+          git add index.html backtest.html roi.html roi_jogos.csv predictions.db
           git diff --staged --quiet && echo "Sem alterações" && exit 0
           git commit -m "Auto-update: dashboard, backtest e base de dados"
           git pull --rebase --autostash

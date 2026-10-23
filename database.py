@@ -56,7 +56,40 @@ def init_db():
 
     if "modelo" not in colunas_predictions:
         cursor.execute("ALTER TABLE predictions ADD COLUMN modelo TEXT")
+    for nome, tipo in (("prob_o25_base", "REAL"), ("calibracao_o25_id", "TEXT")):
+        if nome not in colunas_predictions:
+            cursor.execute(f"ALTER TABLE predictions ADD COLUMN {nome} {tipo}")
     _backfill_modelo(cursor)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS odds_snapshots (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            match_id TEXT NOT NULL,
+            capturado_em TEXT NOT NULL,
+            quote_at TEXT,
+            fonte TEXT NOT NULL DEFAULT 'bsd_consensus',
+            mercado TEXT NOT NULL DEFAULT 'over_25_goals',
+            odd REAL,
+            estado TEXT NOT NULL,
+            detalhe TEXT,
+            prob_o25_no_instante REAL,
+            prob_o25_base_no_instante REAL,
+            calibracao_o25_no_instante TEXT,
+            UNIQUE(match_id, capturado_em, fonte)
+        )
+    """)
+    cursor.execute("PRAGMA table_info(odds_snapshots)")
+    odds_cols = {row[1] for row in cursor.fetchall()}
+    for nome, tipo in (("prob_o25_no_instante", "REAL"),
+                       ("prob_o25_base_no_instante", "REAL"),
+                       ("calibracao_o25_no_instante", "TEXT")):
+        if nome not in odds_cols:
+            cursor.execute(f"ALTER TABLE odds_snapshots ADD COLUMN {nome} {tipo}")
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_odds_match_source
+        ON odds_snapshots(match_id, fonte, capturado_em)
+    """)
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS team_stats (
@@ -158,22 +191,24 @@ def salvar_previsoes_db(jogos):
         cursor.execute("""
             INSERT OR IGNORE INTO predictions (
                 match_id,event_date,timestamp,league,league_id,home_team,away_team,
-                xg_home,xg_away,prob_o25,prob_btts,created_at,status,modelo
+                xg_home,xg_away,prob_o25,prob_btts,created_at,status,modelo,
+                prob_o25_base,calibracao_o25_id
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
         """, (
             match_id, j["data_str"], j["timestamp"], j["liga"], j.get("league_id"),
             j["home"], j["away"], j["xg_home"], j["xg_away"],
-            round(j["o25"], 2), round(j["btts"], 2), agora_iso, modelo
+            round(j["o25"], 2), round(j["btts"], 2), agora_iso, modelo,
+            j.get("o25_base", j["o25"]), j.get("calibracao_o25_id")
         ))
         if cursor.rowcount:
             n_inseridas += 1
             continue
 
         extras_jogo = [c for c in extras if c in j]
-        sets = ["xg_home = ?", "xg_away = ?", "prob_o25 = ?", "prob_btts = ?", "modelo = ?"]
+        sets = ["xg_home = ?", "xg_away = ?", "prob_o25 = ?", "prob_btts = ?", "modelo = ?", "prob_o25_base = ?", "calibracao_o25_id = ?"]
         sets += [f"{c} = ?" for c in extras_jogo]
-        valores = [j["xg_home"], j["xg_away"], round(j["o25"], 2), round(j["btts"], 2), modelo]
+        valores = [j["xg_home"], j["xg_away"], round(j["o25"], 2), round(j["btts"], 2), modelo, j.get("o25_base", j["o25"]), j.get("calibracao_o25_id")]
         valores += [j[c] for c in extras_jogo]
 
         cursor.execute(f"""
