@@ -1,6 +1,21 @@
 name: Executar Previsões e Backtest
 
 on:
+  # Executa quando o código do pipeline muda na main, além do cron.
+  # Commits de dados com GITHUB_TOKEN não disparam um novo workflow.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/monte_carlo.yml'
+      - 'main.py'
+      - 'api.py'
+      - 'database.py'
+      - 'odds_tracking.py'
+      - 'roi_report.py'
+      - 'settlement.py'
+      - 'backtest.py'
+      - 'requirements.txt'
+      - 'calibracao_o25_v2.json'
   schedule:
     - cron: '17 */2 * * *'
   workflow_dispatch:
@@ -10,9 +25,13 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     concurrency:
       group: repo-writes
       cancel-in-progress: false
@@ -31,6 +50,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
+
+      - name: Verificar configuracao da API BSD
+        env:
+          BSD_API_TOKEN: ${{ secrets.BSD_API_TOKEN }}
+        run: |
+          if [ -z "$BSD_API_TOKEN" ]; then
+            echo '::error::Secret BSD_API_TOKEN em falta (Settings > Secrets and variables > Actions).'
+            exit 1
+          fi
+          echo 'Secret BSD_API_TOKEN configurado; o valor permanece oculto.'
 
       - name: Executar Previsões Monte Carlo (main.py)
         env:
@@ -56,6 +85,51 @@ jobs:
 
       - name: Gerar Relatório de ROI (simulação de consenso)
         run: python roi_report.py
+
+      - name: Resumo operacional de odds e ROI
+        if: always()
+        run: |
+          python - <<'PY_REPORT'
+          import os
+          import sqlite3
+          from collections import Counter
+          from datetime import datetime, timezone, timedelta
+          from pathlib import Path
+
+          now = datetime.now(timezone.utc)
+          lines = ['## Recolha de odds BSD — diagnostico', '', f'- UTC: `{now.isoformat()}`']
+          if not Path('predictions.db').exists():
+              lines.append('❌ Base de dados ausente.')
+          else:
+              db = sqlite3.connect('predictions.db')
+              try:
+                  has_table = db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='odds_snapshots'").fetchone()
+                  if not has_table:
+                      lines.append('❌ Tabela odds_snapshots ausente.')
+                  else:
+                      since = (now - timedelta(hours=24)).isoformat()
+                      rows = db.execute('SELECT estado, capturado_em FROM odds_snapshots').fetchall()
+                      recent = Counter(state for state, captured in rows if captured >= since)
+                      upcoming = db.execute("""SELECT COUNT(*) FROM predictions
+                          WHERE modelo='v2' AND status='pending' AND result_o25 IS NULL
+                          AND timestamp>? AND timestamp<=?""",
+                          (int(now.timestamp()), int(now.timestamp())+21600)).fetchone()[0]
+                      lines.extend([f'- Jogos pendentes nas proximas 6h: **{upcoming}**',
+                                    f'- Snapshots totais: **{len(rows)}**',
+                                    f'- Odds validas em 24h: **{recent.get("ok",0)}**',
+                                    f'- Estados recentes: `{dict(recent)}`'])
+                      if upcoming and not recent.get('ok'):
+                          lines.append('⚠️ Existem jogos elegiveis mas nenhuma odd valida recente; inspecionar logs da API.')
+              finally:
+                  db.close()
+          lines.extend([f'- roi.html gerado: **{Path("roi.html").exists()}**',
+                        f'- roi_jogos.csv gerado: **{Path("roi_jogos.csv").exists()}**'])
+          report = '\n'.join(lines)+'\n'
+          print(report)
+          if os.getenv('GITHUB_STEP_SUMMARY'):
+              with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
+                  out.write(report)
+          PY_REPORT
 
       - name: Testes offline
         run: |
