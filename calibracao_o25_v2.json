@@ -1,0 +1,17 @@
+{
+  "versao": "MC-O25-PLATT-20261023",
+  "modelo": "v2",
+  "gerado_em": "2026-10-23T11:44:11.011605+00:00",
+  "ativo": false,
+  "a": -0.008187138,
+  "b": 0.702151706,
+  "n_treino": 757,
+  "n_validacao": 420,
+  "n_ajuste_final": 1177,
+  "ultimo_evento_treino_utc": "2026-10-23T01:00:00+00:00",
+  "ultimo_evento_treino_ts": 1792717200,
+  "brier_original_validacao": 0.23537963,
+  "brier_recalibrado_validacao": 0.23571873,
+  "validacao_metodo": "primeiros 60% por kickoff -> últimos 40%; coeficientes finais ajustados em todos os pre-deploy",
+  "advertencia": "Melhoria de calibração não demonstra ROI positivo. Não retreinar automaticamente."
+}

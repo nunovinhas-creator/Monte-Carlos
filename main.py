@@ -94,6 +94,7 @@ from database import init_db, salvar_previsoes_db, DB_NAME, carregar_team_stats,
 from adjusted_xg import calcular_adjusted_xg
 
 from predictor import monte_carlo as monte_carlo_sim, calibrar_probabilidades
+from calibration_o25 import aplicar as aplicar_calibracao_o25
 
 def extrair_data_hora(match):
     for campo in ['event_date', 'date', 'starting_at', 'match_date']:
@@ -651,6 +652,9 @@ def analisar():
             shrink_btts=0.12,
         )
 
+        o25_base = p_o25
+        p_o25, calibracao_o25_id = aplicar_calibracao_o25(o25_base)
+
         baixa_confianca = 1 if (n_h2h == 0 and origem_xg == 'h2h') else 0
 
         match_id = str(match.get('id') or f"{home_name}_{away_name}_{timestamp}")
@@ -672,6 +676,8 @@ def analisar():
             'xg_away': xg_away,
             'origem_xg': origem_xg,
             'o25': p_o25,
+            'o25_base': o25_base,
+            'calibracao_o25_id': calibracao_o25_id,
             'btts': p_btts,
             'n_h2h': n_h2h,
             'media_h2h_bruta': media_h2h_bruta,
@@ -804,6 +810,7 @@ def gerar_dashboard_html(jogos):
             </div>
             <div>
                 <a href="backtest.html" class="btn-backtest">📊 Ver Backtest & Desempenho</a>
+                <a href="roi.html" class="btn-backtest">📈 ROI Over 2,5</a>
             </div>
         </div>
 
