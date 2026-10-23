@@ -1,0 +1,12 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Monte Carlos · ROI O2.5</title>
+    <style>body{font-family:system-ui,sans-serif;max-width:1080px;margin:36px auto;padding:0 18px;background:#f8fafc;color:#17243a}table{border-collapse:collapse;width:100%;background:white}th,td{padding:13px 9px;text-align:left;border-bottom:1px solid #dbe2ec}.notice{padding:15px;border:1px solid #f2cf75;background:#fffaf0;border-radius:8px}a{color:#2050a2}</style></head>
+    <body><nav><a href="index.html">Previsões</a> · <a href="backtest.html">Calibração</a> · <a href="roi_jogos.csv">Exportar CSV</a></nav>
+    <h1>ROI Over 2,5 · registo prospectivo</h1>
+    <p class="notice"><strong>Simulação, não lucro real:</strong> a API BSD gratuita publica odds de <em>consenso</em>, que não garantem execução numa casa. As odds são recolhidas antes do jogo; não se retropreenchem cotações antigas. 1 unidade por evento, sem comissão. Não colocar apostas automaticamente.</p>
+    <p>Snapshots recolhidos: <b>42</b> · com odds válidas: <b>34</b> · jogos já terminados depois do início do registo: <b>0</b> · jogos com odds pré-jogo elegíveis: <b>0</b>.</p>
+    <table><thead><tr><th>Estratégia</th><th>Jogos</th><th>Acertos</th><th>Odd média</th><th>Lucro 1u/jogo</th><th>ROI teórico</th></tr></thead>
+    <tbody><tr><td>Todos com odd</td><td>0</td><td>0</td><td>—</td><td>+0.00u</td><td>Sem amostra</td></tr><tr><td>MC-O70: probabilidade BASE ≥70%</td><td>0</td><td>0</td><td>—</td><td>+0.00u</td><td>Sem amostra</td></tr><tr><td>MC-O70 e EV modelado ≥5%</td><td>0</td><td>0</td><td>—</td><td>+0.00u</td><td>Sem amostra</td></tr></tbody></table>
+    <p>MC-O70 usa a probabilidade <strong>base</strong> do modelo v2, antes da calibração adicional. EV modelado = probabilidade publicada × odd − 1. Uma boa taxa de acerto não implica EV positivo.</p>
+    <p>Relatório UTC: 2026-10-23 12:37.</p></body></html>

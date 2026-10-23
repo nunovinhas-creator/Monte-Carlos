@@ -20,21 +20,22 @@
                 <p class="text-muted mb-0">Calibracao do modelo em jogos liquidados</p>
             </div>
             <a href="index.html" class="btn btn-outline-primary">Ver Previsoes</a>
+            <a href="roi.html" class="btn btn-outline-primary">ROI Over 2,5</a>
         </div>
 
-        <div class="alert alert-info mb-4"><strong>Amostra:</strong> 5687 jogos liquidados (de 6561 previsoes registadas).</div>
+        <div class="alert alert-info mb-4"><strong>Amostra:</strong> 5688 jogos liquidados (de 6561 previsoes registadas).</div>
 
         
     <div class="mb-5">
         <h3 class="fw-bold text-primary mb-3">
-            Modelo v2 (modelo = 'v2') <span class="badge bg-secondary">n=1319</span>
+            Modelo v2 (modelo = 'v2') <span class="badge bg-secondary">n=1320</span>
         </h3>
 
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Mais de 2.5 Golos</h5>
-                    <p class="small text-muted mb-3">Brier <strong>0.2403</strong> | baseline 0.2482 | <span class="text-success">skill +3.2%</span> (n=1319)</p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2402</strong> | baseline 0.2482 | <span class="text-success">skill +3.2%</span> (n=1320)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -74,10 +75,10 @@
         
         <tr>
             <td><strong>60% - 69%</strong></td>
-            <td>304</td>
-            <td>176</td>
+            <td>305</td>
+            <td>177</td>
             <td>64.6%</td>
-            <td><span class="badge bg-warning text-dark">57.9% (-6.7)</span></td>
+            <td><span class="badge bg-warning text-dark">58.0% (-6.6)</span></td>
         </tr>
         
         <tr>
@@ -105,7 +106,7 @@
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Ambas Marcam (BTTS)</h5>
-                    <p class="small text-muted mb-3">Brier <strong>0.2479</strong> | baseline 0.2484 | <span class="text-success">skill +0.2%</span> (n=1319)</p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2479</strong> | baseline 0.2484 | <span class="text-success">skill +0.2%</span> (n=1320)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -145,10 +146,10 @@
         
         <tr>
             <td><strong>60% - 69%</strong></td>
-            <td>419</td>
-            <td>245</td>
+            <td>420</td>
+            <td>246</td>
             <td>63.4%</td>
-            <td><span class="badge bg-warning text-dark">58.5% (-4.9)</span></td>
+            <td><span class="badge bg-warning text-dark">58.6% (-4.8)</span></td>
         </tr>
         
         <tr>
@@ -196,8 +197,8 @@
                         
     <tr>
         <td>Outras</td>
-        <td>1319</td>
-        <td>0.2403</td>
+        <td>1320</td>
+        <td>0.2402</td>
         <td>0.2482</td>
         <td><span class="text-success">+3.2%</span></td>
         <td>0.2479</td>
@@ -225,42 +226,42 @@
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
     <p class="mb-1"><strong>Over 2.5</strong>
-        <span class="text-muted">(n=1311, baseline 0.2483)</span></p>
+        <span class="text-muted">(n=1312, baseline 0.2483)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2402</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2401</strong> |
         <span class="text-success">skill +3.3%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2443</strong> |
-        <span class="text-success">skill +1.6%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2442</strong> |
+        <span class="text-success">skill +1.7%</span>
     </p>
     
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=1311):
-        diferenca media <strong>-0.0041</strong> |
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=1312):
+        diferenca media <strong>-0.0040</strong> |
         erro padrao 0.0029 |
-        t = <strong>-1.43</strong>
+        t = <strong>-1.40</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
     
     </div>
                 <div class="col-md-6">
     <p class="mb-1"><strong>BTTS</strong>
-        <span class="text-muted">(n=1311, baseline 0.2485)</span></p>
+        <span class="text-muted">(n=1312, baseline 0.2485)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2481</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2480</strong> |
         <span class="text-success">skill +0.2%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2516</strong> |
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2514</strong> |
         <span class="text-danger">skill -1.2%</span>
     </p>
     
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=1311):
-        diferenca media <strong>-0.0035</strong> |
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=1312):
+        diferenca media <strong>-0.0034</strong> |
         erro padrao 0.0031 |
-        t = <strong>-1.15</strong>
+        t = <strong>-1.11</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
     
@@ -293,16 +294,16 @@
                         
     <tr>
         <td>Outras</td>
-        <td>1311</td>
+        <td>1312</td>
         <td>0.2483</td>
-        <td>0.2402</td>
+        <td>0.2401</td>
         <td><span class="text-success">+3.3%</span></td>
-        <td>0.2443</td>
-        <td><span class="text-success">+1.6%</span></td>
+        <td>0.2442</td>
+        <td><span class="text-success">+1.7%</span></td>
         <td>0.2485</td>
-        <td>0.2481</td>
+        <td>0.2480</td>
         <td><span class="text-success">+0.2%</span></td>
-        <td>0.2516</td>
+        <td>0.2514</td>
         <td><span class="text-danger">-1.2%</span></td>
     </tr>
     
@@ -1604,14 +1605,14 @@
     
     <div class="mb-5">
         <h3 class="fw-bold text-secondary mb-3">
-            Desde o corte (2026-10-04T13:47:00) <span class="badge bg-secondary">n=1177</span>
+            Desde o corte (2026-10-04T13:47:00) <span class="badge bg-secondary">n=1178</span>
         </h3>
 
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Mais de 2.5 Golos</h5>
-                    <p class="small text-muted mb-3">Brier <strong>0.2407</strong> | baseline 0.2479 | <span class="text-success">skill +2.9%</span> (n=1177)</p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2405</strong> | baseline 0.2478 | <span class="text-success">skill +2.9%</span> (n=1178)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -1651,10 +1652,10 @@
         
         <tr>
             <td><strong>60% - 69%</strong></td>
-            <td>285</td>
-            <td>165</td>
+            <td>286</td>
+            <td>166</td>
             <td>64.6%</td>
-            <td><span class="badge bg-warning text-dark">57.9% (-6.7)</span></td>
+            <td><span class="badge bg-warning text-dark">58.0% (-6.5)</span></td>
         </tr>
         
         <tr>
@@ -1682,7 +1683,7 @@
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Ambas Marcam (BTTS)</h5>
-                    <p class="small text-muted mb-3">Brier <strong>0.2464</strong> | baseline 0.2479 | <span class="text-success">skill +0.6%</span> (n=1177)</p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2463</strong> | baseline 0.2479 | <span class="text-success">skill +0.6%</span> (n=1178)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -1722,10 +1723,10 @@
         
         <tr>
             <td><strong>60% - 69%</strong></td>
-            <td>391</td>
-            <td>237</td>
+            <td>392</td>
+            <td>238</td>
             <td>63.4%</td>
-            <td><span class="badge bg-success">60.6% (-2.7)</span></td>
+            <td><span class="badge bg-success">60.7% (-2.6)</span></td>
         </tr>
         
         <tr>
@@ -1773,11 +1774,11 @@
                         
     <tr>
         <td>Outras</td>
-        <td>1177</td>
-        <td>0.2407</td>
-        <td>0.2479</td>
+        <td>1178</td>
+        <td>0.2405</td>
+        <td>0.2478</td>
         <td><span class="text-success">+2.9%</span></td>
-        <td>0.2464</td>
+        <td>0.2463</td>
         <td>0.2479</td>
         <td><span class="text-success">+0.6%</span></td>
     </tr>
@@ -1802,42 +1803,42 @@
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
     <p class="mb-1"><strong>Over 2.5</strong>
-        <span class="text-muted">(n=1169, baseline 0.2480)</span></p>
+        <span class="text-muted">(n=1170, baseline 0.2479)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2406</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2405</strong> |
         <span class="text-success">skill +3.0%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2439</strong> |
-        <span class="text-success">skill +1.6%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2437</strong> |
+        <span class="text-success">skill +1.7%</span>
     </p>
     
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=1169):
-        diferenca media <strong>-0.0034</strong> |
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=1170):
+        diferenca media <strong>-0.0033</strong> |
         erro padrao 0.0031 |
-        t = <strong>-1.07</strong>
+        t = <strong>-1.04</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
     
     </div>
                 <div class="col-md-6">
     <p class="mb-1"><strong>BTTS</strong>
-        <span class="text-muted">(n=1169, baseline 0.2481)</span></p>
+        <span class="text-muted">(n=1170, baseline 0.2480)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2466</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2465</strong> |
         <span class="text-success">skill +0.6%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2516</strong> |
-        <span class="text-danger">skill -1.4%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2514</strong> |
+        <span class="text-danger">skill -1.3%</span>
     </p>
     
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=1169):
-        diferenca media <strong>-0.0050</strong> |
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=1170):
+        diferenca media <strong>-0.0049</strong> |
         erro padrao 0.0032 |
-        t = <strong>-1.57</strong>
+        t = <strong>-1.53</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
     
@@ -1870,17 +1871,17 @@
                         
     <tr>
         <td>Outras</td>
-        <td>1169</td>
-        <td>0.2480</td>
-        <td>0.2406</td>
+        <td>1170</td>
+        <td>0.2479</td>
+        <td>0.2405</td>
         <td><span class="text-success">+3.0%</span></td>
-        <td>0.2439</td>
-        <td><span class="text-success">+1.6%</span></td>
-        <td>0.2481</td>
-        <td>0.2466</td>
+        <td>0.2437</td>
+        <td><span class="text-success">+1.7%</span></td>
+        <td>0.2480</td>
+        <td>0.2465</td>
         <td><span class="text-success">+0.6%</span></td>
-        <td>0.2516</td>
-        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2514</td>
+        <td><span class="text-danger">-1.3%</span></td>
     </tr>
     
                     </tbody>
@@ -1891,14 +1892,14 @@
     
     <div class="mb-5">
         <h3 class="fw-bold text-secondary mb-3">
-            Historico completo <span class="badge bg-secondary">n=5687</span>
+            Historico completo <span class="badge bg-secondary">n=5688</span>
         </h3>
 
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Mais de 2.5 Golos</h5>
-                    <p class="small text-muted mb-3">Brier <strong>0.2583</strong> | baseline 0.2472 | <span class="text-danger">skill -4.5%</span> (n=5687)</p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2583</strong> | baseline 0.2472 | <span class="text-danger">skill -4.5%</span> (n=5688)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -1938,10 +1939,10 @@
         
         <tr>
             <td><strong>60% - 69%</strong></td>
-            <td>631</td>
-            <td>379</td>
+            <td>632</td>
+            <td>380</td>
             <td>64.3%</td>
-            <td><span class="badge bg-warning text-dark">60.1% (-4.3)</span></td>
+            <td><span class="badge bg-warning text-dark">60.1% (-4.2)</span></td>
         </tr>
         
         <tr>
@@ -1969,7 +1970,7 @@
             <div class="col-md-6">
                 <div class="card p-3">
                     <h5 class="card-title fw-bold text-primary mb-1">Ambas Marcam (BTTS)</h5>
-                    <p class="small text-muted mb-3">Brier <strong>0.2577</strong> | baseline 0.2479 | <span class="text-danger">skill -3.9%</span> (n=5687)</p>
+                    <p class="small text-muted mb-3">Brier <strong>0.2576</strong> | baseline 0.2479 | <span class="text-danger">skill -3.9%</span> (n=5688)</p>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -2009,8 +2010,8 @@
         
         <tr>
             <td><strong>60% - 69%</strong></td>
-            <td>948</td>
-            <td>545</td>
+            <td>949</td>
+            <td>546</td>
             <td>63.5%</td>
             <td><span class="badge bg-warning text-dark">57.5% (-6.0)</span></td>
         </tr>
@@ -2629,13 +2630,13 @@
     
     <tr>
         <td>Outras</td>
-        <td>592</td>
-        <td>0.2533</td>
-        <td>0.2489</td>
-        <td><span class="text-danger">-1.8%</span></td>
-        <td>0.2594</td>
-        <td>0.2493</td>
-        <td><span class="text-danger">-4.1%</span></td>
+        <td>593</td>
+        <td>0.2531</td>
+        <td>0.2488</td>
+        <td><span class="text-danger">-1.7%</span></td>
+        <td>0.2592</td>
+        <td>0.2492</td>
+        <td><span class="text-danger">-4.0%</span></td>
     </tr>
     
                     </tbody>
@@ -2658,7 +2659,7 @@
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
     <p class="mb-1"><strong>Over 2.5</strong>
-        <span class="text-muted">(n=5608, baseline 0.2473)</span></p>
+        <span class="text-muted">(n=5609, baseline 0.2472)</span></p>
     <p class="small mb-1">
         Modelo actual &nbsp; Brier <strong>0.2587</strong> |
         <span class="text-danger">skill -4.6%</span>
@@ -2669,31 +2670,31 @@
     </p>
     
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=5608):
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=5609):
         diferenca media <strong>+0.0031</strong> |
         erro padrao 0.0025 |
-        t = <strong>+1.24</strong>
+        t = <strong>+1.25</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
     
     </div>
                 <div class="col-md-6">
     <p class="mb-1"><strong>BTTS</strong>
-        <span class="text-muted">(n=5608, baseline 0.2479)</span></p>
+        <span class="text-muted">(n=5609, baseline 0.2479)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2579</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2578</strong> |
         <span class="text-danger">skill -4.0%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2593</strong> |
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2592</strong> |
         <span class="text-danger">skill -4.6%</span>
     </p>
     
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=5608):
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=5609):
         diferenca media <strong>-0.0014</strong> |
         erro padrao 0.0023 |
-        t = <strong>-0.63</strong>
+        t = <strong>-0.62</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
     
@@ -3491,17 +3492,17 @@
     
     <tr>
         <td>Outras</td>
-        <td>564</td>
-        <td>0.2491</td>
-        <td>0.2545</td>
-        <td><span class="text-danger">-2.2%</span></td>
-        <td>0.2644</td>
-        <td><span class="text-danger">-6.1%</span></td>
+        <td>565</td>
+        <td>0.2490</td>
+        <td>0.2542</td>
+        <td><span class="text-danger">-2.1%</span></td>
+        <td>0.2639</td>
+        <td><span class="text-danger">-6.0%</span></td>
         <td>0.2495</td>
-        <td>0.2609</td>
-        <td><span class="text-danger">-4.6%</span></td>
-        <td>0.2851</td>
-        <td><span class="text-danger">-14.3%</span></td>
+        <td>0.2607</td>
+        <td><span class="text-danger">-4.5%</span></td>
+        <td>0.2846</td>
+        <td><span class="text-danger">-14.1%</span></td>
     </tr>
     
                     </tbody>
