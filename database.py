@@ -56,7 +56,8 @@ def init_db():
 
     if "modelo" not in colunas_predictions:
         cursor.execute("ALTER TABLE predictions ADD COLUMN modelo TEXT")
-    for nome, tipo in (("prob_o25_base", "REAL"), ("calibracao_o25_id", "TEXT")):
+    for nome, tipo in (("prob_o25_base", "REAL"), ("calibracao_o25_id", "TEXT"),
+                       ("baixa_confianca", "INTEGER")):
         if nome not in colunas_predictions:
             cursor.execute(f"ALTER TABLE predictions ADD COLUMN {nome} {tipo}")
     _backfill_modelo(cursor)
@@ -75,6 +76,8 @@ def init_db():
             prob_o25_no_instante REAL,
             prob_o25_base_no_instante REAL,
             calibracao_o25_no_instante TEXT,
+            prob_btts_no_instante REAL,
+            baixa_confianca_no_instante INTEGER,
             UNIQUE(match_id, capturado_em, fonte)
         )
     """)
@@ -82,7 +85,9 @@ def init_db():
     odds_cols = {row[1] for row in cursor.fetchall()}
     for nome, tipo in (("prob_o25_no_instante", "REAL"),
                        ("prob_o25_base_no_instante", "REAL"),
-                       ("calibracao_o25_no_instante", "TEXT")):
+                       ("calibracao_o25_no_instante", "TEXT"),
+                       ("prob_btts_no_instante", "REAL"),
+                       ("baixa_confianca_no_instante", "INTEGER")):
         if nome not in odds_cols:
             cursor.execute(f"ALTER TABLE odds_snapshots ADD COLUMN {nome} {tipo}")
 
