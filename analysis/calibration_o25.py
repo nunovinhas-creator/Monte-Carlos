@@ -107,7 +107,6 @@ def gerar(db_path='predictions.db'):
     beta_treino = fit(treino)
     raw = brier(teste)
     cal = brier(teste, beta_treino)
-    # Só ativar se o holdout mostra melhoria sem fingir significância.
     # Train-only coefficients. Holdout never selects activation or enters fitting.
     beta_final = beta_treino
     return {
