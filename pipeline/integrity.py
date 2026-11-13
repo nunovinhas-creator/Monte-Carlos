@@ -75,6 +75,18 @@ def audit(db_path, now=None):
             n = db.execute(sql).fetchone()[0]
             if n:
                 errors.append(f'{label}: {n}')
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='prediction_snapshots'").fetchone():
+            invalid = db.execute('''SELECT COUNT(*) FROM odds_snapshots s
+                LEFT JOIN prediction_snapshots ps ON ps.id=s.prediction_snapshot_id
+                WHERE s.prediction_snapshot_id IS NOT NULL AND (
+                  ps.id IS NULL OR ps.match_id!=s.match_id OR
+                  unixepoch(ps.predicted_at)>unixepoch(s.capturado_em) OR
+                  s.modelo_no_instante IS NOT ps.modelo OR
+                  s.prob_o25_no_instante IS NOT ps.prob_o25 OR
+                  s.prob_btts_no_instante IS NOT ps.prob_btts OR
+                  s.prob_o25_base_no_instante IS NOT ps.prob_o25_base)''').fetchone()[0]
+            if invalid:
+                errors.append(f'odds/prediction snapshot mismatch: {invalid}')
         late = db.execute("SELECT COUNT(*) FROM predictions WHERE status='finished' AND unixepoch(created_at)>=timestamp").fetchone()[0]
         if late:
             warnings.append(f'{late} legacy predictions created at/after kickoff; no first/last reconstruction')

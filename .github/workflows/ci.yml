@@ -11,21 +11,20 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Instalar dependências
-        run: pip install -r requirements.txt
-
+          cache: pip
+      - name: Instalar dependências de teste
+        run: pip install -r requirements-dev.txt
       - name: Compilar módulos
-        run: python -m py_compile main.py predictor.py adjusted_xg.py database.py backtest.py recalibracao.py team_stats.py api.py settlement.py calibration_o25.py odds_tracking.py roi_report.py
-
-      - name: Smoke test da calibração
-        run: python tests/test_calibracao.py
-
-      - name: Testes de odds e ROI (sem rede)
-        run: python -m unittest discover -s tests -p 'test_roi*.py' -v
+        run: python -m compileall -q src pipeline analysis tests *.py
+      - name: Testes offline (API simulada)
+        run: python -m pytest -q
+      - name: Validar histórico e páginas versionadas
+        run: python -m pipeline.integrity --published .
+      - name: Regenerar painéis offline numa cópia
+        run: python -m pipeline.offline_check

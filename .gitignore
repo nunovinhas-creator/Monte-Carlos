@@ -1,4 +1,9 @@
 predictions.db.bak
+data/backups/
+work/
+*.db-journal
+*.db-wal
+*.db-shm
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
