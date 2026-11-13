@@ -1,55 +1,98 @@
 # Monte-Carlos
 
-Previsões de futebol **Over 2,5 e BTTS** usando simulação Monte Carlo e estimativas de força ofensiva e defensiva. O site apresenta probabilidades; não executa apostas.
+Previsões de futebol **Over 2,5 e BTTS**, com Monte Carlo, SQLite e fontes gratuitas BSD. O projeto mede probabilidades e hipóteses; não executa apostas, não integra Betfair nem demonstra vantagem económica.
 
-**Site:** https://nunovinhas-creator.github.io/Monte-Carlos/  
-**Relatório ROI:** https://nunovinhas-creator.github.io/Monte-Carlos/roi.html  
-**Metodologia completa:** [docs/METODOLOGIA_ROI.md](docs/METODOLOGIA_ROI.md)  
-**Alterações verificadas em 23/10/2026:** [docs/ALTERACOES_2026-10-23.md](docs/ALTERACOES_2026-10-23.md)
+[Previsões](https://nunovinhas-creator.github.io/Monte-Carlos/) · [Validação](https://nunovinhas-creator.github.io/Monte-Carlos/backtest.html) · [Laboratório ROI](https://nunovinhas-creator.github.io/Monte-Carlos/roi.html) · [CSV](https://nunovinhas-creator.github.io/Monte-Carlos/roi_jogos.csv)
 
-## Modelo v2 e apresentação original (sem alterações à lógica)
+## Auditoria de novembro de 2026
 
-- Probabilidades de Over 2,5 e BTTS a partir do modelo `predictor.py`: estimativas xG/força de equipa, vantagem de casa, forma, médias por liga, ajuste H2H e simulação. O código inclui Dixon–Coles e shrinkage.
-- **Regra visual do `index.html`:** Over ≥60% aparece verde; BTTS ≥60% aparece verde; um jogo marcado `baixa_confianca` aparece cinzento com aviso «sem dados», mesmo acima do limiar.
-- Estes destaques são **informativos**, não uma estratégia anteriormente comprovada como rentável. A regra de 60% não foi substituída.
-- O ajuste adicional de calibração v2 é opcional. `calibracao_o25_v2.json` mantém `ativo=false` porque piorou ligeiramente o Brier Score na validação temporal; o seu retreino não corre nas Actions. Não confundir com a recalibração legada `APPLY_RECAL`.
+[AUDITORIA_FINAL_2026-11.md](docs/AUDITORIA_FINAL_2026-11.md) contém SHA inicial, inventário/hashes, resultados antes/depois, migrações, testes, riscos e rollback. O trabalho foi preparado numa branch e PR Draft; a produção não foi alterada durante a implementação.
 
-## Comparação de estratégias de Over 2,5 no painel ROI
+A baseline reproduz **7 532 jogos liquidados**, incluindo 3 164 v2. Brier v2: **0,2444 Over / 0,2474 BTTS**. O ROI das cinco estratégias continua negativo; nenhuma recebe validação automática. A base histórica não foi recalculada.
 
-Todas são testadas sobre **jogos v2 terminados com odds BSD de consenso registadas antes do início**. Uma unidade hipotética por jogo, sem comissão:
+[Estudo de calibração offline](research/results_2026-11/CALIBRACAO_2026-11.md): probabilidades congeladas em 933 jogos com odds; treino 607, validação 76, holdout 28, embargo de 48h. Platt e isotónica não melhoraram o Brier no pequeno holdout final. **Calibração experimental em produção bloqueada**, incluindo a ativação legada por `APPLY_RECAL`. O shrinkage e o teto BTTS que já fazem parte do modelo v2 mantêm-se.
 
-| Linha do relatório | Regra | Origem |
-|---|---|---|
-| Todos os jogos com odd | Sem limiar de probabilidade | Base de comparação |
-| Original: Over verde ≥60% | Over **publicado no instante** ≥60% e `baixa_confianca=0` | Reprodução do destaque visual original, usado como filtro experimental de apostas |
-| Original: Over e BTTS verdes ≥60% | Ambas as probabilidades **no instante** ≥60% e `baixa_confianca=0` | Conjunção dos dois destaques originais, testada em separado |
-| MC-O70: Over base ≥70% | Over **base no instante** ≥70%, sem exigir BTTS nem filtrar confiança | Filtro experimental adicionado após análise histórica |
-| MC-O70 + EV modelado ≥5% | MC-O70 e `probabilidade publicada / 100 × odd − 1 ≥ 0,05` | Hipótese de valor **modelado**, não vantagem real comprovada |
+## Estrutura e compatibilidade
 
-**«Base»** significa probabilidade v2 antes da *calibração adicional opcional*; **«publicada»** é a que aparece no site. A recalibração adicional está atualmente inativa, mas as duas séries são guardadas separadamente.
-
-### Integridade histórica e limitações
-
-- `odds_tracking.py` recolhe odds `odds.over_25_goals` a partir de `/api/v2/events/{id}/odds/`, de partidas `pending` com ID numérico e início nas próximas **6h**. Aceita apenas preços decimais e cotações datadas até **6h** antes da recolha; guarda também timestamp da cotação, instante observado, probabilidades e baixa confiança. Não volta a recolher um jogo com odd válida já guardada.
-- `database.init_db()` cria/migra `odds_snapshots`, mantendo as linhas existentes. Os snapshots capturados antes da inclusão de `prob_btts_no_instante` e `baixa_confianca_no_instante` **ficam com NULL**. A simulação original de 60% **exclui** esses casos se faltar alguma variável requerida; nunca completa com os valores atuais de `predictions`.
-- `roi_report.py` produz `roi.html` e `roi_jogos.csv` com os cinco conjuntos. As estratégias sobrepõem-se; não é válido somar ROI/lucros. Dados sem partidas liquidadas aparecem **«Sem amostra»**, e não um falso ROI de 0%.
-- `odd` é **consenso BSD gratuito**, não a odd disponível numa casa definida. O ROI simulado **não é rentabilidade executável**, não inclui comissão, slippage, limites, impostos ou alterações de cotação. **Não existe backfill artificial** para preços anteriores ao início da recolha.
-- A série futura de odds e resultados permite avaliar *hipóteses*: não há garantia de acerto ou rentabilidade; comparação e calibração devem ser avaliadas cronologicamente.
-
-## Execução e GitHub Actions
-
-```bash
-export BSD_API_TOKEN='...'
-python main.py          # previsões + index.html
-python odds_tracking.py # odds pré-jogo: apenas jogos elegíveis
-python settlement.py    # resultados finais
-python backtest.py      # backtest de probabilidades
-python roi_report.py    # roi.html e roi_jogos.csv
-python -m pytest -q     # testes sem usar a API
+```text
+src/         modelo, xG, estatísticas, API e geração das previsões
+pipeline/    SQLite, migração, snapshots, odds, liquidação e controlos
+analysis/    validação, ROI e investigação de calibração offline
+research/    hipóteses versionadas, protocolo, resultados e curvas
+docs/       auditoria, baseline e metodologia
+tests/      testes offline com mocks BSD
 ```
 
-O workflow `.github/workflows/monte_carlo.yml` corre **às 00:17, 02:17, 04:17… UTC** (cron `17 */2 * * *`, sujeito à fila do GitHub), também por `workflow_dispatch` e quando código operacional é publicado na `main`. Requer `secrets.BSD_API_TOKEN`; o `GITHUB_TOKEN` tem `contents: write`. Executa previsões → odds → settlement → backtest → ROI → diagnóstico → testes → commit dos artefactos para `main`. Os commits automáticos de dados **não** desencadeiam novos runs por `push` (evita loop). O diagnóstico no Actions Job Summary mostra número de snapshots e odds válidas; a publicação Pages atualiza o site.
+Os módulos na raiz continuam como comandos/imports de compatibilidade. A base, os JSON ativos e as três páginas mantêm os caminhos atuais. `PREDICTIONS_DB` permite selecionar uma cópia da base; por omissão usa-se a base na raiz do projeto. Nenhum ficheiro histórico foi apagado ou arquivado.
 
-Verificação de produção de **23/10/2026, run [39954307779](https://github.com/nunovinhas-creator/Monte-Carlos/actions/runs/39954307779)**: 42 jogos consultados, 34 odds válidas, 8 sem cotação utilizável, geração `roi.html`/CSV, 11 testes positivos, commit automático `07068a0`, GitHub Pages publicado. **Isto valida o pipeline, não o ROI**: nessa primeira execução não havia resultados liquidados para as odds novas. Depois das alterações documentais e dos campos adicionais serão necessários novos jogos para avaliar o cruzamento original Over+BTTS sem fuga de informação.
+## Histórico e definições de previsão
 
-Detalhes, critérios de qualidade e fórmulas: [docs/METODOLOGIA_ROI.md](docs/METODOLOGIA_ROI.md).
+`predictions` é a vista atual compatível. Novas previsões pré-jogo também são guardadas em `prediction_snapshots` append-only, com instante UTC, kickoff conhecido, modelo, probabilidades/base, confiança, proveniência, parâmetros e hashes do código. UPDATE/DELETE de snapshots e alterações a previsões liquidadas são bloqueados. Novas liquidações guardam `settled_at`.
+
+O backtest distingue **primeira observação**, **última observação pré-jogo**, **probabilidade congelada na primeira odd válida** e **vista histórica legada**. Estas séries não são misturadas. Não se fabricam observações antigas; comparações impossíveis aparecem como **N/D**. A data `created_at` antiga não prova quando a última previsão foi calculada.
+
+A migração é aditiva, transacional e idempotente, com backup local antes da primeira alteração. Foi testada duas vezes numa cópia da base existente, incluindo rollback. Consulte o procedimento de recuperação na auditoria; nunca restaure um backup antigo sobre observações posteriores.
+
+## Modelo e cinco hipóteses ROI
+
+O destaque original mantém-se: **Over ≥60% verde**, **BTTS ≥60% verde**; baixa confiança fica cinzenta com aviso de dados insuficientes. É informação sobre o modelo, não uma recomendação de aposta.
+
+| Hipótese | Regra preservada |
+|---|---|
+| ROI-ALL-v1 | Todos os jogos elegíveis com odd |
+| ROI-GREEN60-v1 | Over publicado no instante ≥60% e confiança=0 |
+| ROI-DOUBLE60-v1 | Over e BTTS publicados no instante ≥60% e confiança=0 |
+| ROI-O70-v1 | Over base no instante ≥70%, sem exigir BTTS/confiança |
+| ROI-O70-EV5-v1 | MC-O70 e Over publicado/100 × odd − 1 ≥0,05 |
+
+As cinco séries são exploratórias e sobrepostas. O laboratório mostra n, acertos, odd/probabilidade médias, lucro teórico por unidade, ROI, intervalos, períodos, cobertura, versão e evolução semanal. Os campos BTTS/confiança/versão ausentes em snapshots antigos não são preenchidos com dados atuais. A versão histórica inferida é identificada no CSV.
+
+**BSD é consenso não executável.** O ROI não inclui execução, custos ou garantia de disponibilidade do preço. Uma taxa alta de acerto não demonstra lucro.
+
+[Registo de hipóteses](research/hypotheses.json): EXPERIMENTAL = hipótese sem amostra; NO-GO = integridade falhada ou IC95% ROI inteiramente negativo; INCONCLUSIVO = evidência insuficiente. CANDIDATO e VALIDADO exigem protocolos prospetivos separados e revisão registada, sem atribuição automática.
+
+## Executar e testar
+
+Python **3.12**, a partir da raiz:
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+pip install -r requirements-dev.txt
+python -m pytest -q
+python -m pipeline.offline_check
+python -m pipeline.integrity --published .
+```
+
+Os testes não precisam de token nem de chamadas reais BSD. Para investigação reproduzível:
+
+```bash
+pip install -r requirements-research.txt
+python -m analysis.calibration_study --db predictions.db --output research/results_2026-11 --plot
+```
+
+O estudo não modifica a base nem configurações de produção. Os diagnósticos legados `recalibracao.py` e `calibration_o25.py` também escrevem apenas em investigação. `migrar_ligas.py` é diagnóstico read-only; uma migração histórica nova exige revisão separada.
+
+Execução operacional, apenas num contexto autorizado e com `BSD_API_TOKEN` configurado:
+
+```bash
+python -m src.main
+python -m pipeline.odds_tracking
+python -m pipeline.settlement
+python -m analysis.backtest
+python -m analysis.roi_report
+```
+
+Os comandos antigos `python main.py`, `python odds_tracking.py`, etc. continuam funcionais.
+
+## GitHub Actions e cobertura
+
+Mantém-se o cron **`17 */2 * * *` UTC**: previsões → odds → liquidação → controlos → backtest → ROI → validação de ficheiros → commit → build Pages → confirmação do SHA publicado. Testes correm antes da API. Corridas operacionais e auditoria manual de ligas só escrevem na main, com a mesma exclusão mútua. O PR só executa CI offline; não publica.
+
+Uma etapa crítica falhada impede publicação. Se a main mudar entretanto, não se faz rebase automático da SQLite. Um artefacto de recuperação por um dia preserva a corrida falhada; a conta/quota e o crescimento da base devem ser acompanhados. Não foram ativados serviços pagos.
+
+**Workflow verde não significa cobertura satisfatória.** A baseline recente tem apenas **43,6%** de cobertura de odds. O piso operacional de bloqueio é 25% com n≥20 em sete dias; os protocolos científicos futuros exigem ≥80%. O resumo mostra a cobertura independentemente do estado verde/vermelho.
+
+As permissões e a primeira publicação real do novo workflow só podem ser confirmadas depois de revisão e eventual merge. O PR não faz esse merge.
+
+[Metodologia ROI original](docs/METODOLOGIA_ROI.md) · [Registo histórico de 23/10/2026](docs/ALTERACOES_2026-10-23.md)

@@ -25,7 +25,32 @@
 
         <div class="alert alert-info mb-4"><strong>Amostra:</strong> 7532 jogos liquidados (de 8299 previsoes registadas).</div>
 
-        
+        <section class="card p-3 mb-4"><h3>Definições e métricas científicas</h3>
+<p>Histórico de predictions = vista legada mutável antes do jogo; created_at não prova a hora da última previsão. Primeira, última pré-jogo e congelada na odd são séries separadas. Não se reconstroem snapshots antigos. N/D = comparação indisponível.</p>
+<div class="table-responsive"><table class="table"><thead><tr><th>Série</th><th>Mercado</th><th>n</th><th>Período UTC</th><th>Brier</th><th>Log Loss</th><th>Skill vs 0,5</th><th>ECE</th><th>Brier IC95%</th></tr></thead><tbody>
+<tr><td>Histórico legado v1</td><td>Over 2,5</td><td>4368</td><td>2026-08-06 a 2026-10-04</td><td>0.2637</td><td>0.7294</td><td>-5.5%</td><td>0.1082</td><td>[0.2589; 0.2686]</td></tr>
+<tr><td>Histórico legado v1</td><td>BTTS</td><td>4368</td><td>2026-08-06 a 2026-10-04</td><td>0.2606</td><td>0.7188</td><td>-4.2%</td><td>0.0815</td><td>[0.2574; 0.2646]</td></tr>
+<tr><td>Histórico legado v2</td><td>Over 2,5</td><td>3164</td><td>2026-10-04 a 2026-11-13</td><td>0.2444</td><td>0.6828</td><td>+2.2%</td><td>0.0525</td><td>[0.2396; 0.2488]</td></tr>
+<tr><td>Histórico legado v2</td><td>BTTS</td><td>3164</td><td>2026-10-04 a 2026-11-13</td><td>0.2474</td><td>0.6881</td><td>+1.0%</td><td>0.0365</td><td>[0.2442; 0.2505]</td></tr>
+<tr><td>Primeira observada</td><td>Over 2,5</td><td>0</td><td colspan="6">N/D</td></tr>
+<tr><td>Primeira observada</td><td>BTTS</td><td>0</td><td colspan="6">N/D</td></tr>
+<tr><td>Última observada pré-jogo</td><td>Over 2,5</td><td>0</td><td colspan="6">N/D</td></tr>
+<tr><td>Última observada pré-jogo</td><td>BTTS</td><td>0</td><td colspan="6">N/D</td></tr>
+<tr><td>Congelada na primeira odd válida (v2 histórica inferida quando ausente)</td><td>Over 2,5</td><td>933</td><td>2026-10-23 a 2026-11-13</td><td>0.2494</td><td>0.6927</td><td>+0.2%</td><td>0.0836</td><td>[0.2374; 0.2590]</td></tr>
+<tr><td>Congelada na primeira odd válida (v2 histórica inferida quando ausente)</td><td>BTTS</td><td>899</td><td>2026-10-23 a 2026-11-13</td><td>0.2475</td><td>0.6883</td><td>+1.0%</td><td>0.0433</td><td>[0.2386; 0.2561]</td></tr>
+</tbody></table></div>
+<p>IC95% Brier: bootstrap por dia UTC, 1000 réplicas, aproximado. ECE usa faixas fixas; faixas e amostras distintas não são validações independentes. A comparação v1/v2 cobre períodos diferentes.</p>
+<p>Os blocos legados abaixo preservam Brier/skill histórico contra a taxa da própria amostra (baseline descritivo que usa os resultados). O baseline por liga foi corrigido para só incluir jogos com início pelo menos 48h antes. Como não existe hora de liquidação antiga, este atraso é uma hipótese retrospectiva, não prova de disponibilidade em tempo real. Ligas desconhecidas não partilham histórico.</p>
+<p>Estudo offline reproduzível: <a href="research/results_2026-11/CALIBRACAO_2026-11.md">relatório de calibração</a>. Calibração de produção desligada; nenhum ganho económico demonstrado.</p>
+<h4>Evolução mensal v1/v2 (histórico legado)</h4><table class="table"><thead><tr><th>Modelo</th><th>Mês UTC</th><th>n Over</th><th>Brier</th><th>Log Loss</th></tr></thead><tbody>
+<tr><td>v1</td><td>2026-08</td><td>1898</td><td>0.2659</td><td>0.7421</td></tr>
+<tr><td>v1</td><td>2026-09</td><td>2140</td><td>0.2618</td><td>0.7189</td></tr>
+<tr><td>v1</td><td>2026-10</td><td>330</td><td>0.2638</td><td>0.7240</td></tr>
+<tr><td>v2</td><td>2026-10</td><td>2265</td><td>0.2438</td><td>0.6820</td></tr>
+<tr><td>v2</td><td>2026-11</td><td>899</td><td>0.2459</td><td>0.6846</td></tr>
+</tbody></table></section>
+
+
     <div class="mb-5">
         <h3 class="fw-bold text-primary mb-3">
             Modelo v2 (modelo = 'v2') <span class="badge bg-secondary">n=3164</span>
@@ -48,7 +73,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>319</td>
@@ -56,7 +81,7 @@
             <td>34.4%</td>
             <td><span class="badge bg-success">37.3% (+2.9)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>639</td>
@@ -64,7 +89,7 @@
             <td>45.7%</td>
             <td><span class="badge bg-warning text-dark">51.8% (+6.1)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>955</td>
@@ -72,7 +97,7 @@
             <td>55.1%</td>
             <td><span class="badge bg-success">52.8% (-2.3)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>744</td>
@@ -80,7 +105,7 @@
             <td>64.6%</td>
             <td><span class="badge bg-warning text-dark">57.4% (-7.2)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>396</td>
@@ -88,7 +113,7 @@
             <td>74.2%</td>
             <td><span class="badge bg-warning text-dark">65.7% (-8.5)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>80%+</strong></td>
             <td>111</td>
@@ -96,7 +121,7 @@
             <td>83.0%</td>
             <td><span class="badge bg-warning text-dark">74.8% (-8.3)</span></td>
         </tr>
-        
+
                             </tbody>
                         </table>
                     </div>
@@ -119,7 +144,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>129</td>
@@ -127,7 +152,7 @@
             <td>35.6%</td>
             <td><span class="badge bg-success">42.6% (+7.1)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>551</td>
@@ -135,7 +160,7 @@
             <td>45.9%</td>
             <td><span class="badge bg-warning text-dark">51.4% (+5.4)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>1402</td>
@@ -143,7 +168,7 @@
             <td>55.9%</td>
             <td><span class="badge bg-success">53.5% (-2.4)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>1054</td>
@@ -151,7 +176,7 @@
             <td>63.4%</td>
             <td><span class="badge bg-warning text-dark">59.9% (-3.6)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>28</td>
@@ -194,7 +219,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Campeonato de Portugal</td>
         <td>110</td>
@@ -205,7 +230,7 @@
         <td>0.2460</td>
         <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>106</td>
@@ -216,7 +241,7 @@
         <td>0.2212</td>
         <td><span class="text-danger">-1.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
         <td>88</td>
@@ -227,7 +252,7 @@
         <td>0.2495</td>
         <td><span class="text-danger">-7.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
         <td>85</td>
@@ -238,7 +263,7 @@
         <td>0.2472</td>
         <td><span class="text-danger">-2.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
         <td>83</td>
@@ -249,7 +274,7 @@
         <td>0.2491</td>
         <td><span class="text-danger">-5.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Categoría Primera A</td>
         <td>71</td>
@@ -260,7 +285,7 @@
         <td>0.2496</td>
         <td><span class="text-success">+0.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>League One</td>
         <td>68</td>
@@ -271,7 +296,7 @@
         <td>0.2491</td>
         <td><span class="text-success">+2.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
         <td>62</td>
@@ -282,7 +307,7 @@
         <td>0.2240</td>
         <td><span class="text-danger">-6.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie B</td>
         <td>61</td>
@@ -293,7 +318,7 @@
         <td>0.2499</td>
         <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie A</td>
         <td>60</td>
@@ -304,7 +329,7 @@
         <td>0.2475</td>
         <td><span class="text-danger">-2.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>J1 League</td>
         <td>60</td>
@@ -315,7 +340,7 @@
         <td>0.2497</td>
         <td><span class="text-danger">-2.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga ID 100</td>
         <td>60</td>
@@ -326,7 +351,7 @@
         <td>0.2475</td>
         <td><span class="text-danger">-0.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Serie A</td>
         <td>60</td>
@@ -337,7 +362,7 @@
         <td>0.2431</td>
         <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Nigeria Premier Football League</td>
         <td>56</td>
@@ -348,7 +373,7 @@
         <td>0.2471</td>
         <td><span class="text-danger">-5.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Segunda División</td>
         <td>55</td>
@@ -359,7 +384,7 @@
         <td>0.2360</td>
         <td><span class="text-danger">-4.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga MX Apertura</td>
         <td>55</td>
@@ -370,7 +395,7 @@
         <td>0.2202</td>
         <td><span class="text-danger">-1.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Champions League</td>
         <td>54</td>
@@ -381,7 +406,7 @@
         <td>0.2377</td>
         <td><span class="text-danger">-2.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Conference League</td>
         <td>54</td>
@@ -392,7 +417,7 @@
         <td>0.2445</td>
         <td><span class="text-danger">-1.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>54</td>
@@ -403,7 +428,7 @@
         <td>0.2445</td>
         <td><span class="text-danger">-1.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>USL Championship</td>
         <td>53</td>
@@ -414,7 +439,7 @@
         <td>0.2428</td>
         <td><span class="text-danger">-0.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>La Liga</td>
         <td>50</td>
@@ -425,7 +450,7 @@
         <td>0.2496</td>
         <td><span class="text-danger">-2.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Premier League</td>
         <td>50</td>
@@ -436,7 +461,7 @@
         <td>0.2496</td>
         <td><span class="text-danger">-4.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Outras</td>
         <td>1709</td>
@@ -447,7 +472,7 @@
         <td>0.2486</td>
         <td><span class="text-success">+0.7%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
@@ -468,45 +493,45 @@
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
     <p class="mb-1"><strong>Over 2.5</strong>
-        <span class="text-muted">(n=3151, baseline 0.2481)</span></p>
+        <span class="text-muted">(n=3083, baseline 0.2481)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2445</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2447</strong> |
         <span class="text-success">skill +1.4%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2468</strong> |
-        <span class="text-success">skill +0.5%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2463</strong> |
+        <span class="text-success">skill +0.7%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=3151):
-        diferenca media <strong>-0.0023</strong> |
-        erro padrao 0.0017 |
-        t = <strong>-1.40</strong>
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=3083):
+        diferenca media <strong>-0.0016</strong> |
+        erro padrao 0.0015 |
+        t = <strong>-1.05</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
-    
+
     </div>
                 <div class="col-md-6">
     <p class="mb-1"><strong>BTTS</strong>
-        <span class="text-muted">(n=3151, baseline 0.2478)</span></p>
+        <span class="text-muted">(n=3083, baseline 0.2478)</span></p>
     <p class="small mb-1">
         Modelo actual &nbsp; Brier <strong>0.2476</strong> |
         <span class="text-success">skill +0.1%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2520</strong> |
-        <span class="text-danger">skill -1.7%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2505</strong> |
+        <span class="text-danger">skill -1.1%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=3151):
-        diferenca media <strong>-0.0044</strong> |
-        erro padrao 0.0017 |
-        t = <strong>-2.53</strong>
-        <span class="text-dark">(significativo)</span>
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=3083):
+        diferenca media <strong>-0.0029</strong> |
+        erro padrao 0.0016 |
+        t = <strong>-1.76</strong>
+        <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
-    
+
     </div>
             </div>
 
@@ -533,52 +558,52 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Campeonato de Portugal</td>
         <td>110</td>
         <td>0.2497</td>
         <td>0.2496</td>
         <td><span class="text-success">+0.0%</span></td>
-        <td>0.2547</td>
-        <td><span class="text-danger">-2.0%</span></td>
+        <td>0.2530</td>
+        <td><span class="text-danger">-1.3%</span></td>
         <td>0.2460</td>
         <td>0.2480</td>
         <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2497</td>
-        <td><span class="text-danger">-1.5%</span></td>
+        <td>0.2522</td>
+        <td><span class="text-danger">-2.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>106</td>
         <td>0.2144</td>
         <td>0.2149</td>
         <td><span class="text-danger">-0.2%</span></td>
-        <td>0.2162</td>
-        <td><span class="text-danger">-0.8%</span></td>
+        <td>0.2163</td>
+        <td><span class="text-danger">-0.9%</span></td>
         <td>0.2212</td>
         <td>0.2234</td>
         <td><span class="text-danger">-1.0%</span></td>
-        <td>0.2225</td>
-        <td><span class="text-danger">-0.6%</span></td>
+        <td>0.2227</td>
+        <td><span class="text-danger">-0.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
         <td>88</td>
         <td>0.2247</td>
         <td>0.2228</td>
         <td><span class="text-success">+0.8%</span></td>
-        <td>0.2256</td>
-        <td><span class="text-danger">-0.4%</span></td>
+        <td>0.2254</td>
+        <td><span class="text-danger">-0.3%</span></td>
         <td>0.2495</td>
         <td>0.2671</td>
         <td><span class="text-danger">-7.1%</span></td>
-        <td>0.2595</td>
-        <td><span class="text-danger">-4.0%</span></td>
+        <td>0.2600</td>
+        <td><span class="text-danger">-4.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
         <td>85</td>
@@ -590,301 +615,301 @@
         <td>0.2472</td>
         <td>0.2538</td>
         <td><span class="text-danger">-2.7%</span></td>
-        <td>0.2582</td>
-        <td><span class="text-danger">-4.5%</span></td>
+        <td>0.2579</td>
+        <td><span class="text-danger">-4.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
         <td>83</td>
         <td>0.2418</td>
         <td>0.2503</td>
         <td><span class="text-danger">-3.5%</span></td>
-        <td>0.2454</td>
-        <td><span class="text-danger">-1.5%</span></td>
+        <td>0.2452</td>
+        <td><span class="text-danger">-1.4%</span></td>
         <td>0.2491</td>
         <td>0.2621</td>
         <td><span class="text-danger">-5.2%</span></td>
-        <td>0.2513</td>
-        <td><span class="text-danger">-0.9%</span></td>
+        <td>0.2516</td>
+        <td><span class="text-danger">-1.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Categoría Primera A</td>
         <td>71</td>
         <td>0.2440</td>
         <td>0.2477</td>
         <td><span class="text-danger">-1.5%</span></td>
-        <td>0.2510</td>
-        <td><span class="text-danger">-2.9%</span></td>
+        <td>0.2506</td>
+        <td><span class="text-danger">-2.7%</span></td>
         <td>0.2496</td>
         <td>0.2474</td>
         <td><span class="text-success">+0.9%</span></td>
-        <td>0.2595</td>
-        <td><span class="text-danger">-4.0%</span></td>
+        <td>0.2583</td>
+        <td><span class="text-danger">-3.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>League One</td>
         <td>68</td>
         <td>0.2498</td>
         <td>0.2528</td>
         <td><span class="text-danger">-1.2%</span></td>
-        <td>0.2521</td>
-        <td><span class="text-danger">-0.9%</span></td>
+        <td>0.2510</td>
+        <td><span class="text-danger">-0.5%</span></td>
         <td>0.2491</td>
         <td>0.2431</td>
         <td><span class="text-success">+2.4%</span></td>
-        <td>0.2541</td>
-        <td><span class="text-danger">-2.0%</span></td>
+        <td>0.2545</td>
+        <td><span class="text-danger">-2.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
         <td>62</td>
         <td>0.2500</td>
         <td>0.2414</td>
         <td><span class="text-success">+3.4%</span></td>
-        <td>0.2534</td>
-        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2542</td>
+        <td><span class="text-danger">-1.7%</span></td>
         <td>0.2240</td>
         <td>0.2376</td>
         <td><span class="text-danger">-6.1%</span></td>
-        <td>0.2366</td>
-        <td><span class="text-danger">-5.6%</span></td>
+        <td>0.2377</td>
+        <td><span class="text-danger">-6.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie B</td>
         <td>61</td>
         <td>0.2499</td>
         <td>0.2543</td>
         <td><span class="text-danger">-1.8%</span></td>
-        <td>0.2525</td>
-        <td><span class="text-danger">-1.0%</span></td>
+        <td>0.2526</td>
+        <td><span class="text-danger">-1.1%</span></td>
         <td>0.2499</td>
         <td>0.2519</td>
         <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2529</td>
-        <td><span class="text-danger">-1.2%</span></td>
+        <td>0.2525</td>
+        <td><span class="text-danger">-1.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie A</td>
         <td>60</td>
         <td>0.2500</td>
         <td>0.2585</td>
         <td><span class="text-danger">-3.4%</span></td>
-        <td>0.2575</td>
-        <td><span class="text-danger">-3.0%</span></td>
+        <td>0.2567</td>
+        <td><span class="text-danger">-2.7%</span></td>
         <td>0.2475</td>
         <td>0.2547</td>
         <td><span class="text-danger">-2.9%</span></td>
-        <td>0.2554</td>
-        <td><span class="text-danger">-3.2%</span></td>
+        <td>0.2550</td>
+        <td><span class="text-danger">-3.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>J1 League</td>
         <td>60</td>
         <td>0.2364</td>
         <td>0.2421</td>
         <td><span class="text-danger">-2.4%</span></td>
-        <td>0.2422</td>
-        <td><span class="text-danger">-2.5%</span></td>
+        <td>0.2427</td>
+        <td><span class="text-danger">-2.7%</span></td>
         <td>0.2497</td>
         <td>0.2568</td>
         <td><span class="text-danger">-2.8%</span></td>
-        <td>0.2599</td>
-        <td><span class="text-danger">-4.1%</span></td>
+        <td>0.2595</td>
+        <td><span class="text-danger">-3.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Serie A</td>
         <td>60</td>
         <td>0.2275</td>
         <td>0.2420</td>
         <td><span class="text-danger">-6.4%</span></td>
-        <td>0.2361</td>
-        <td><span class="text-danger">-3.8%</span></td>
+        <td>0.2347</td>
+        <td><span class="text-danger">-3.2%</span></td>
         <td>0.2431</td>
         <td>0.2450</td>
         <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2463</td>
-        <td><span class="text-danger">-1.3%</span></td>
+        <td>0.2453</td>
+        <td><span class="text-danger">-0.9%</span></td>
     </tr>
-    
-    <tr>
-        <td>Liga ID 100</td>
-        <td>59</td>
-        <td>0.2442</td>
-        <td>0.2579</td>
-        <td><span class="text-danger">-5.6%</span></td>
-        <td>0.2732</td>
-        <td><span class="text-danger">-11.9%</span></td>
-        <td>0.2482</td>
-        <td>0.2492</td>
-        <td><span class="text-danger">-0.4%</span></td>
-        <td>0.2705</td>
-        <td><span class="text-danger">-9.0%</span></td>
-    </tr>
-    
+
     <tr>
         <td>Nigeria Premier Football League</td>
         <td>56</td>
         <td>0.2344</td>
         <td>0.2329</td>
         <td><span class="text-success">+0.6%</span></td>
-        <td>0.2377</td>
-        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2355</td>
+        <td><span class="text-danger">-0.5%</span></td>
         <td>0.2471</td>
         <td>0.2595</td>
         <td><span class="text-danger">-5.0%</span></td>
-        <td>0.2549</td>
-        <td><span class="text-danger">-3.1%</span></td>
+        <td>0.2541</td>
+        <td><span class="text-danger">-2.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Segunda División</td>
         <td>55</td>
         <td>0.2460</td>
         <td>0.2478</td>
         <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2529</td>
-        <td><span class="text-danger">-2.8%</span></td>
+        <td>0.2526</td>
+        <td><span class="text-danger">-2.7%</span></td>
         <td>0.2360</td>
         <td>0.2458</td>
         <td><span class="text-danger">-4.1%</span></td>
-        <td>0.2505</td>
-        <td><span class="text-danger">-6.1%</span></td>
+        <td>0.2499</td>
+        <td><span class="text-danger">-5.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga MX Apertura</td>
         <td>55</td>
         <td>0.2493</td>
         <td>0.2586</td>
         <td><span class="text-danger">-3.7%</span></td>
-        <td>0.2524</td>
-        <td><span class="text-danger">-1.3%</span></td>
+        <td>0.2514</td>
+        <td><span class="text-danger">-0.9%</span></td>
         <td>0.2202</td>
         <td>0.2228</td>
         <td><span class="text-danger">-1.2%</span></td>
-        <td>0.2279</td>
-        <td><span class="text-danger">-3.5%</span></td>
+        <td>0.2293</td>
+        <td><span class="text-danger">-4.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Champions League</td>
         <td>54</td>
         <td>0.1828</td>
         <td>0.1868</td>
         <td><span class="text-danger">-2.2%</span></td>
-        <td>0.1878</td>
-        <td><span class="text-danger">-2.8%</span></td>
+        <td>0.1856</td>
+        <td><span class="text-danger">-1.6%</span></td>
         <td>0.2377</td>
         <td>0.2426</td>
         <td><span class="text-danger">-2.1%</span></td>
-        <td>0.2414</td>
-        <td><span class="text-danger">-1.6%</span></td>
+        <td>0.2396</td>
+        <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Conference League</td>
         <td>54</td>
         <td>0.2486</td>
         <td>0.2819</td>
         <td><span class="text-danger">-13.4%</span></td>
-        <td>0.2646</td>
-        <td><span class="text-danger">-6.4%</span></td>
+        <td>0.2651</td>
+        <td><span class="text-danger">-6.6%</span></td>
         <td>0.2445</td>
         <td>0.2472</td>
         <td><span class="text-danger">-1.1%</span></td>
-        <td>0.2471</td>
-        <td><span class="text-danger">-1.1%</span></td>
+        <td>0.2458</td>
+        <td><span class="text-danger">-0.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>54</td>
         <td>0.2281</td>
         <td>0.2332</td>
         <td><span class="text-danger">-2.3%</span></td>
-        <td>0.2312</td>
-        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2331</td>
+        <td><span class="text-danger">-2.2%</span></td>
         <td>0.2445</td>
         <td>0.2486</td>
         <td><span class="text-danger">-1.7%</span></td>
-        <td>0.2538</td>
-        <td><span class="text-danger">-3.8%</span></td>
+        <td>0.2541</td>
+        <td><span class="text-danger">-3.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>USL Championship</td>
         <td>53</td>
         <td>0.2499</td>
         <td>0.2500</td>
         <td><span class="text-danger">-0.0%</span></td>
-        <td>0.2517</td>
-        <td><span class="text-danger">-0.7%</span></td>
+        <td>0.2512</td>
+        <td><span class="text-danger">-0.5%</span></td>
         <td>0.2428</td>
         <td>0.2432</td>
         <td><span class="text-danger">-0.2%</span></td>
-        <td>0.2457</td>
-        <td><span class="text-danger">-1.2%</span></td>
+        <td>0.2445</td>
+        <td><span class="text-danger">-0.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>La Liga</td>
         <td>50</td>
         <td>0.2484</td>
         <td>0.2545</td>
         <td><span class="text-danger">-2.5%</span></td>
-        <td>0.2515</td>
+        <td>0.2514</td>
         <td><span class="text-danger">-1.2%</span></td>
         <td>0.2496</td>
         <td>0.2550</td>
         <td><span class="text-danger">-2.2%</span></td>
-        <td>0.2544</td>
-        <td><span class="text-danger">-1.9%</span></td>
+        <td>0.2539</td>
+        <td><span class="text-danger">-1.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Premier League</td>
         <td>50</td>
         <td>0.2436</td>
         <td>0.2644</td>
         <td><span class="text-danger">-8.5%</span></td>
-        <td>0.2521</td>
-        <td><span class="text-danger">-3.5%</span></td>
+        <td>0.2565</td>
+        <td><span class="text-danger">-5.3%</span></td>
         <td>0.2496</td>
         <td>0.2603</td>
         <td><span class="text-danger">-4.3%</span></td>
-        <td>0.2533</td>
-        <td><span class="text-danger">-1.5%</span></td>
+        <td>0.2552</td>
+        <td><span class="text-danger">-2.3%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Liga ID 100</td>
+        <td>50</td>
+        <td>0.2436</td>
+        <td>0.2594</td>
+        <td><span class="text-danger">-6.5%</span></td>
+        <td>0.2547</td>
+        <td><span class="text-danger">-4.5%</span></td>
+        <td>0.2464</td>
+        <td>0.2471</td>
+        <td><span class="text-danger">-0.3%</span></td>
+        <td>0.2606</td>
+        <td><span class="text-danger">-5.7%</span></td>
+    </tr>
+
     <tr>
         <td>Outras</td>
-        <td>1697</td>
-        <td>0.2478</td>
-        <td>0.2448</td>
-        <td><span class="text-success">+1.2%</span></td>
+        <td>1638</td>
+        <td>0.2479</td>
+        <td>0.2453</td>
+        <td><span class="text-success">+1.1%</span></td>
         <td>0.2493</td>
         <td><span class="text-danger">-0.6%</span></td>
-        <td>0.2487</td>
-        <td>0.2470</td>
-        <td><span class="text-success">+0.7%</span></td>
-        <td>0.2538</td>
-        <td><span class="text-danger">-2.1%</span></td>
+        <td>0.2488</td>
+        <td>0.2472</td>
+        <td><span class="text-success">+0.6%</span></td>
+        <td>0.2514</td>
+        <td><span class="text-danger">-1.1%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    
+
     <div class="mb-5">
         <h3 class="fw-bold text-secondary mb-3">
             Modelo v1 (modelo = 'v1') <span class="badge bg-secondary">n=4368</span>
@@ -907,7 +932,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>1386</td>
@@ -915,7 +940,7 @@
             <td>31.6%</td>
             <td><span class="badge bg-warning text-dark">51.6% (+19.9)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>1343</td>
@@ -923,7 +948,7 @@
             <td>45.6%</td>
             <td><span class="badge bg-warning text-dark">55.1% (+9.5)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>1169</td>
@@ -931,7 +956,7 @@
             <td>54.3%</td>
             <td><span class="badge bg-warning text-dark">58.0% (+3.7)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>327</td>
@@ -939,7 +964,7 @@
             <td>64.1%</td>
             <td><span class="badge bg-success">62.1% (-2.0)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>104</td>
@@ -947,7 +972,7 @@
             <td>74.5%</td>
             <td><span class="badge bg-warning text-dark">64.4% (-10.1)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>80%+</strong></td>
             <td>39</td>
@@ -955,7 +980,7 @@
             <td>88.9%</td>
             <td><span class="badge bg-warning text-dark">69.2% (-19.6)</span></td>
         </tr>
-        
+
                             </tbody>
                         </table>
                     </div>
@@ -978,7 +1003,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>611</td>
@@ -986,7 +1011,7 @@
             <td>33.0%</td>
             <td><span class="badge bg-warning text-dark">53.7% (+20.6)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>1301</td>
@@ -994,7 +1019,7 @@
             <td>45.0%</td>
             <td><span class="badge bg-warning text-dark">56.0% (+10.9)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>1786</td>
@@ -1002,7 +1027,7 @@
             <td>54.8%</td>
             <td><span class="badge bg-success">53.6% (-1.2)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>529</td>
@@ -1010,7 +1035,7 @@
             <td>63.6%</td>
             <td><span class="badge bg-warning text-dark">56.7% (-6.9)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>108</td>
@@ -1018,7 +1043,7 @@
             <td>73.8%</td>
             <td><span class="badge bg-warning text-dark">55.6% (-18.3)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>80%+</strong></td>
             <td>33</td>
@@ -1026,7 +1051,7 @@
             <td>87.0%</td>
             <td><span class="badge bg-warning text-dark">54.5% (-32.5)</span></td>
         </tr>
-        
+
                             </tbody>
                         </table>
                     </div>
@@ -1061,7 +1086,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Club Friendlies</td>
         <td>458</td>
@@ -1072,7 +1097,7 @@
         <td>0.2477</td>
         <td><span class="text-danger">-5.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
         <td>274</td>
@@ -1083,7 +1108,7 @@
         <td>0.2423</td>
         <td><span class="text-danger">-0.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>136</td>
@@ -1094,7 +1119,7 @@
         <td>0.2262</td>
         <td><span class="text-danger">-9.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>National League</td>
         <td>119</td>
@@ -1105,7 +1130,7 @@
         <td>0.2258</td>
         <td><span class="text-danger">-13.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>USL Championship</td>
         <td>114</td>
@@ -1116,7 +1141,7 @@
         <td>0.2481</td>
         <td><span class="text-danger">-4.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
         <td>113</td>
@@ -1127,7 +1152,7 @@
         <td>0.2467</td>
         <td><span class="text-danger">-11.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie B</td>
         <td>109</td>
@@ -1138,7 +1163,7 @@
         <td>0.2475</td>
         <td><span class="text-danger">-4.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
         <td>102</td>
@@ -1149,7 +1174,7 @@
         <td>0.2491</td>
         <td><span class="text-danger">-3.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
         <td>95</td>
@@ -1160,7 +1185,7 @@
         <td>0.2161</td>
         <td><span class="text-danger">-23.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>League One</td>
         <td>90</td>
@@ -1171,7 +1196,7 @@
         <td>0.2400</td>
         <td><span class="text-danger">-6.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Categoría Primera A</td>
         <td>87</td>
@@ -1182,7 +1207,7 @@
         <td>0.2405</td>
         <td><span class="text-danger">-10.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Conference League</td>
         <td>85</td>
@@ -1193,7 +1218,7 @@
         <td>0.2400</td>
         <td><span class="text-danger">-12.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Segunda División</td>
         <td>82</td>
@@ -1204,7 +1229,7 @@
         <td>0.2494</td>
         <td><span class="text-danger">-7.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>J1 League</td>
         <td>80</td>
@@ -1215,7 +1240,7 @@
         <td>0.2400</td>
         <td><span class="text-danger">-19.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>UEFA Nations League</td>
         <td>79</td>
@@ -1226,7 +1251,7 @@
         <td>0.2480</td>
         <td><span class="text-danger">-2.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>NWSL</td>
         <td>74</td>
@@ -1237,7 +1262,7 @@
         <td>0.2279</td>
         <td><span class="text-danger">-5.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie A</td>
         <td>74</td>
@@ -1248,7 +1273,7 @@
         <td>0.2279</td>
         <td><span class="text-danger">-19.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Carabao Cup</td>
         <td>73</td>
@@ -1259,7 +1284,7 @@
         <td>0.2462</td>
         <td><span class="text-danger">-6.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>La Liga</td>
         <td>69</td>
@@ -1270,7 +1295,7 @@
         <td>0.2436</td>
         <td><span class="text-danger">-6.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Pro League</td>
         <td>63</td>
@@ -1281,7 +1306,7 @@
         <td>0.2394</td>
         <td><span class="text-danger">-23.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Ligue 2</td>
         <td>63</td>
@@ -1292,7 +1317,7 @@
         <td>0.2424</td>
         <td><span class="text-danger">-8.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Saudi Pro League</td>
         <td>63</td>
@@ -1303,7 +1328,7 @@
         <td>0.2499</td>
         <td><span class="text-danger">-8.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Eredivisie</td>
         <td>62</td>
@@ -1314,7 +1339,7 @@
         <td>0.2125</td>
         <td><span class="text-danger">-2.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Emperor Cup</td>
         <td>62</td>
@@ -1325,7 +1350,7 @@
         <td>0.2497</td>
         <td><span class="text-danger">-14.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Ekstraklasa</td>
         <td>61</td>
@@ -1336,7 +1361,7 @@
         <td>0.2257</td>
         <td><span class="text-danger">-19.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Portugal Betclic</td>
         <td>61</td>
@@ -1347,7 +1372,7 @@
         <td>0.2499</td>
         <td><span class="text-danger">-3.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga MX Apertura</td>
         <td>61</td>
@@ -1358,7 +1383,7 @@
         <td>0.2446</td>
         <td><span class="text-success">+0.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Nigeria Premier Football League</td>
         <td>59</td>
@@ -1369,7 +1394,7 @@
         <td>0.2482</td>
         <td><span class="text-success">+1.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>Allsvenskan</td>
         <td>57</td>
@@ -1380,7 +1405,7 @@
         <td>0.2407</td>
         <td><span class="text-danger">-11.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>CAF Champions League</td>
         <td>57</td>
@@ -1391,7 +1416,7 @@
         <td>0.2278</td>
         <td><span class="text-danger">-14.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>56</td>
@@ -1402,7 +1427,7 @@
         <td>0.2487</td>
         <td><span class="text-danger">-10.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Taça de Portugal</td>
         <td>55</td>
@@ -1413,7 +1438,7 @@
         <td>0.2400</td>
         <td><span class="text-danger">-16.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>K League 1</td>
         <td>54</td>
@@ -1424,7 +1449,7 @@
         <td>0.2469</td>
         <td><span class="text-danger">-10.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Trendyol Super Lig</td>
         <td>54</td>
@@ -1435,7 +1460,7 @@
         <td>0.2486</td>
         <td><span class="text-success">+1.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>CONCACAF Nations League</td>
         <td>54</td>
@@ -1446,7 +1471,7 @@
         <td>0.2414</td>
         <td><span class="text-danger">-8.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Superliga</td>
         <td>53</td>
@@ -1457,7 +1482,7 @@
         <td>0.2478</td>
         <td><span class="text-danger">-10.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Portugal 2</td>
         <td>53</td>
@@ -1468,7 +1493,7 @@
         <td>0.2392</td>
         <td><span class="text-danger">-4.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga 3</td>
         <td>50</td>
@@ -1479,7 +1504,7 @@
         <td>0.2496</td>
         <td><span class="text-success">+1.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Premier League</td>
         <td>50</td>
@@ -1490,7 +1515,7 @@
         <td>0.2500</td>
         <td><span class="text-danger">-5.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Serie A</td>
         <td>50</td>
@@ -1501,7 +1526,7 @@
         <td>0.2436</td>
         <td><span class="text-danger">-13.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Outras</td>
         <td>857</td>
@@ -1512,7 +1537,7 @@
         <td>0.2477</td>
         <td><span class="text-danger">-5.4%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
@@ -1533,45 +1558,45 @@
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
     <p class="mb-1"><strong>Over 2.5</strong>
-        <span class="text-muted">(n=4297, baseline 0.2469)</span></p>
+        <span class="text-muted">(n=3606, baseline 0.2463)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2643</strong> |
-        <span class="text-danger">skill -7.1%</span>
+        Modelo actual &nbsp; Brier <strong>0.2649</strong> |
+        <span class="text-danger">skill -7.6%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2590</strong> |
-        <span class="text-danger">skill -4.9%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2633</strong> |
+        <span class="text-danger">skill -6.9%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=4297):
-        diferenca media <strong>+0.0053</strong> |
-        erro padrao 0.0031 |
-        t = <strong>+1.69</strong>
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=3606):
+        diferenca media <strong>+0.0016</strong> |
+        erro padrao 0.0033 |
+        t = <strong>+0.48</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
-    
+
     </div>
                 <div class="col-md-6">
     <p class="mb-1"><strong>BTTS</strong>
-        <span class="text-muted">(n=4297, baseline 0.2476)</span></p>
+        <span class="text-muted">(n=3606, baseline 0.2470)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2608</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2600</strong> |
         <span class="text-danger">skill -5.3%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2616</strong> |
-        <span class="text-danger">skill -5.6%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2654</strong> |
+        <span class="text-danger">skill -7.5%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=4297):
-        diferenca media <strong>-0.0008</strong> |
-        erro padrao 0.0028 |
-        t = <strong>-0.28</strong>
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=3606):
+        diferenca media <strong>-0.0053</strong> |
+        erro padrao 0.0031 |
+        t = <strong>-1.71</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
-    
+
     </div>
             </div>
 
@@ -1598,583 +1623,448 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Club Friendlies</td>
-        <td>457</td>
-        <td>0.2452</td>
-        <td>0.2591</td>
-        <td><span class="text-danger">-5.6%</span></td>
-        <td>0.2497</td>
-        <td><span class="text-danger">-1.8%</span></td>
-        <td>0.2476</td>
-        <td>0.2607</td>
-        <td><span class="text-danger">-5.3%</span></td>
-        <td>0.2513</td>
-        <td><span class="text-danger">-1.5%</span></td>
+        <td>373</td>
+        <td>0.2457</td>
+        <td>0.2558</td>
+        <td><span class="text-danger">-4.1%</span></td>
+        <td>0.2485</td>
+        <td><span class="text-danger">-1.1%</span></td>
+        <td>0.2478</td>
+        <td>0.2579</td>
+        <td><span class="text-danger">-4.1%</span></td>
+        <td>0.2612</td>
+        <td><span class="text-danger">-5.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
-        <td>273</td>
-        <td>0.2291</td>
-        <td>0.2507</td>
-        <td><span class="text-danger">-9.5%</span></td>
-        <td>0.2357</td>
-        <td><span class="text-danger">-2.9%</span></td>
-        <td>0.2419</td>
-        <td>0.2437</td>
-        <td><span class="text-danger">-0.7%</span></td>
-        <td>0.2486</td>
-        <td><span class="text-danger">-2.7%</span></td>
+        <td>162</td>
+        <td>0.2242</td>
+        <td>0.2593</td>
+        <td><span class="text-danger">-15.7%</span></td>
+        <td>0.2254</td>
+        <td><span class="text-danger">-0.5%</span></td>
+        <td>0.2414</td>
+        <td>0.2453</td>
+        <td><span class="text-danger">-1.6%</span></td>
+        <td>0.2430</td>
+        <td><span class="text-danger">-0.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>135</td>
         <td>0.2246</td>
         <td>0.2669</td>
         <td><span class="text-danger">-18.8%</span></td>
-        <td>0.2375</td>
-        <td><span class="text-danger">-5.7%</span></td>
+        <td>0.2601</td>
+        <td><span class="text-danger">-15.8%</span></td>
         <td>0.2246</td>
         <td>0.2479</td>
         <td><span class="text-danger">-10.3%</span></td>
-        <td>0.2381</td>
-        <td><span class="text-danger">-6.0%</span></td>
+        <td>0.2868</td>
+        <td><span class="text-danger">-27.7%</span></td>
     </tr>
-    
-    <tr>
-        <td>National League</td>
-        <td>118</td>
-        <td>0.2379</td>
-        <td>0.2722</td>
-        <td><span class="text-danger">-14.4%</span></td>
-        <td>0.2510</td>
-        <td><span class="text-danger">-5.5%</span></td>
-        <td>0.2241</td>
-        <td>0.2546</td>
-        <td><span class="text-danger">-13.6%</span></td>
-        <td>0.2377</td>
-        <td><span class="text-danger">-6.1%</span></td>
-    </tr>
-    
-    <tr>
-        <td>USL Championship</td>
-        <td>113</td>
-        <td>0.2500</td>
-        <td>0.2756</td>
-        <td><span class="text-danger">-10.3%</span></td>
-        <td>0.2596</td>
-        <td><span class="text-danger">-3.8%</span></td>
-        <td>0.2476</td>
-        <td>0.2592</td>
-        <td><span class="text-danger">-4.7%</span></td>
-        <td>0.2585</td>
-        <td><span class="text-danger">-4.4%</span></td>
-    </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
-        <td>112</td>
-        <td>0.2487</td>
-        <td>0.2668</td>
-        <td><span class="text-danger">-7.3%</span></td>
-        <td>0.2614</td>
-        <td><span class="text-danger">-5.1%</span></td>
-        <td>0.2471</td>
-        <td>0.2748</td>
-        <td><span class="text-danger">-11.2%</span></td>
-        <td>0.2588</td>
-        <td><span class="text-danger">-4.7%</span></td>
+        <td>107</td>
+        <td>0.2482</td>
+        <td>0.2582</td>
+        <td><span class="text-danger">-4.0%</span></td>
+        <td>0.2884</td>
+        <td><span class="text-danger">-16.2%</span></td>
+        <td>0.2474</td>
+        <td>0.2692</td>
+        <td><span class="text-danger">-8.8%</span></td>
+        <td>0.2808</td>
+        <td><span class="text-danger">-13.5%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>National League</td>
+        <td>107</td>
+        <td>0.2404</td>
+        <td>0.2701</td>
+        <td><span class="text-danger">-12.4%</span></td>
+        <td>0.2480</td>
+        <td><span class="text-danger">-3.2%</span></td>
+        <td>0.2262</td>
+        <td>0.2533</td>
+        <td><span class="text-danger">-12.0%</span></td>
+        <td>0.2281</td>
+        <td><span class="text-danger">-0.8%</span></td>
+    </tr>
+
+    <tr>
+        <td>USL Championship</td>
+        <td>103</td>
+        <td>0.2494</td>
+        <td>0.2696</td>
+        <td><span class="text-danger">-8.1%</span></td>
+        <td>0.2688</td>
+        <td><span class="text-danger">-7.8%</span></td>
+        <td>0.2447</td>
+        <td>0.2553</td>
+        <td><span class="text-danger">-4.4%</span></td>
+        <td>0.2604</td>
+        <td><span class="text-danger">-6.4%</span></td>
+    </tr>
+
     <tr>
         <td>Brasileirão Serie B</td>
-        <td>108</td>
-        <td>0.2479</td>
-        <td>0.2639</td>
-        <td><span class="text-danger">-6.5%</span></td>
-        <td>0.2637</td>
-        <td><span class="text-danger">-6.4%</span></td>
-        <td>0.2469</td>
-        <td>0.2585</td>
-        <td><span class="text-danger">-4.7%</span></td>
-        <td>0.2639</td>
-        <td><span class="text-danger">-6.9%</span></td>
+        <td>101</td>
+        <td>0.2494</td>
+        <td>0.2713</td>
+        <td><span class="text-danger">-8.8%</span></td>
+        <td>0.2619</td>
+        <td><span class="text-danger">-5.0%</span></td>
+        <td>0.2470</td>
+        <td>0.2635</td>
+        <td><span class="text-danger">-6.7%</span></td>
+        <td>0.2496</td>
+        <td><span class="text-danger">-1.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
-        <td>101</td>
-        <td>0.2480</td>
-        <td>0.2601</td>
-        <td><span class="text-danger">-4.9%</span></td>
-        <td>0.2650</td>
-        <td><span class="text-danger">-6.9%</span></td>
-        <td>0.2488</td>
-        <td>0.2579</td>
-        <td><span class="text-danger">-3.7%</span></td>
-        <td>0.2628</td>
+        <td>90</td>
+        <td>0.2469</td>
+        <td>0.2594</td>
+        <td><span class="text-danger">-5.1%</span></td>
+        <td>0.2514</td>
+        <td><span class="text-danger">-1.8%</span></td>
+        <td>0.2469</td>
+        <td>0.2607</td>
         <td><span class="text-danger">-5.6%</span></td>
+        <td>0.2645</td>
+        <td><span class="text-danger">-7.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
-        <td>94</td>
-        <td>0.2309</td>
-        <td>0.2942</td>
-        <td><span class="text-danger">-27.4%</span></td>
-        <td>0.2401</td>
-        <td><span class="text-danger">-4.0%</span></td>
-        <td>0.2173</td>
-        <td>0.2679</td>
-        <td><span class="text-danger">-23.3%</span></td>
-        <td>0.2257</td>
-        <td><span class="text-danger">-3.9%</span></td>
-    </tr>
-    
-    <tr>
-        <td>League One</td>
-        <td>89</td>
-        <td>0.2492</td>
-        <td>0.2451</td>
-        <td><span class="text-success">+1.6%</span></td>
-        <td>0.2643</td>
-        <td><span class="text-danger">-6.0%</span></td>
-        <td>0.2409</td>
-        <td>0.2572</td>
-        <td><span class="text-danger">-6.8%</span></td>
-        <td>0.2516</td>
-        <td><span class="text-danger">-4.4%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Categoría Primera A</td>
-        <td>86</td>
-        <td>0.2495</td>
-        <td>0.2803</td>
-        <td><span class="text-danger">-12.4%</span></td>
-        <td>0.2651</td>
-        <td><span class="text-danger">-6.3%</span></td>
-        <td>0.2390</td>
-        <td>0.2681</td>
-        <td><span class="text-danger">-12.2%</span></td>
-        <td>0.2571</td>
-        <td><span class="text-danger">-7.6%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Conference League</td>
         <td>84</td>
         <td>0.2358</td>
-        <td>0.2627</td>
-        <td><span class="text-danger">-11.4%</span></td>
-        <td>0.2520</td>
-        <td><span class="text-danger">-6.8%</span></td>
-        <td>0.2385</td>
-        <td>0.2693</td>
-        <td><span class="text-danger">-12.9%</span></td>
-        <td>0.2544</td>
-        <td><span class="text-danger">-6.7%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Segunda División</td>
-        <td>81</td>
-        <td>0.2497</td>
-        <td>0.2602</td>
-        <td><span class="text-danger">-4.2%</span></td>
-        <td>0.2698</td>
-        <td><span class="text-danger">-8.1%</span></td>
-        <td>0.2497</td>
-        <td>0.2591</td>
-        <td><span class="text-danger">-3.8%</span></td>
-        <td>0.2699</td>
-        <td><span class="text-danger">-8.1%</span></td>
-    </tr>
-    
-    <tr>
-        <td>J1 League</td>
-        <td>79</td>
-        <td>0.2490</td>
-        <td>0.2934</td>
-        <td><span class="text-danger">-17.8%</span></td>
-        <td>0.2656</td>
-        <td><span class="text-danger">-6.7%</span></td>
-        <td>0.2410</td>
-        <td>0.2874</td>
+        <td>0.2890</td>
+        <td><span class="text-danger">-22.6%</span></td>
+        <td>0.2450</td>
+        <td><span class="text-danger">-3.9%</span></td>
+        <td>0.2222</td>
+        <td>0.2650</td>
         <td><span class="text-danger">-19.3%</span></td>
-        <td>0.2567</td>
+        <td>0.2307</td>
+        <td><span class="text-danger">-3.8%</span></td>
+    </tr>
+
+    <tr>
+        <td>Categoría Primera A</td>
+        <td>80</td>
+        <td>0.2486</td>
+        <td>0.2829</td>
+        <td><span class="text-danger">-13.8%</span></td>
+        <td>0.2648</td>
         <td><span class="text-danger">-6.5%</span></td>
+        <td>0.2373</td>
+        <td>0.2663</td>
+        <td><span class="text-danger">-12.2%</span></td>
+        <td>0.2516</td>
+        <td><span class="text-danger">-6.0%</span></td>
     </tr>
-    
+
     <tr>
-        <td>UEFA Nations League</td>
+        <td>Conference League</td>
         <td>78</td>
-        <td>0.2498</td>
-        <td>0.2471</td>
-        <td><span class="text-success">+1.1%</span></td>
-        <td>0.2718</td>
-        <td><span class="text-danger">-8.8%</span></td>
-        <td>0.2474</td>
-        <td>0.2517</td>
-        <td><span class="text-danger">-1.7%</span></td>
-        <td>0.2699</td>
-        <td><span class="text-danger">-9.1%</span></td>
-    </tr>
-    
-    <tr>
-        <td>NWSL</td>
-        <td>73</td>
-        <td>0.2364</td>
-        <td>0.2876</td>
-        <td><span class="text-danger">-21.6%</span></td>
-        <td>0.2572</td>
-        <td><span class="text-danger">-8.8%</span></td>
-        <td>0.2293</td>
-        <td>0.2435</td>
-        <td><span class="text-danger">-6.2%</span></td>
-        <td>0.2478</td>
-        <td><span class="text-danger">-8.1%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Brasileirão Serie A</td>
-        <td>73</td>
-        <td>0.2421</td>
-        <td>0.2662</td>
-        <td><span class="text-danger">-10.0%</span></td>
-        <td>0.2584</td>
-        <td><span class="text-danger">-6.8%</span></td>
-        <td>0.2293</td>
-        <td>0.2719</td>
-        <td><span class="text-danger">-18.6%</span></td>
-        <td>0.2429</td>
-        <td><span class="text-danger">-5.9%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Carabao Cup</td>
-        <td>72</td>
-        <td>0.2452</td>
-        <td>0.2466</td>
-        <td><span class="text-danger">-0.6%</span></td>
-        <td>0.2690</td>
-        <td><span class="text-danger">-9.7%</span></td>
-        <td>0.2452</td>
-        <td>0.2630</td>
-        <td><span class="text-danger">-7.3%</span></td>
-        <td>0.2692</td>
-        <td><span class="text-danger">-9.8%</span></td>
-    </tr>
-    
-    <tr>
-        <td>La Liga</td>
-        <td>68</td>
-        <td>0.2465</td>
-        <td>0.2503</td>
-        <td><span class="text-danger">-1.5%</span></td>
-        <td>0.2634</td>
-        <td><span class="text-danger">-6.8%</span></td>
-        <td>0.2422</td>
-        <td>0.2614</td>
-        <td><span class="text-danger">-7.9%</span></td>
-        <td>0.2682</td>
-        <td><span class="text-danger">-10.7%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Pro League</td>
-        <td>62</td>
-        <td>0.2406</td>
-        <td>0.2834</td>
-        <td><span class="text-danger">-17.8%</span></td>
-        <td>0.2595</td>
-        <td><span class="text-danger">-7.8%</span></td>
-        <td>0.2406</td>
-        <td>0.2879</td>
-        <td><span class="text-danger">-19.6%</span></td>
-        <td>0.2645</td>
-        <td><span class="text-danger">-9.9%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Ligue 2</td>
-        <td>62</td>
-        <td>0.2477</td>
-        <td>0.2724</td>
-        <td><span class="text-danger">-10.0%</span></td>
-        <td>0.2745</td>
-        <td><span class="text-danger">-10.8%</span></td>
-        <td>0.2435</td>
-        <td>0.2642</td>
-        <td><span class="text-danger">-8.5%</span></td>
-        <td>0.2687</td>
-        <td><span class="text-danger">-10.3%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Saudi Pro League</td>
-        <td>62</td>
-        <td>0.2490</td>
-        <td>0.2815</td>
-        <td><span class="text-danger">-13.1%</span></td>
-        <td>0.2695</td>
-        <td><span class="text-danger">-8.3%</span></td>
-        <td>0.2497</td>
-        <td>0.2735</td>
-        <td><span class="text-danger">-9.5%</span></td>
-        <td>0.2714</td>
-        <td><span class="text-danger">-8.7%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Eredivisie</td>
-        <td>61</td>
-        <td>0.1854</td>
-        <td>0.2288</td>
-        <td><span class="text-danger">-23.4%</span></td>
-        <td>0.1984</td>
-        <td><span class="text-danger">-7.0%</span></td>
-        <td>0.2080</td>
-        <td>0.2136</td>
-        <td><span class="text-danger">-2.7%</span></td>
-        <td>0.2367</td>
+        <td>0.2336</td>
+        <td>0.2636</td>
+        <td><span class="text-danger">-12.9%</span></td>
+        <td>0.2579</td>
+        <td><span class="text-danger">-10.4%</span></td>
+        <td>0.2336</td>
+        <td>0.2700</td>
+        <td><span class="text-danger">-15.6%</span></td>
+        <td>0.2659</td>
         <td><span class="text-danger">-13.8%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Emperor Cup</td>
-        <td>61</td>
-        <td>0.2080</td>
-        <td>0.2316</td>
-        <td><span class="text-danger">-11.4%</span></td>
-        <td>0.2295</td>
-        <td><span class="text-danger">-10.3%</span></td>
-        <td>0.2494</td>
-        <td>0.2868</td>
-        <td><span class="text-danger">-15.0%</span></td>
-        <td>0.2699</td>
-        <td><span class="text-danger">-8.2%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Ekstraklasa</td>
-        <td>60</td>
-        <td>0.2431</td>
-        <td>0.2781</td>
-        <td><span class="text-danger">-14.4%</span></td>
-        <td>0.2616</td>
-        <td><span class="text-danger">-7.6%</span></td>
-        <td>0.2275</td>
-        <td>0.2713</td>
-        <td><span class="text-danger">-19.3%</span></td>
-        <td>0.2440</td>
-        <td><span class="text-danger">-7.2%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Liga Portugal Betclic</td>
-        <td>60</td>
-        <td>0.2475</td>
-        <td>0.2557</td>
+        <td>League One</td>
+        <td>78</td>
+        <td>0.2493</td>
+        <td>0.2508</td>
+        <td><span class="text-danger">-0.6%</span></td>
+        <td>0.2582</td>
+        <td><span class="text-danger">-3.6%</span></td>
+        <td>0.2441</td>
+        <td>0.2521</td>
         <td><span class="text-danger">-3.3%</span></td>
-        <td>0.2688</td>
-        <td><span class="text-danger">-8.6%</span></td>
-        <td>0.2500</td>
-        <td>0.2576</td>
-        <td><span class="text-danger">-3.0%</span></td>
-        <td>0.2773</td>
-        <td><span class="text-danger">-10.9%</span></td>
+        <td>0.2512</td>
+        <td><span class="text-danger">-2.9%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Liga MX Apertura</td>
-        <td>60</td>
-        <td>0.2497</td>
-        <td>0.2496</td>
-        <td><span class="text-success">+0.0%</span></td>
-        <td>0.2771</td>
-        <td><span class="text-danger">-11.0%</span></td>
-        <td>0.2431</td>
-        <td>0.2449</td>
-        <td><span class="text-danger">-0.7%</span></td>
-        <td>0.2716</td>
-        <td><span class="text-danger">-11.7%</span></td>
+        <td>Segunda División</td>
+        <td>74</td>
+        <td>0.2498</td>
+        <td>0.2619</td>
+        <td><span class="text-danger">-4.8%</span></td>
+        <td>0.2719</td>
+        <td><span class="text-danger">-8.8%</span></td>
+        <td>0.2493</td>
+        <td>0.2607</td>
+        <td><span class="text-danger">-4.6%</span></td>
+        <td>0.2640</td>
+        <td><span class="text-danger">-5.9%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>J1 League</td>
+        <td>70</td>
+        <td>0.2498</td>
+        <td>0.2904</td>
+        <td><span class="text-danger">-16.2%</span></td>
+        <td>0.2584</td>
+        <td><span class="text-danger">-3.4%</span></td>
+        <td>0.2427</td>
+        <td>0.2782</td>
+        <td><span class="text-danger">-14.7%</span></td>
+        <td>0.2465</td>
+        <td><span class="text-danger">-1.6%</span></td>
+    </tr>
+
+    <tr>
+        <td>NWSL</td>
+        <td>68</td>
+        <td>0.2362</td>
+        <td>0.2889</td>
+        <td><span class="text-danger">-22.3%</span></td>
+        <td>0.2528</td>
+        <td><span class="text-danger">-7.0%</span></td>
+        <td>0.2325</td>
+        <td>0.2459</td>
+        <td><span class="text-danger">-5.8%</span></td>
+        <td>0.2497</td>
+        <td><span class="text-danger">-7.4%</span></td>
+    </tr>
+
+    <tr>
+        <td>La Liga</td>
+        <td>65</td>
+        <td>0.2485</td>
+        <td>0.2474</td>
+        <td><span class="text-success">+0.4%</span></td>
+        <td>0.2749</td>
+        <td><span class="text-danger">-10.6%</span></td>
+        <td>0.2428</td>
+        <td>0.2543</td>
+        <td><span class="text-danger">-4.7%</span></td>
+        <td>0.2570</td>
+        <td><span class="text-danger">-5.8%</span></td>
+    </tr>
+
+    <tr>
+        <td>Brasileirão Serie A</td>
+        <td>64</td>
+        <td>0.2344</td>
+        <td>0.2931</td>
+        <td><span class="text-danger">-25.0%</span></td>
+        <td>0.2490</td>
+        <td><span class="text-danger">-6.3%</span></td>
+        <td>0.2205</td>
+        <td>0.2858</td>
+        <td><span class="text-danger">-29.6%</span></td>
+        <td>0.2303</td>
+        <td><span class="text-danger">-4.5%</span></td>
+    </tr>
+
+    <tr>
+        <td>UEFA Nations League</td>
+        <td>62</td>
+        <td>0.2490</td>
+        <td>0.2474</td>
+        <td><span class="text-success">+0.6%</span></td>
+        <td>0.2724</td>
+        <td><span class="text-danger">-9.4%</span></td>
+        <td>0.2490</td>
+        <td>0.2496</td>
+        <td><span class="text-danger">-0.3%</span></td>
+        <td>0.2497</td>
+        <td><span class="text-danger">-0.3%</span></td>
+    </tr>
+
     <tr>
         <td>Nigeria Premier Football League</td>
         <td>58</td>
         <td>0.2393</td>
         <td>0.2443</td>
         <td><span class="text-danger">-2.1%</span></td>
-        <td>0.2684</td>
-        <td><span class="text-danger">-12.2%</span></td>
+        <td>0.2841</td>
+        <td><span class="text-danger">-18.7%</span></td>
         <td>0.2473</td>
         <td>0.2454</td>
         <td><span class="text-success">+0.8%</span></td>
-        <td>0.2748</td>
-        <td><span class="text-danger">-11.1%</span></td>
+        <td>0.2787</td>
+        <td><span class="text-danger">-12.7%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Allsvenskan</td>
+        <td>Saudi Pro League</td>
+        <td>57</td>
+        <td>0.2499</td>
+        <td>0.2597</td>
+        <td><span class="text-danger">-3.9%</span></td>
+        <td>0.2774</td>
+        <td><span class="text-danger">-11.0%</span></td>
+        <td>0.2481</td>
+        <td>0.2588</td>
+        <td><span class="text-danger">-4.3%</span></td>
+        <td>0.3030</td>
+        <td><span class="text-danger">-22.1%</span></td>
+    </tr>
+
+    <tr>
+        <td>Liga Portugal Betclic</td>
         <td>56</td>
+        <td>0.2449</td>
+        <td>0.2595</td>
+        <td><span class="text-danger">-5.9%</span></td>
+        <td>0.2914</td>
+        <td><span class="text-danger">-19.0%</span></td>
         <td>0.2497</td>
-        <td>0.2620</td>
-        <td><span class="text-danger">-4.9%</span></td>
-        <td>0.2775</td>
-        <td><span class="text-danger">-11.1%</span></td>
-        <td>0.2385</td>
-        <td>0.2715</td>
-        <td><span class="text-danger">-13.8%</span></td>
-        <td>0.2692</td>
-        <td><span class="text-danger">-12.9%</span></td>
+        <td>0.2593</td>
+        <td><span class="text-danger">-3.8%</span></td>
+        <td>0.2691</td>
+        <td><span class="text-danger">-7.8%</span></td>
     </tr>
-    
+
     <tr>
-        <td>CAF Champions League</td>
-        <td>56</td>
-        <td>0.2296</td>
-        <td>0.3056</td>
-        <td><span class="text-danger">-33.1%</span></td>
-        <td>0.2445</td>
-        <td><span class="text-danger">-6.5%</span></td>
-        <td>0.2296</td>
-        <td>0.2585</td>
-        <td><span class="text-danger">-12.6%</span></td>
-        <td>0.2462</td>
-        <td><span class="text-danger">-7.2%</span></td>
+        <td>Ekstraklasa</td>
+        <td>55</td>
+        <td>0.2433</td>
+        <td>0.2835</td>
+        <td><span class="text-danger">-16.5%</span></td>
+        <td>0.2660</td>
+        <td><span class="text-danger">-9.3%</span></td>
+        <td>0.2261</td>
+        <td>0.2800</td>
+        <td><span class="text-danger">-23.8%</span></td>
+        <td>0.2416</td>
+        <td><span class="text-danger">-6.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>55</td>
         <td>0.2360</td>
         <td>0.2895</td>
         <td><span class="text-danger">-22.7%</span></td>
-        <td>0.2582</td>
-        <td><span class="text-danger">-9.4%</span></td>
+        <td>0.2738</td>
+        <td><span class="text-danger">-16.0%</span></td>
         <td>0.2479</td>
         <td>0.2745</td>
         <td><span class="text-danger">-10.7%</span></td>
-        <td>0.2726</td>
-        <td><span class="text-danger">-10.0%</span></td>
+        <td>0.3048</td>
+        <td><span class="text-danger">-22.9%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Taça de Portugal</td>
+        <td>Ligue 2</td>
         <td>54</td>
-        <td>0.2414</td>
-        <td>0.2689</td>
-        <td><span class="text-danger">-11.4%</span></td>
-        <td>0.2599</td>
-        <td><span class="text-danger">-7.7%</span></td>
-        <td>0.2414</td>
-        <td>0.2787</td>
-        <td><span class="text-danger">-15.4%</span></td>
-        <td>0.2638</td>
-        <td><span class="text-danger">-9.3%</span></td>
-    </tr>
-    
-    <tr>
-        <td>K League 1</td>
-        <td>53</td>
-        <td>0.2478</td>
-        <td>0.2933</td>
-        <td><span class="text-danger">-18.4%</span></td>
-        <td>0.2790</td>
-        <td><span class="text-danger">-12.6%</span></td>
-        <td>0.2456</td>
-        <td>0.2768</td>
-        <td><span class="text-danger">-12.7%</span></td>
-        <td>0.2772</td>
-        <td><span class="text-danger">-12.8%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Trendyol Super Lig</td>
-        <td>53</td>
-        <td>0.2478</td>
-        <td>0.2656</td>
-        <td><span class="text-danger">-7.2%</span></td>
-        <td>0.2770</td>
-        <td><span class="text-danger">-11.8%</span></td>
-        <td>0.2478</td>
-        <td>0.2454</td>
-        <td><span class="text-success">+0.9%</span></td>
-        <td>0.2782</td>
-        <td><span class="text-danger">-12.3%</span></td>
-    </tr>
-    
-    <tr>
-        <td>CONCACAF Nations League</td>
-        <td>53</td>
-        <td>0.2300</td>
-        <td>0.2990</td>
-        <td><span class="text-danger">-30.0%</span></td>
-        <td>0.2617</td>
-        <td><span class="text-danger">-13.8%</span></td>
-        <td>0.2428</td>
-        <td>0.2613</td>
-        <td><span class="text-danger">-7.6%</span></td>
-        <td>0.2614</td>
-        <td><span class="text-danger">-7.7%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Liga Portugal 2</td>
-        <td>52</td>
-        <td>0.2467</td>
-        <td>0.2609</td>
-        <td><span class="text-danger">-5.8%</span></td>
-        <td>0.2776</td>
-        <td><span class="text-danger">-12.5%</span></td>
-        <td>0.2367</td>
-        <td>0.2508</td>
-        <td><span class="text-danger">-6.0%</span></td>
-        <td>0.2688</td>
-        <td><span class="text-danger">-13.6%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Superliga</td>
-        <td>52</td>
-        <td>0.2496</td>
-        <td>0.2672</td>
+        <td>0.2486</td>
+        <td>0.2484</td>
+        <td><span class="text-success">+0.1%</span></td>
+        <td>0.2533</td>
+        <td><span class="text-danger">-1.9%</span></td>
+        <td>0.2377</td>
+        <td>0.2619</td>
+        <td><span class="text-danger">-10.2%</span></td>
+        <td>0.2545</td>
         <td><span class="text-danger">-7.1%</span></td>
-        <td>0.2790</td>
-        <td><span class="text-danger">-11.8%</span></td>
-        <td>0.2485</td>
-        <td>0.2748</td>
-        <td><span class="text-danger">-10.6%</span></td>
-        <td>0.2762</td>
-        <td><span class="text-danger">-11.1%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Pro League</td>
+        <td>54</td>
+        <td>0.2445</td>
+        <td>0.2699</td>
+        <td><span class="text-danger">-10.4%</span></td>
+        <td>0.2589</td>
+        <td><span class="text-danger">-5.9%</span></td>
+        <td>0.2222</td>
+        <td>0.2799</td>
+        <td><span class="text-danger">-25.9%</span></td>
+        <td>0.2745</td>
+        <td><span class="text-danger">-23.5%</span></td>
+    </tr>
+
+    <tr>
+        <td>Liga MX Apertura</td>
+        <td>54</td>
+        <td>0.2500</td>
+        <td>0.2497</td>
+        <td><span class="text-success">+0.1%</span></td>
+        <td>0.2600</td>
+        <td><span class="text-danger">-4.0%</span></td>
+        <td>0.2414</td>
+        <td>0.2406</td>
+        <td><span class="text-success">+0.3%</span></td>
+        <td>0.2491</td>
+        <td><span class="text-danger">-3.2%</span></td>
+    </tr>
+
+    <tr>
+        <td>Eredivisie</td>
+        <td>53</td>
+        <td>0.1645</td>
+        <td>0.2220</td>
+        <td><span class="text-danger">-35.0%</span></td>
+        <td>0.1976</td>
+        <td><span class="text-danger">-20.1%</span></td>
+        <td>0.1944</td>
+        <td>0.2057</td>
+        <td><span class="text-danger">-5.8%</span></td>
+        <td>0.2383</td>
+        <td><span class="text-danger">-22.6%</span></td>
+    </tr>
+
+    <tr>
+        <td>Allsvenskan</td>
+        <td>51</td>
+        <td>0.2491</td>
+        <td>0.2716</td>
+        <td><span class="text-danger">-9.0%</span></td>
+        <td>0.2670</td>
+        <td><span class="text-danger">-7.2%</span></td>
+        <td>0.2384</td>
+        <td>0.2680</td>
+        <td><span class="text-danger">-12.4%</span></td>
+        <td>0.2465</td>
+        <td><span class="text-danger">-3.4%</span></td>
+    </tr>
+
     <tr>
         <td>Outras</td>
-        <td>973</td>
-        <td>0.2473</td>
-        <td>0.2613</td>
-        <td><span class="text-danger">-5.7%</span></td>
-        <td>0.2676</td>
+        <td>1158</td>
+        <td>0.2458</td>
+        <td>0.2661</td>
         <td><span class="text-danger">-8.2%</span></td>
-        <td>0.2479</td>
-        <td>0.2622</td>
-        <td><span class="text-danger">-5.8%</span></td>
-        <td>0.2778</td>
-        <td><span class="text-danger">-12.1%</span></td>
+        <td>0.2753</td>
+        <td><span class="text-danger">-12.0%</span></td>
+        <td>0.2489</td>
+        <td>0.2635</td>
+        <td><span class="text-danger">-5.9%</span></td>
+        <td>0.2805</td>
+        <td><span class="text-danger">-12.7%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    
+
     <div class="mb-5">
         <h3 class="fw-bold text-secondary mb-3">
             Desde o corte (2026-10-04T13:47:00) <span class="badge bg-secondary">n=3022</span>
@@ -2197,7 +2087,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>298</td>
@@ -2205,7 +2095,7 @@
             <td>34.2%</td>
             <td><span class="badge bg-success">36.9% (+2.7)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>604</td>
@@ -2213,7 +2103,7 @@
             <td>45.8%</td>
             <td><span class="badge bg-warning text-dark">52.2% (+6.4)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>907</td>
@@ -2221,7 +2111,7 @@
             <td>55.1%</td>
             <td><span class="badge bg-success">53.3% (-1.8)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>725</td>
@@ -2229,7 +2119,7 @@
             <td>64.6%</td>
             <td><span class="badge bg-warning text-dark">57.4% (-7.2)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>381</td>
@@ -2237,7 +2127,7 @@
             <td>74.2%</td>
             <td><span class="badge bg-warning text-dark">65.4% (-8.8)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>80%+</strong></td>
             <td>107</td>
@@ -2245,7 +2135,7 @@
             <td>83.1%</td>
             <td><span class="badge bg-warning text-dark">73.8% (-9.3)</span></td>
         </tr>
-        
+
                             </tbody>
                         </table>
                     </div>
@@ -2268,7 +2158,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>125</td>
@@ -2276,7 +2166,7 @@
             <td>35.5%</td>
             <td><span class="badge bg-success">43.2% (+7.7)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>512</td>
@@ -2284,7 +2174,7 @@
             <td>46.0%</td>
             <td><span class="badge bg-warning text-dark">51.6% (+5.6)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>1343</td>
@@ -2292,7 +2182,7 @@
             <td>55.9%</td>
             <td><span class="badge bg-success">53.2% (-2.7)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>1026</td>
@@ -2300,7 +2190,7 @@
             <td>63.4%</td>
             <td><span class="badge bg-success">60.7% (-2.7)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>16</td>
@@ -2343,7 +2233,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Campeonato de Portugal</td>
         <td>110</td>
@@ -2354,7 +2244,7 @@
         <td>0.2460</td>
         <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>105</td>
@@ -2365,7 +2255,7 @@
         <td>0.2222</td>
         <td><span class="text-danger">-1.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
         <td>85</td>
@@ -2376,7 +2266,7 @@
         <td>0.2472</td>
         <td><span class="text-danger">-2.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
         <td>83</td>
@@ -2387,7 +2277,7 @@
         <td>0.2491</td>
         <td><span class="text-danger">-6.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
         <td>76</td>
@@ -2398,7 +2288,7 @@
         <td>0.2493</td>
         <td><span class="text-danger">-4.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>League One</td>
         <td>68</td>
@@ -2409,7 +2299,7 @@
         <td>0.2491</td>
         <td><span class="text-success">+2.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Categoría Primera A</td>
         <td>64</td>
@@ -2420,7 +2310,7 @@
         <td>0.2498</td>
         <td><span class="text-success">+1.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
         <td>62</td>
@@ -2431,7 +2321,7 @@
         <td>0.2240</td>
         <td><span class="text-danger">-6.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>J1 League</td>
         <td>60</td>
@@ -2442,7 +2332,7 @@
         <td>0.2497</td>
         <td><span class="text-danger">-2.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga ID 100</td>
         <td>60</td>
@@ -2453,7 +2343,7 @@
         <td>0.2475</td>
         <td><span class="text-danger">-0.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Serie A</td>
         <td>60</td>
@@ -2464,7 +2354,7 @@
         <td>0.2431</td>
         <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga MX Apertura</td>
         <td>55</td>
@@ -2475,7 +2365,7 @@
         <td>0.2202</td>
         <td><span class="text-danger">-1.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Champions League</td>
         <td>54</td>
@@ -2486,7 +2376,7 @@
         <td>0.2377</td>
         <td><span class="text-danger">-2.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Conference League</td>
         <td>54</td>
@@ -2497,7 +2387,7 @@
         <td>0.2445</td>
         <td><span class="text-danger">-1.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>54</td>
@@ -2508,7 +2398,7 @@
         <td>0.2445</td>
         <td><span class="text-danger">-1.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie A</td>
         <td>52</td>
@@ -2519,7 +2409,7 @@
         <td>0.2496</td>
         <td><span class="text-danger">-3.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>USL Championship</td>
         <td>52</td>
@@ -2530,7 +2420,7 @@
         <td>0.2441</td>
         <td><span class="text-danger">-0.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie B</td>
         <td>51</td>
@@ -2541,7 +2431,7 @@
         <td>0.2499</td>
         <td><span class="text-danger">-1.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>La Liga</td>
         <td>50</td>
@@ -2552,7 +2442,7 @@
         <td>0.2496</td>
         <td><span class="text-danger">-2.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Premier League</td>
         <td>50</td>
@@ -2563,7 +2453,7 @@
         <td>0.2496</td>
         <td><span class="text-danger">-4.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Segunda División</td>
         <td>50</td>
@@ -2574,7 +2464,7 @@
         <td>0.2400</td>
         <td><span class="text-danger">-3.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Outras</td>
         <td>1667</td>
@@ -2585,7 +2475,7 @@
         <td>0.2481</td>
         <td><span class="text-success">+0.8%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
@@ -2606,45 +2496,45 @@
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
     <p class="mb-1"><strong>Over 2.5</strong>
-        <span class="text-muted">(n=3009, baseline 0.2479)</span></p>
+        <span class="text-muted">(n=2941, baseline 0.2479)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2448</strong> |
-        <span class="text-success">skill +1.3%</span>
+        Modelo actual &nbsp; Brier <strong>0.2451</strong> |
+        <span class="text-success">skill +1.2%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2468</strong> |
-        <span class="text-success">skill +0.5%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2464</strong> |
+        <span class="text-success">skill +0.6%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=3009):
-        diferenca media <strong>-0.0020</strong> |
-        erro padrao 0.0017 |
-        t = <strong>-1.14</strong>
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=2941):
+        diferenca media <strong>-0.0013</strong> |
+        erro padrao 0.0015 |
+        t = <strong>-0.84</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
-    
+
     </div>
                 <div class="col-md-6">
     <p class="mb-1"><strong>BTTS</strong>
-        <span class="text-muted">(n=3009, baseline 0.2475)</span></p>
+        <span class="text-muted">(n=2941, baseline 0.2476)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2469</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2470</strong> |
         <span class="text-success">skill +0.2%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2520</strong> |
-        <span class="text-danger">skill -1.8%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2505</strong> |
+        <span class="text-danger">skill -1.2%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=3009):
-        diferenca media <strong>-0.0050</strong> |
-        erro padrao 0.0017 |
-        t = <strong>-2.86</strong>
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=2941):
+        diferenca media <strong>-0.0035</strong> |
+        erro padrao 0.0016 |
+        t = <strong>-2.20</strong>
         <span class="text-dark">(significativo)</span>
     </p>
-    
+
     </div>
             </div>
 
@@ -2671,37 +2561,37 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Campeonato de Portugal</td>
         <td>110</td>
         <td>0.2497</td>
         <td>0.2496</td>
         <td><span class="text-success">+0.0%</span></td>
-        <td>0.2547</td>
-        <td><span class="text-danger">-2.0%</span></td>
+        <td>0.2530</td>
+        <td><span class="text-danger">-1.3%</span></td>
         <td>0.2460</td>
         <td>0.2480</td>
         <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2497</td>
-        <td><span class="text-danger">-1.5%</span></td>
+        <td>0.2522</td>
+        <td><span class="text-danger">-2.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>105</td>
         <td>0.2155</td>
         <td>0.2161</td>
         <td><span class="text-danger">-0.3%</span></td>
-        <td>0.2171</td>
+        <td>0.2172</td>
         <td><span class="text-danger">-0.8%</span></td>
         <td>0.2222</td>
         <td>0.2246</td>
         <td><span class="text-danger">-1.1%</span></td>
-        <td>0.2235</td>
-        <td><span class="text-danger">-0.6%</span></td>
+        <td>0.2237</td>
+        <td><span class="text-danger">-0.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
         <td>85</td>
@@ -2713,25 +2603,25 @@
         <td>0.2472</td>
         <td>0.2538</td>
         <td><span class="text-danger">-2.7%</span></td>
-        <td>0.2582</td>
-        <td><span class="text-danger">-4.5%</span></td>
+        <td>0.2579</td>
+        <td><span class="text-danger">-4.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
         <td>83</td>
         <td>0.2308</td>
         <td>0.2311</td>
         <td><span class="text-danger">-0.1%</span></td>
-        <td>0.2316</td>
-        <td><span class="text-danger">-0.4%</span></td>
+        <td>0.2313</td>
+        <td><span class="text-danger">-0.2%</span></td>
         <td>0.2491</td>
         <td>0.2654</td>
         <td><span class="text-danger">-6.6%</span></td>
-        <td>0.2606</td>
-        <td><span class="text-danger">-4.6%</span></td>
+        <td>0.2611</td>
+        <td><span class="text-danger">-4.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
         <td>76</td>
@@ -2743,271 +2633,271 @@
         <td>0.2493</td>
         <td>0.2605</td>
         <td><span class="text-danger">-4.5%</span></td>
-        <td>0.2516</td>
-        <td><span class="text-danger">-0.9%</span></td>
+        <td>0.2524</td>
+        <td><span class="text-danger">-1.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>League One</td>
         <td>68</td>
         <td>0.2498</td>
         <td>0.2528</td>
         <td><span class="text-danger">-1.2%</span></td>
-        <td>0.2521</td>
-        <td><span class="text-danger">-0.9%</span></td>
+        <td>0.2510</td>
+        <td><span class="text-danger">-0.5%</span></td>
         <td>0.2491</td>
         <td>0.2431</td>
         <td><span class="text-success">+2.4%</span></td>
-        <td>0.2541</td>
-        <td><span class="text-danger">-2.0%</span></td>
+        <td>0.2545</td>
+        <td><span class="text-danger">-2.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Categoría Primera A</td>
         <td>64</td>
         <td>0.2439</td>
         <td>0.2483</td>
         <td><span class="text-danger">-1.8%</span></td>
-        <td>0.2506</td>
-        <td><span class="text-danger">-2.8%</span></td>
+        <td>0.2505</td>
+        <td><span class="text-danger">-2.7%</span></td>
         <td>0.2498</td>
         <td>0.2470</td>
         <td><span class="text-success">+1.1%</span></td>
-        <td>0.2579</td>
-        <td><span class="text-danger">-3.2%</span></td>
+        <td>0.2568</td>
+        <td><span class="text-danger">-2.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
         <td>62</td>
         <td>0.2500</td>
         <td>0.2414</td>
         <td><span class="text-success">+3.4%</span></td>
-        <td>0.2534</td>
-        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2542</td>
+        <td><span class="text-danger">-1.7%</span></td>
         <td>0.2240</td>
         <td>0.2376</td>
         <td><span class="text-danger">-6.1%</span></td>
-        <td>0.2366</td>
-        <td><span class="text-danger">-5.6%</span></td>
+        <td>0.2377</td>
+        <td><span class="text-danger">-6.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>J1 League</td>
         <td>60</td>
         <td>0.2364</td>
         <td>0.2421</td>
         <td><span class="text-danger">-2.4%</span></td>
-        <td>0.2422</td>
-        <td><span class="text-danger">-2.5%</span></td>
+        <td>0.2427</td>
+        <td><span class="text-danger">-2.7%</span></td>
         <td>0.2497</td>
         <td>0.2568</td>
         <td><span class="text-danger">-2.8%</span></td>
-        <td>0.2599</td>
-        <td><span class="text-danger">-4.1%</span></td>
+        <td>0.2595</td>
+        <td><span class="text-danger">-3.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Serie A</td>
         <td>60</td>
         <td>0.2275</td>
         <td>0.2420</td>
         <td><span class="text-danger">-6.4%</span></td>
-        <td>0.2361</td>
-        <td><span class="text-danger">-3.8%</span></td>
+        <td>0.2347</td>
+        <td><span class="text-danger">-3.2%</span></td>
         <td>0.2431</td>
         <td>0.2450</td>
         <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2463</td>
-        <td><span class="text-danger">-1.3%</span></td>
+        <td>0.2453</td>
+        <td><span class="text-danger">-0.9%</span></td>
     </tr>
-    
-    <tr>
-        <td>Liga ID 100</td>
-        <td>59</td>
-        <td>0.2442</td>
-        <td>0.2579</td>
-        <td><span class="text-danger">-5.6%</span></td>
-        <td>0.2732</td>
-        <td><span class="text-danger">-11.9%</span></td>
-        <td>0.2482</td>
-        <td>0.2492</td>
-        <td><span class="text-danger">-0.4%</span></td>
-        <td>0.2705</td>
-        <td><span class="text-danger">-9.0%</span></td>
-    </tr>
-    
+
     <tr>
         <td>Liga MX Apertura</td>
         <td>55</td>
         <td>0.2493</td>
         <td>0.2586</td>
         <td><span class="text-danger">-3.7%</span></td>
-        <td>0.2524</td>
-        <td><span class="text-danger">-1.3%</span></td>
+        <td>0.2514</td>
+        <td><span class="text-danger">-0.9%</span></td>
         <td>0.2202</td>
         <td>0.2228</td>
         <td><span class="text-danger">-1.2%</span></td>
-        <td>0.2279</td>
-        <td><span class="text-danger">-3.5%</span></td>
+        <td>0.2293</td>
+        <td><span class="text-danger">-4.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Champions League</td>
         <td>54</td>
         <td>0.1828</td>
         <td>0.1868</td>
         <td><span class="text-danger">-2.2%</span></td>
-        <td>0.1878</td>
-        <td><span class="text-danger">-2.8%</span></td>
+        <td>0.1856</td>
+        <td><span class="text-danger">-1.6%</span></td>
         <td>0.2377</td>
         <td>0.2426</td>
         <td><span class="text-danger">-2.1%</span></td>
-        <td>0.2414</td>
-        <td><span class="text-danger">-1.6%</span></td>
+        <td>0.2396</td>
+        <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Conference League</td>
         <td>54</td>
         <td>0.2486</td>
         <td>0.2819</td>
         <td><span class="text-danger">-13.4%</span></td>
-        <td>0.2646</td>
-        <td><span class="text-danger">-6.4%</span></td>
+        <td>0.2651</td>
+        <td><span class="text-danger">-6.6%</span></td>
         <td>0.2445</td>
         <td>0.2472</td>
         <td><span class="text-danger">-1.1%</span></td>
-        <td>0.2471</td>
-        <td><span class="text-danger">-1.1%</span></td>
+        <td>0.2458</td>
+        <td><span class="text-danger">-0.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>54</td>
         <td>0.2281</td>
         <td>0.2332</td>
         <td><span class="text-danger">-2.3%</span></td>
-        <td>0.2312</td>
-        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2331</td>
+        <td><span class="text-danger">-2.2%</span></td>
         <td>0.2445</td>
         <td>0.2486</td>
         <td><span class="text-danger">-1.7%</span></td>
-        <td>0.2538</td>
-        <td><span class="text-danger">-3.8%</span></td>
+        <td>0.2541</td>
+        <td><span class="text-danger">-3.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie A</td>
         <td>52</td>
         <td>0.2496</td>
         <td>0.2618</td>
         <td><span class="text-danger">-4.9%</span></td>
-        <td>0.2604</td>
-        <td><span class="text-danger">-4.3%</span></td>
+        <td>0.2600</td>
+        <td><span class="text-danger">-4.1%</span></td>
         <td>0.2496</td>
         <td>0.2584</td>
         <td><span class="text-danger">-3.5%</span></td>
-        <td>0.2640</td>
-        <td><span class="text-danger">-5.8%</span></td>
+        <td>0.2638</td>
+        <td><span class="text-danger">-5.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>USL Championship</td>
         <td>52</td>
         <td>0.2496</td>
         <td>0.2506</td>
         <td><span class="text-danger">-0.4%</span></td>
-        <td>0.2516</td>
-        <td><span class="text-danger">-0.8%</span></td>
+        <td>0.2511</td>
+        <td><span class="text-danger">-0.6%</span></td>
         <td>0.2441</td>
         <td>0.2444</td>
         <td><span class="text-danger">-0.1%</span></td>
-        <td>0.2464</td>
-        <td><span class="text-danger">-1.0%</span></td>
+        <td>0.2451</td>
+        <td><span class="text-danger">-0.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie B</td>
         <td>51</td>
         <td>0.2499</td>
         <td>0.2530</td>
         <td><span class="text-danger">-1.3%</span></td>
-        <td>0.2522</td>
-        <td><span class="text-danger">-0.9%</span></td>
+        <td>0.2526</td>
+        <td><span class="text-danger">-1.1%</span></td>
         <td>0.2499</td>
         <td>0.2539</td>
         <td><span class="text-danger">-1.6%</span></td>
-        <td>0.2526</td>
-        <td><span class="text-danger">-1.1%</span></td>
+        <td>0.2523</td>
+        <td><span class="text-danger">-1.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>La Liga</td>
         <td>50</td>
         <td>0.2484</td>
         <td>0.2545</td>
         <td><span class="text-danger">-2.5%</span></td>
-        <td>0.2515</td>
+        <td>0.2514</td>
         <td><span class="text-danger">-1.2%</span></td>
         <td>0.2496</td>
         <td>0.2550</td>
         <td><span class="text-danger">-2.2%</span></td>
-        <td>0.2544</td>
-        <td><span class="text-danger">-1.9%</span></td>
+        <td>0.2539</td>
+        <td><span class="text-danger">-1.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Premier League</td>
         <td>50</td>
         <td>0.2436</td>
         <td>0.2644</td>
         <td><span class="text-danger">-8.5%</span></td>
-        <td>0.2521</td>
-        <td><span class="text-danger">-3.5%</span></td>
+        <td>0.2565</td>
+        <td><span class="text-danger">-5.3%</span></td>
         <td>0.2496</td>
         <td>0.2603</td>
         <td><span class="text-danger">-4.3%</span></td>
-        <td>0.2533</td>
-        <td><span class="text-danger">-1.5%</span></td>
+        <td>0.2552</td>
+        <td><span class="text-danger">-2.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Segunda División</td>
         <td>50</td>
         <td>0.2464</td>
         <td>0.2485</td>
         <td><span class="text-danger">-0.9%</span></td>
-        <td>0.2525</td>
-        <td><span class="text-danger">-2.5%</span></td>
+        <td>0.2519</td>
+        <td><span class="text-danger">-2.2%</span></td>
         <td>0.2400</td>
         <td>0.2487</td>
         <td><span class="text-danger">-3.6%</span></td>
-        <td>0.2494</td>
-        <td><span class="text-danger">-3.9%</span></td>
+        <td>0.2471</td>
+        <td><span class="text-danger">-3.0%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Liga ID 100</td>
+        <td>50</td>
+        <td>0.2436</td>
+        <td>0.2594</td>
+        <td><span class="text-danger">-6.5%</span></td>
+        <td>0.2547</td>
+        <td><span class="text-danger">-4.5%</span></td>
+        <td>0.2464</td>
+        <td>0.2471</td>
+        <td><span class="text-danger">-0.3%</span></td>
+        <td>0.2606</td>
+        <td><span class="text-danger">-5.7%</span></td>
+    </tr>
+
     <tr>
         <td>Outras</td>
-        <td>1655</td>
-        <td>0.2479</td>
-        <td>0.2444</td>
-        <td><span class="text-success">+1.4%</span></td>
-        <td>0.2486</td>
+        <td>1596</td>
+        <td>0.2480</td>
+        <td>0.2449</td>
+        <td><span class="text-success">+1.2%</span></td>
+        <td>0.2488</td>
         <td><span class="text-danger">-0.3%</span></td>
-        <td>0.2482</td>
-        <td>0.2462</td>
+        <td>0.2483</td>
+        <td>0.2464</td>
         <td><span class="text-success">+0.8%</span></td>
-        <td>0.2537</td>
-        <td><span class="text-danger">-2.2%</span></td>
+        <td>0.2515</td>
+        <td><span class="text-danger">-1.3%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    
+
     <div class="mb-5">
         <h3 class="fw-bold text-secondary mb-3">
             Historico completo <span class="badge bg-secondary">n=7532</span>
@@ -3030,7 +2920,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>1705</td>
@@ -3038,7 +2928,7 @@
             <td>32.2%</td>
             <td><span class="badge bg-warning text-dark">48.9% (+16.8)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>1982</td>
@@ -3046,7 +2936,7 @@
             <td>45.6%</td>
             <td><span class="badge bg-warning text-dark">54.0% (+8.4)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>2124</td>
@@ -3054,7 +2944,7 @@
             <td>54.6%</td>
             <td><span class="badge bg-success">55.6% (+1.0)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>1071</td>
@@ -3062,7 +2952,7 @@
             <td>64.4%</td>
             <td><span class="badge bg-warning text-dark">58.8% (-5.6)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>500</td>
@@ -3070,7 +2960,7 @@
             <td>74.2%</td>
             <td><span class="badge bg-warning text-dark">65.4% (-8.8)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>80%+</strong></td>
             <td>150</td>
@@ -3078,7 +2968,7 @@
             <td>84.6%</td>
             <td><span class="badge bg-warning text-dark">73.3% (-11.2)</span></td>
         </tr>
-        
+
                             </tbody>
                         </table>
                     </div>
@@ -3101,7 +2991,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
         <tr>
             <td><strong>0% - 39%</strong></td>
             <td>740</td>
@@ -3109,7 +2999,7 @@
             <td>33.5%</td>
             <td><span class="badge bg-warning text-dark">51.8% (+18.3)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>40% - 49%</strong></td>
             <td>1852</td>
@@ -3117,7 +3007,7 @@
             <td>45.3%</td>
             <td><span class="badge bg-warning text-dark">54.6% (+9.3)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>50% - 59%</strong></td>
             <td>3188</td>
@@ -3125,7 +3015,7 @@
             <td>55.3%</td>
             <td><span class="badge bg-success">53.5% (-1.7)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>60% - 69%</strong></td>
             <td>1583</td>
@@ -3133,7 +3023,7 @@
             <td>63.5%</td>
             <td><span class="badge bg-warning text-dark">58.8% (-4.7)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>70% - 79%</strong></td>
             <td>136</td>
@@ -3141,7 +3031,7 @@
             <td>73.4%</td>
             <td><span class="badge bg-warning text-dark">55.1% (-18.2)</span></td>
         </tr>
-        
+
         <tr>
             <td><strong>80%+</strong></td>
             <td>33</td>
@@ -3149,7 +3039,7 @@
             <td>87.0%</td>
             <td><span class="badge bg-warning text-dark">54.5% (-32.5)</span></td>
         </tr>
-        
+
                             </tbody>
                         </table>
                     </div>
@@ -3184,7 +3074,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Club Friendlies</td>
         <td>482</td>
@@ -3195,7 +3085,7 @@
         <td>0.2483</td>
         <td><span class="text-danger">-5.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
         <td>362</td>
@@ -3206,7 +3096,7 @@
         <td>0.2463</td>
         <td><span class="text-danger">-1.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>242</td>
@@ -3217,7 +3107,7 @@
         <td>0.2240</td>
         <td><span class="text-danger">-5.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
         <td>196</td>
@@ -3228,7 +3118,7 @@
         <td>0.2479</td>
         <td><span class="text-danger">-8.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
         <td>180</td>
@@ -3239,7 +3129,7 @@
         <td>0.2351</td>
         <td><span class="text-danger">-10.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie B</td>
         <td>170</td>
@@ -3250,7 +3140,7 @@
         <td>0.2488</td>
         <td><span class="text-danger">-2.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>USL Championship</td>
         <td>167</td>
@@ -3261,7 +3151,7 @@
         <td>0.2468</td>
         <td><span class="text-danger">-3.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>National League</td>
         <td>165</td>
@@ -3272,7 +3162,7 @@
         <td>0.2280</td>
         <td><span class="text-danger">-10.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
         <td>164</td>
@@ -3283,7 +3173,7 @@
         <td>0.2437</td>
         <td><span class="text-danger">-2.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Categoría Primera A</td>
         <td>158</td>
@@ -3294,7 +3184,7 @@
         <td>0.2480</td>
         <td><span class="text-danger">-3.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>League One</td>
         <td>158</td>
@@ -3305,7 +3195,7 @@
         <td>0.2452</td>
         <td><span class="text-danger">-1.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Campeonato de Portugal</td>
         <td>147</td>
@@ -3316,7 +3206,7 @@
         <td>0.2474</td>
         <td><span class="text-success">+0.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>J1 League</td>
         <td>140</td>
@@ -3327,7 +3217,7 @@
         <td>0.2475</td>
         <td><span class="text-danger">-10.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Conference League</td>
         <td>139</td>
@@ -3338,7 +3228,7 @@
         <td>0.2419</td>
         <td><span class="text-danger">-7.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Segunda División</td>
         <td>137</td>
@@ -3349,7 +3239,7 @@
         <td>0.2489</td>
         <td><span class="text-danger">-3.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie A</td>
         <td>134</td>
@@ -3360,7 +3250,7 @@
         <td>0.2391</td>
         <td><span class="text-danger">-10.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>La Liga</td>
         <td>119</td>
@@ -3371,7 +3261,7 @@
         <td>0.2470</td>
         <td><span class="text-danger">-4.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga MX Apertura</td>
         <td>116</td>
@@ -3382,7 +3272,7 @@
         <td>0.2354</td>
         <td><span class="text-success">+0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Nigeria Premier Football League</td>
         <td>115</td>
@@ -3393,7 +3283,7 @@
         <td>0.2500</td>
         <td><span class="text-danger">-0.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>UEFA Nations League</td>
         <td>112</td>
@@ -3404,7 +3294,7 @@
         <td>0.2493</td>
         <td><span class="text-danger">-0.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>110</td>
@@ -3415,7 +3305,7 @@
         <td>0.2497</td>
         <td><span class="text-danger">-4.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Serie A</td>
         <td>110</td>
@@ -3426,7 +3316,7 @@
         <td>0.2433</td>
         <td><span class="text-danger">-6.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Ligue 2</td>
         <td>108</td>
@@ -3437,7 +3327,7 @@
         <td>0.2479</td>
         <td><span class="text-danger">-6.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>Ekstraklasa</td>
         <td>107</td>
@@ -3448,7 +3338,7 @@
         <td>0.2262</td>
         <td><span class="text-danger">-11.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Eredivisie</td>
         <td>106</td>
@@ -3459,7 +3349,7 @@
         <td>0.2069</td>
         <td><span class="text-danger">-2.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>NWSL</td>
         <td>105</td>
@@ -3470,7 +3360,7 @@
         <td>0.2400</td>
         <td><span class="text-danger">-3.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Allsvenskan</td>
         <td>105</td>
@@ -3481,7 +3371,7 @@
         <td>0.2434</td>
         <td><span class="text-danger">-5.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Saudi Pro League</td>
         <td>101</td>
@@ -3492,7 +3382,7 @@
         <td>0.2480</td>
         <td><span class="text-danger">-4.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>Premier League</td>
         <td>100</td>
@@ -3503,7 +3393,7 @@
         <td>0.2499</td>
         <td><span class="text-danger">-4.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Pro League</td>
         <td>99</td>
@@ -3514,7 +3404,7 @@
         <td>0.2498</td>
         <td><span class="text-danger">-8.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Trendyol Super Lig</td>
         <td>99</td>
@@ -3525,7 +3415,7 @@
         <td>0.2479</td>
         <td><span class="text-danger">-2.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Portugal Betclic</td>
         <td>96</td>
@@ -3536,7 +3426,7 @@
         <td>0.2496</td>
         <td><span class="text-danger">-3.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Champions League</td>
         <td>96</td>
@@ -3547,7 +3437,7 @@
         <td>0.2369</td>
         <td><span class="text-success">+1.1%</span></td>
     </tr>
-    
+
     <tr>
         <td>Superliga</td>
         <td>94</td>
@@ -3558,7 +3448,7 @@
         <td>0.2495</td>
         <td><span class="text-danger">-5.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga 3</td>
         <td>90</td>
@@ -3569,7 +3459,7 @@
         <td>0.2500</td>
         <td><span class="text-success">+1.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Ligue 1</td>
         <td>90</td>
@@ -3580,7 +3470,7 @@
         <td>0.2421</td>
         <td><span class="text-danger">-6.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Portugal 2</td>
         <td>89</td>
@@ -3591,7 +3481,7 @@
         <td>0.2500</td>
         <td><span class="text-danger">-1.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>CAF Champions League</td>
         <td>89</td>
@@ -3602,7 +3492,7 @@
         <td>0.2113</td>
         <td><span class="text-danger">-14.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Eliteserien</td>
         <td>86</td>
@@ -3613,7 +3503,7 @@
         <td>0.2196</td>
         <td><span class="text-danger">-10.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>K League 1</td>
         <td>84</td>
@@ -3624,7 +3514,7 @@
         <td>0.2385</td>
         <td><span class="text-danger">-9.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Taça de Portugal</td>
         <td>82</td>
@@ -3635,7 +3525,7 @@
         <td>0.2427</td>
         <td><span class="text-danger">-14.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Carabao Cup</td>
         <td>81</td>
@@ -3646,7 +3536,7 @@
         <td>0.2454</td>
         <td><span class="text-danger">-5.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Bundesliga</td>
         <td>81</td>
@@ -3657,7 +3547,7 @@
         <td>0.2390</td>
         <td><span class="text-danger">-0.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>CONCACAF Nations League</td>
         <td>80</td>
@@ -3668,7 +3558,7 @@
         <td>0.2475</td>
         <td><span class="text-danger">-6.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga F</td>
         <td>79</td>
@@ -3679,7 +3569,7 @@
         <td>0.2500</td>
         <td><span class="text-danger">-6.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Chinese Super League</td>
         <td>76</td>
@@ -3690,7 +3580,7 @@
         <td>0.2360</td>
         <td><span class="text-danger">-0.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>Parva Liga</td>
         <td>75</td>
@@ -3701,7 +3591,7 @@
         <td>0.2500</td>
         <td><span class="text-danger">-6.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>International Friendly Games</td>
         <td>73</td>
@@ -3712,7 +3602,7 @@
         <td>0.2443</td>
         <td><span class="text-danger">-7.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Emperor Cup</td>
         <td>72</td>
@@ -3723,7 +3613,7 @@
         <td>0.2498</td>
         <td><span class="text-danger">-17.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Veikkausliiga</td>
         <td>71</td>
@@ -3734,7 +3624,7 @@
         <td>0.2496</td>
         <td><span class="text-danger">-1.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Danish Superliga</td>
         <td>71</td>
@@ -3745,7 +3635,7 @@
         <td>0.2416</td>
         <td><span class="text-danger">-14.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Scottish Premiership</td>
         <td>69</td>
@@ -3756,7 +3646,7 @@
         <td>0.2474</td>
         <td><span class="text-danger">-6.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>Stoiximan Super League</td>
         <td>69</td>
@@ -3767,7 +3657,7 @@
         <td>0.2499</td>
         <td><span class="text-success">+3.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Super League</td>
         <td>66</td>
@@ -3778,7 +3668,7 @@
         <td>0.2169</td>
         <td><span class="text-danger">-14.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>2. Bundesliga</td>
         <td>63</td>
@@ -3789,7 +3679,7 @@
         <td>0.2484</td>
         <td><span class="text-success">+4.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga ID 100</td>
         <td>60</td>
@@ -3800,7 +3690,7 @@
         <td>0.2475</td>
         <td><span class="text-danger">-0.2%</span></td>
     </tr>
-    
+
     <tr>
         <td>Copa del Rey</td>
         <td>58</td>
@@ -3811,7 +3701,7 @@
         <td>0.2473</td>
         <td><span class="text-danger">-12.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Tunisian Ligue Professionnelle 1</td>
         <td>56</td>
@@ -3822,7 +3712,7 @@
         <td>0.2487</td>
         <td><span class="text-danger">-9.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Botola Pro</td>
         <td>54</td>
@@ -3833,7 +3723,7 @@
         <td>0.2486</td>
         <td><span class="text-success">+2.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Outras</td>
         <td>629</td>
@@ -3844,7 +3734,7 @@
         <td>0.2486</td>
         <td><span class="text-danger">-2.3%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
@@ -3865,45 +3755,45 @@
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
     <p class="mb-1"><strong>Over 2.5</strong>
-        <span class="text-muted">(n=7448, baseline 0.2474)</span></p>
+        <span class="text-muted">(n=6689, baseline 0.2472)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2559</strong> |
+        Modelo actual &nbsp; Brier <strong>0.2556</strong> |
         <span class="text-danger">skill -3.4%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2539</strong> |
-        <span class="text-danger">skill -2.6%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2555</strong> |
+        <span class="text-danger">skill -3.3%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=7448):
-        diferenca media <strong>+0.0021</strong> |
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=6689):
+        diferenca media <strong>+0.0001</strong> |
         erro padrao 0.0019 |
-        t = <strong>+1.06</strong>
+        t = <strong>+0.07</strong>
         <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
     </p>
-    
+
     </div>
                 <div class="col-md-6">
     <p class="mb-1"><strong>BTTS</strong>
-        <span class="text-muted">(n=7448, baseline 0.2477)</span></p>
+        <span class="text-muted">(n=6689, baseline 0.2474)</span></p>
     <p class="small mb-1">
-        Modelo actual &nbsp; Brier <strong>0.2552</strong> |
-        <span class="text-danger">skill -3.0%</span>
+        Modelo actual &nbsp; Brier <strong>0.2543</strong> |
+        <span class="text-danger">skill -2.8%</span>
     </p>
     <p class="small mb-1">
-        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2575</strong> |
-        <span class="text-danger">skill -4.0%</span>
+        Trivial (taxa base da liga) &nbsp; Brier <strong>0.2585</strong> |
+        <span class="text-danger">skill -4.5%</span>
     </p>
-    
+
     <p class="small mb-0">
-        Teste emparelhado (erro quadratico actual &minus; trivial, n=7448):
-        diferenca media <strong>-0.0023</strong> |
+        Teste emparelhado (erro quadratico actual &minus; trivial, n=6689):
+        diferenca media <strong>-0.0042</strong> |
         erro padrao 0.0018 |
-        t = <strong>-1.29</strong>
-        <span class="text-muted">(nao significativo (|t| &lt; 2))</span>
+        t = <strong>-2.28</strong>
+        <span class="text-dark">(significativo)</span>
     </p>
-    
+
     </div>
             </div>
 
@@ -3930,916 +3820,856 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
     <tr>
         <td>Club Friendlies</td>
-        <td>481</td>
-        <td>0.2449</td>
-        <td>0.2577</td>
-        <td><span class="text-danger">-5.2%</span></td>
-        <td>0.2491</td>
-        <td><span class="text-danger">-1.7%</span></td>
-        <td>0.2482</td>
-        <td>0.2610</td>
+        <td>397</td>
+        <td>0.2452</td>
+        <td>0.2543</td>
+        <td><span class="text-danger">-3.7%</span></td>
+        <td>0.2478</td>
+        <td><span class="text-danger">-1.1%</span></td>
+        <td>0.2485</td>
+        <td>0.2583</td>
+        <td><span class="text-danger">-4.0%</span></td>
+        <td>0.2612</td>
         <td><span class="text-danger">-5.1%</span></td>
-        <td>0.2518</td>
-        <td><span class="text-danger">-1.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>FA Cup</td>
-        <td>361</td>
-        <td>0.2280</td>
-        <td>0.2439</td>
-        <td><span class="text-danger">-7.0%</span></td>
-        <td>0.2333</td>
+        <td>250</td>
+        <td>0.2244</td>
+        <td>0.2465</td>
+        <td><span class="text-danger">-9.8%</span></td>
+        <td>0.2254</td>
+        <td><span class="text-danger">-0.4%</span></td>
+        <td>0.2473</td>
+        <td>0.2529</td>
         <td><span class="text-danger">-2.3%</span></td>
-        <td>0.2461</td>
-        <td>0.2494</td>
-        <td><span class="text-danger">-1.3%</span></td>
-        <td>0.2512</td>
-        <td><span class="text-danger">-2.1%</span></td>
+        <td>0.2490</td>
+        <td><span class="text-danger">-0.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>MLS</td>
         <td>241</td>
         <td>0.2203</td>
         <td>0.2440</td>
         <td><span class="text-danger">-10.7%</span></td>
-        <td>0.2281</td>
-        <td><span class="text-danger">-3.5%</span></td>
+        <td>0.2408</td>
+        <td><span class="text-danger">-9.3%</span></td>
         <td>0.2231</td>
         <td>0.2371</td>
         <td><span class="text-danger">-6.2%</span></td>
-        <td>0.2312</td>
-        <td><span class="text-danger">-3.6%</span></td>
+        <td>0.2586</td>
+        <td><span class="text-danger">-15.9%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Profesional de Fútbol</td>
-        <td>195</td>
-        <td>0.2465</td>
-        <td>0.2597</td>
-        <td><span class="text-danger">-5.4%</span></td>
-        <td>0.2546</td>
-        <td><span class="text-danger">-3.3%</span></td>
-        <td>0.2481</td>
-        <td>0.2694</td>
-        <td><span class="text-danger">-8.6%</span></td>
-        <td>0.2556</td>
-        <td><span class="text-danger">-3.0%</span></td>
+        <td>190</td>
+        <td>0.2460</td>
+        <td>0.2547</td>
+        <td><span class="text-danger">-3.5%</span></td>
+        <td>0.2696</td>
+        <td><span class="text-danger">-9.6%</span></td>
+        <td>0.2482</td>
+        <td>0.2661</td>
+        <td><span class="text-danger">-7.2%</span></td>
+        <td>0.2680</td>
+        <td><span class="text-danger">-8.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Championship</td>
-        <td>179</td>
-        <td>0.2356</td>
-        <td>0.2738</td>
-        <td><span class="text-danger">-16.2%</span></td>
-        <td>0.2414</td>
+        <td>169</td>
+        <td>0.2380</td>
+        <td>0.2700</td>
+        <td><span class="text-danger">-13.4%</span></td>
+        <td>0.2439</td>
         <td><span class="text-danger">-2.5%</span></td>
-        <td>0.2356</td>
-        <td>0.2612</td>
-        <td><span class="text-danger">-10.9%</span></td>
-        <td>0.2412</td>
-        <td><span class="text-danger">-2.4%</span></td>
+        <td>0.2380</td>
+        <td>0.2594</td>
+        <td><span class="text-danger">-9.0%</span></td>
+        <td>0.2444</td>
+        <td><span class="text-danger">-2.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Brasileirão Serie B</td>
-        <td>169</td>
-        <td>0.2489</td>
-        <td>0.2605</td>
-        <td><span class="text-danger">-4.6%</span></td>
-        <td>0.2596</td>
-        <td><span class="text-danger">-4.3%</span></td>
-        <td>0.2485</td>
-        <td>0.2561</td>
-        <td><span class="text-danger">-3.0%</span></td>
-        <td>0.2600</td>
-        <td><span class="text-danger">-4.6%</span></td>
+        <td>162</td>
+        <td>0.2497</td>
+        <td>0.2649</td>
+        <td><span class="text-danger">-6.1%</span></td>
+        <td>0.2584</td>
+        <td><span class="text-danger">-3.5%</span></td>
+        <td>0.2486</td>
+        <td>0.2591</td>
+        <td><span class="text-danger">-4.2%</span></td>
+        <td>0.2507</td>
+        <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>USL Championship</td>
-        <td>166</td>
-        <td>0.2500</td>
-        <td>0.2674</td>
-        <td><span class="text-danger">-7.0%</span></td>
-        <td>0.2571</td>
-        <td><span class="text-danger">-2.8%</span></td>
-        <td>0.2464</td>
-        <td>0.2541</td>
-        <td><span class="text-danger">-3.1%</span></td>
-        <td>0.2544</td>
-        <td><span class="text-danger">-3.3%</span></td>
+        <td>156</td>
+        <td>0.2498</td>
+        <td>0.2629</td>
+        <td><span class="text-danger">-5.2%</span></td>
+        <td>0.2628</td>
+        <td><span class="text-danger">-5.2%</span></td>
+        <td>0.2441</td>
+        <td>0.2512</td>
+        <td><span class="text-danger">-2.9%</span></td>
+        <td>0.2550</td>
+        <td><span class="text-danger">-4.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>National League</td>
-        <td>164</td>
-        <td>0.2303</td>
-        <td>0.2540</td>
-        <td><span class="text-danger">-10.3%</span></td>
-        <td>0.2401</td>
-        <td><span class="text-danger">-4.2%</span></td>
-        <td>0.2268</td>
-        <td>0.2500</td>
-        <td><span class="text-danger">-10.2%</span></td>
-        <td>0.2370</td>
-        <td><span class="text-danger">-4.5%</span></td>
+        <td>153</td>
+        <td>0.2320</td>
+        <td>0.2513</td>
+        <td><span class="text-danger">-8.3%</span></td>
+        <td>0.2372</td>
+        <td><span class="text-danger">-2.2%</span></td>
+        <td>0.2284</td>
+        <td>0.2488</td>
+        <td><span class="text-danger">-8.9%</span></td>
+        <td>0.2302</td>
+        <td><span class="text-danger">-0.8%</span></td>
     </tr>
-    
+
     <tr>
         <td>League Two</td>
-        <td>163</td>
-        <td>0.2492</td>
-        <td>0.2530</td>
-        <td><span class="text-danger">-1.5%</span></td>
-        <td>0.2606</td>
+        <td>152</td>
+        <td>0.2489</td>
+        <td>0.2521</td>
+        <td><span class="text-danger">-1.3%</span></td>
+        <td>0.2525</td>
+        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2403</td>
+        <td>0.2513</td>
         <td><span class="text-danger">-4.6%</span></td>
-        <td>0.2431</td>
-        <td>0.2502</td>
-        <td><span class="text-danger">-2.9%</span></td>
-        <td>0.2528</td>
-        <td><span class="text-danger">-4.0%</span></td>
+        <td>0.2536</td>
+        <td><span class="text-danger">-5.5%</span></td>
     </tr>
-    
+
     <tr>
         <td>Categoría Primera A</td>
-        <td>157</td>
-        <td>0.2495</td>
-        <td>0.2656</td>
-        <td><span class="text-danger">-6.4%</span></td>
-        <td>0.2587</td>
-        <td><span class="text-danger">-3.7%</span></td>
-        <td>0.2477</td>
-        <td>0.2587</td>
-        <td><span class="text-danger">-4.5%</span></td>
-        <td>0.2582</td>
-        <td><span class="text-danger">-4.2%</span></td>
-    </tr>
-    
-    <tr>
-        <td>League One</td>
-        <td>157</td>
-        <td>0.2495</td>
-        <td>0.2485</td>
-        <td><span class="text-success">+0.4%</span></td>
-        <td>0.2590</td>
-        <td><span class="text-danger">-3.8%</span></td>
-        <td>0.2455</td>
-        <td>0.2511</td>
-        <td><span class="text-danger">-2.3%</span></td>
-        <td>0.2526</td>
+        <td>151</td>
+        <td>0.2497</td>
+        <td>0.2663</td>
+        <td><span class="text-danger">-6.7%</span></td>
+        <td>0.2581</td>
+        <td><span class="text-danger">-3.4%</span></td>
+        <td>0.2475</td>
+        <td>0.2574</td>
+        <td><span class="text-danger">-4.0%</span></td>
+        <td>0.2548</td>
         <td><span class="text-danger">-2.9%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Campeonato de Portugal</td>
+        <td>League One</td>
         <td>146</td>
-        <td>0.2500</td>
-        <td>0.2482</td>
-        <td><span class="text-success">+0.7%</span></td>
-        <td>0.2601</td>
-        <td><span class="text-danger">-4.1%</span></td>
-        <td>0.2477</td>
-        <td>0.2468</td>
-        <td><span class="text-success">+0.4%</span></td>
-        <td>0.2561</td>
-        <td><span class="text-danger">-3.4%</span></td>
+        <td>0.2496</td>
+        <td>0.2518</td>
+        <td><span class="text-danger">-0.9%</span></td>
+        <td>0.2549</td>
+        <td><span class="text-danger">-2.1%</span></td>
+        <td>0.2470</td>
+        <td>0.2479</td>
+        <td><span class="text-danger">-0.4%</span></td>
+        <td>0.2528</td>
+        <td><span class="text-danger">-2.3%</span></td>
     </tr>
-    
-    <tr>
-        <td>J1 League</td>
-        <td>139</td>
-        <td>0.2453</td>
-        <td>0.2713</td>
-        <td><span class="text-danger">-10.6%</span></td>
-        <td>0.2555</td>
-        <td><span class="text-danger">-4.1%</span></td>
-        <td>0.2478</td>
-        <td>0.2742</td>
-        <td><span class="text-danger">-10.6%</span></td>
-        <td>0.2581</td>
-        <td><span class="text-danger">-4.1%</span></td>
-    </tr>
-    
+
     <tr>
         <td>Conference League</td>
-        <td>138</td>
-        <td>0.2466</td>
-        <td>0.2702</td>
-        <td><span class="text-danger">-9.6%</span></td>
-        <td>0.2569</td>
-        <td><span class="text-danger">-4.2%</span></td>
-        <td>0.2411</td>
-        <td>0.2606</td>
-        <td><span class="text-danger">-8.1%</span></td>
-        <td>0.2516</td>
-        <td><span class="text-danger">-4.3%</span></td>
+        <td>132</td>
+        <td>0.2463</td>
+        <td>0.2711</td>
+        <td><span class="text-danger">-10.1%</span></td>
+        <td>0.2608</td>
+        <td><span class="text-danger">-5.9%</span></td>
+        <td>0.2388</td>
+        <td>0.2607</td>
+        <td><span class="text-danger">-9.2%</span></td>
+        <td>0.2577</td>
+        <td><span class="text-danger">-7.9%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>J1 League</td>
+        <td>130</td>
+        <td>0.2462</td>
+        <td>0.2681</td>
+        <td><span class="text-danger">-8.9%</span></td>
+        <td>0.2511</td>
+        <td><span class="text-danger">-2.0%</span></td>
+        <td>0.2485</td>
+        <td>0.2683</td>
+        <td><span class="text-danger">-8.0%</span></td>
+        <td>0.2525</td>
+        <td><span class="text-danger">-1.6%</span></td>
+    </tr>
+
     <tr>
         <td>Segunda División</td>
-        <td>136</td>
-        <td>0.2498</td>
-        <td>0.2552</td>
+        <td>129</td>
+        <td>0.2496</td>
+        <td>0.2559</td>
+        <td><span class="text-danger">-2.5%</span></td>
+        <td>0.2637</td>
+        <td><span class="text-danger">-5.6%</span></td>
+        <td>0.2488</td>
+        <td>0.2543</td>
         <td><span class="text-danger">-2.2%</span></td>
-        <td>0.2630</td>
-        <td><span class="text-danger">-5.3%</span></td>
-        <td>0.2486</td>
-        <td>0.2537</td>
-        <td><span class="text-danger">-2.0%</span></td>
-        <td>0.2621</td>
-        <td><span class="text-danger">-5.4%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Brasileirão Serie A</td>
-        <td>133</td>
-        <td>0.2476</td>
-        <td>0.2627</td>
-        <td><span class="text-danger">-6.1%</span></td>
         <td>0.2580</td>
-        <td><span class="text-danger">-4.2%</span></td>
-        <td>0.2397</td>
-        <td>0.2642</td>
-        <td><span class="text-danger">-10.2%</span></td>
-        <td>0.2485</td>
         <td><span class="text-danger">-3.7%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Brasileirão Serie A</td>
+        <td>124</td>
+        <td>0.2458</td>
+        <td>0.2763</td>
+        <td><span class="text-danger">-12.4%</span></td>
+        <td>0.2527</td>
+        <td><span class="text-danger">-2.8%</span></td>
+        <td>0.2373</td>
+        <td>0.2708</td>
+        <td><span class="text-danger">-14.1%</span></td>
+        <td>0.2423</td>
+        <td><span class="text-danger">-2.1%</span></td>
+    </tr>
+
+    <tr>
+        <td>Campeonato de Portugal</td>
+        <td>120</td>
+        <td>0.2500</td>
+        <td>0.2507</td>
+        <td><span class="text-danger">-0.3%</span></td>
+        <td>0.2519</td>
+        <td><span class="text-danger">-0.7%</span></td>
+        <td>0.2475</td>
+        <td>0.2464</td>
+        <td><span class="text-success">+0.4%</span></td>
+        <td>0.2529</td>
+        <td><span class="text-danger">-2.2%</span></td>
+    </tr>
+
     <tr>
         <td>La Liga</td>
-        <td>118</td>
-        <td>0.2474</td>
-        <td>0.2521</td>
-        <td><span class="text-danger">-1.9%</span></td>
-        <td>0.2583</td>
-        <td><span class="text-danger">-4.4%</span></td>
-        <td>0.2465</td>
-        <td>0.2587</td>
-        <td><span class="text-danger">-4.9%</span></td>
-        <td>0.2623</td>
-        <td><span class="text-danger">-6.4%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Liga MX Apertura</td>
         <td>115</td>
-        <td>0.2495</td>
-        <td>0.2539</td>
-        <td><span class="text-danger">-1.8%</span></td>
-        <td>0.2653</td>
-        <td><span class="text-danger">-6.3%</span></td>
-        <td>0.2341</td>
-        <td>0.2343</td>
-        <td><span class="text-danger">-0.1%</span></td>
-        <td>0.2507</td>
-        <td><span class="text-danger">-7.1%</span></td>
+        <td>0.2485</td>
+        <td>0.2505</td>
+        <td><span class="text-danger">-0.8%</span></td>
+        <td>0.2647</td>
+        <td><span class="text-danger">-6.5%</span></td>
+        <td>0.2468</td>
+        <td>0.2546</td>
+        <td><span class="text-danger">-3.2%</span></td>
+        <td>0.2556</td>
+        <td><span class="text-danger">-3.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Nigeria Premier Football League</td>
         <td>114</td>
         <td>0.2370</td>
         <td>0.2387</td>
         <td><span class="text-danger">-0.7%</span></td>
-        <td>0.2533</td>
-        <td><span class="text-danger">-6.9%</span></td>
+        <td>0.2602</td>
+        <td><span class="text-danger">-9.8%</span></td>
         <td>0.2500</td>
         <td>0.2523</td>
         <td><span class="text-danger">-0.9%</span></td>
-        <td>0.2650</td>
-        <td><span class="text-danger">-6.0%</span></td>
-    </tr>
-    
-    <tr>
-        <td>UEFA Nations League</td>
-        <td>111</td>
-        <td>0.2500</td>
-        <td>0.2475</td>
-        <td><span class="text-success">+1.0%</span></td>
-        <td>0.2661</td>
-        <td><span class="text-danger">-6.5%</span></td>
-        <td>0.2490</td>
-        <td>0.2499</td>
-        <td><span class="text-danger">-0.3%</span></td>
-        <td>0.2655</td>
+        <td>0.2666</td>
         <td><span class="text-danger">-6.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>Europa League</td>
         <td>109</td>
         <td>0.2323</td>
         <td>0.2616</td>
         <td><span class="text-danger">-12.6%</span></td>
-        <td>0.2448</td>
-        <td><span class="text-danger">-5.4%</span></td>
+        <td>0.2536</td>
+        <td><span class="text-danger">-9.2%</span></td>
         <td>0.2498</td>
         <td>0.2617</td>
         <td><span class="text-danger">-4.8%</span></td>
-        <td>0.2633</td>
-        <td><span class="text-danger">-5.4%</span></td>
+        <td>0.2797</td>
+        <td><span class="text-danger">-12.0%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Liga MX Apertura</td>
+        <td>109</td>
+        <td>0.2498</td>
+        <td>0.2542</td>
+        <td><span class="text-danger">-1.7%</span></td>
+        <td>0.2557</td>
+        <td><span class="text-danger">-2.3%</span></td>
+        <td>0.2323</td>
+        <td>0.2316</td>
+        <td><span class="text-success">+0.3%</span></td>
+        <td>0.2391</td>
+        <td><span class="text-danger">-2.9%</span></td>
+    </tr>
+
     <tr>
         <td>Serie A</td>
-        <td>109</td>
-        <td>0.2389</td>
-        <td>0.2528</td>
-        <td><span class="text-danger">-5.8%</span></td>
-        <td>0.2555</td>
-        <td><span class="text-danger">-7.0%</span></td>
-        <td>0.2439</td>
+        <td>102</td>
+        <td>0.2362</td>
+        <td>0.2529</td>
+        <td><span class="text-danger">-7.1%</span></td>
+        <td>0.2466</td>
+        <td><span class="text-danger">-4.4%</span></td>
+        <td>0.2422</td>
         <td>0.2593</td>
-        <td><span class="text-danger">-6.3%</span></td>
-        <td>0.2572</td>
-        <td><span class="text-danger">-5.4%</span></td>
+        <td><span class="text-danger">-7.1%</span></td>
+        <td>0.2630</td>
+        <td><span class="text-danger">-8.6%</span></td>
     </tr>
-    
-    <tr>
-        <td>Ligue 2</td>
-        <td>107</td>
-        <td>0.2495</td>
-        <td>0.2725</td>
-        <td><span class="text-danger">-9.3%</span></td>
-        <td>0.2661</td>
-        <td><span class="text-danger">-6.7%</span></td>
-        <td>0.2482</td>
-        <td>0.2643</td>
-        <td><span class="text-danger">-6.5%</span></td>
-        <td>0.2644</td>
-        <td><span class="text-danger">-6.5%</span></td>
-    </tr>
-    
+
     <tr>
         <td>Ekstraklasa</td>
-        <td>106</td>
+        <td>101</td>
         <td>0.2392</td>
-        <td>0.2571</td>
-        <td><span class="text-danger">-7.5%</span></td>
-        <td>0.2509</td>
-        <td><span class="text-danger">-4.9%</span></td>
-        <td>0.2272</td>
-        <td>0.2520</td>
-        <td><span class="text-danger">-10.9%</span></td>
-        <td>0.2377</td>
-        <td><span class="text-danger">-4.6%</span></td>
+        <td>0.2590</td>
+        <td><span class="text-danger">-8.3%</span></td>
+        <td>0.2526</td>
+        <td><span class="text-danger">-5.6%</span></td>
+        <td>0.2264</td>
+        <td>0.2557</td>
+        <td><span class="text-danger">-12.9%</span></td>
+        <td>0.2348</td>
+        <td><span class="text-danger">-3.7%</span></td>
     </tr>
-    
-    <tr>
-        <td>Eredivisie</td>
-        <td>105</td>
-        <td>0.2041</td>
-        <td>0.2360</td>
-        <td><span class="text-danger">-15.6%</span></td>
-        <td>0.2130</td>
-        <td><span class="text-danger">-4.4%</span></td>
-        <td>0.2041</td>
-        <td>0.2089</td>
-        <td><span class="text-danger">-2.4%</span></td>
-        <td>0.2220</td>
-        <td><span class="text-danger">-8.8%</span></td>
-    </tr>
-    
+
     <tr>
         <td>NWSL</td>
-        <td>104</td>
-        <td>0.2441</td>
-        <td>0.2829</td>
-        <td><span class="text-danger">-15.9%</span></td>
-        <td>0.2598</td>
-        <td><span class="text-danger">-6.5%</span></td>
-        <td>0.2408</td>
-        <td>0.2498</td>
+        <td>99</td>
+        <td>0.2443</td>
+        <td>0.2836</td>
+        <td><span class="text-danger">-16.1%</span></td>
+        <td>0.2580</td>
+        <td><span class="text-danger">-5.6%</span></td>
+        <td>0.2426</td>
+        <td>0.2517</td>
         <td><span class="text-danger">-3.7%</span></td>
-        <td>0.2550</td>
-        <td><span class="text-danger">-5.9%</span></td>
+        <td>0.2578</td>
+        <td><span class="text-danger">-6.3%</span></td>
     </tr>
-    
+
     <tr>
         <td>Allsvenskan</td>
-        <td>104</td>
-        <td>0.2499</td>
-        <td>0.2505</td>
-        <td><span class="text-danger">-0.2%</span></td>
-        <td>0.2663</td>
-        <td><span class="text-danger">-6.6%</span></td>
-        <td>0.2425</td>
-        <td>0.2582</td>
-        <td><span class="text-danger">-6.4%</span></td>
-        <td>0.2603</td>
-        <td><span class="text-danger">-7.3%</span></td>
+        <td>99</td>
+        <td>0.2498</td>
+        <td>0.2549</td>
+        <td><span class="text-danger">-2.0%</span></td>
+        <td>0.2592</td>
+        <td><span class="text-danger">-3.8%</span></td>
+        <td>0.2426</td>
+        <td>0.2557</td>
+        <td><span class="text-danger">-5.4%</span></td>
+        <td>0.2473</td>
+        <td><span class="text-danger">-1.9%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Ligue 2</td>
+        <td>99</td>
+        <td>0.2498</td>
+        <td>0.2594</td>
+        <td><span class="text-danger">-3.9%</span></td>
+        <td>0.2537</td>
+        <td><span class="text-danger">-1.6%</span></td>
+        <td>0.2469</td>
+        <td>0.2630</td>
+        <td><span class="text-danger">-6.5%</span></td>
+        <td>0.2568</td>
+        <td><span class="text-danger">-4.0%</span></td>
+    </tr>
+
+    <tr>
+        <td>Eredivisie</td>
+        <td>97</td>
+        <td>0.1962</td>
+        <td>0.2329</td>
+        <td><span class="text-danger">-18.7%</span></td>
+        <td>0.2153</td>
+        <td><span class="text-danger">-9.7%</span></td>
+        <td>0.1962</td>
+        <td>0.2042</td>
+        <td><span class="text-danger">-4.1%</span></td>
+        <td>0.2222</td>
+        <td><span class="text-danger">-13.3%</span></td>
+    </tr>
+
     <tr>
         <td>Saudi Pro League</td>
-        <td>100</td>
-        <td>0.2451</td>
-        <td>0.2641</td>
-        <td><span class="text-danger">-7.7%</span></td>
-        <td>0.2587</td>
-        <td><span class="text-danger">-5.5%</span></td>
-        <td>0.2484</td>
-        <td>0.2608</td>
-        <td><span class="text-danger">-5.0%</span></td>
-        <td>0.2624</td>
-        <td><span class="text-danger">-5.7%</span></td>
+        <td>95</td>
+        <td>0.2466</td>
+        <td>0.2501</td>
+        <td><span class="text-danger">-1.4%</span></td>
+        <td>0.2618</td>
+        <td><span class="text-danger">-6.1%</span></td>
+        <td>0.2493</td>
+        <td>0.2513</td>
+        <td><span class="text-danger">-0.8%</span></td>
+        <td>0.2807</td>
+        <td><span class="text-danger">-12.6%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Premier League</td>
-        <td>99</td>
-        <td>0.2488</td>
-        <td>0.2621</td>
-        <td><span class="text-danger">-5.3%</span></td>
-        <td>0.2667</td>
-        <td><span class="text-danger">-7.2%</span></td>
-        <td>0.2500</td>
-        <td>0.2619</td>
-        <td><span class="text-danger">-4.8%</span></td>
-        <td>0.2633</td>
-        <td><span class="text-danger">-5.3%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Pro League</td>
-        <td>98</td>
-        <td>0.2324</td>
-        <td>0.2601</td>
-        <td><span class="text-danger">-11.9%</span></td>
-        <td>0.2451</td>
-        <td><span class="text-danger">-5.4%</span></td>
-        <td>0.2499</td>
-        <td>0.2653</td>
+        <td>UEFA Nations League</td>
+        <td>95</td>
+        <td>0.2493</td>
+        <td>0.2478</td>
+        <td><span class="text-success">+0.6%</span></td>
+        <td>0.2648</td>
         <td><span class="text-danger">-6.2%</span></td>
-        <td>0.2670</td>
-        <td><span class="text-danger">-6.9%</span></td>
+        <td>0.2498</td>
+        <td>0.2482</td>
+        <td><span class="text-success">+0.6%</span></td>
+        <td>0.2508</td>
+        <td><span class="text-danger">-0.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Trendyol Super Lig</td>
-        <td>98</td>
-        <td>0.2416</td>
-        <td>0.2490</td>
-        <td><span class="text-danger">-3.1%</span></td>
-        <td>0.2585</td>
-        <td><span class="text-danger">-7.0%</span></td>
-        <td>0.2474</td>
-        <td>0.2556</td>
-        <td><span class="text-danger">-3.3%</span></td>
-        <td>0.2655</td>
-        <td><span class="text-danger">-7.3%</span></td>
+        <td>93</td>
+        <td>0.2373</td>
+        <td>0.2505</td>
+        <td><span class="text-danger">-5.6%</span></td>
+        <td>0.2516</td>
+        <td><span class="text-danger">-6.1%</span></td>
+        <td>0.2465</td>
+        <td>0.2558</td>
+        <td><span class="text-danger">-3.8%</span></td>
+        <td>0.2721</td>
+        <td><span class="text-danger">-10.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Portugal Betclic</td>
-        <td>95</td>
-        <td>0.2486</td>
-        <td>0.2580</td>
-        <td><span class="text-danger">-3.8%</span></td>
-        <td>0.2632</td>
-        <td><span class="text-danger">-5.8%</span></td>
-        <td>0.2493</td>
-        <td>0.2589</td>
-        <td><span class="text-danger">-3.9%</span></td>
-        <td>0.2681</td>
-        <td><span class="text-danger">-7.5%</span></td>
+        <td>91</td>
+        <td>0.2476</td>
+        <td>0.2604</td>
+        <td><span class="text-danger">-5.2%</span></td>
+        <td>0.2759</td>
+        <td><span class="text-danger">-11.4%</span></td>
+        <td>0.2497</td>
+        <td>0.2600</td>
+        <td><span class="text-danger">-4.1%</span></td>
+        <td>0.2628</td>
+        <td><span class="text-danger">-5.3%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Champions League</td>
-        <td>95</td>
-        <td>0.1939</td>
-        <td>0.2106</td>
-        <td><span class="text-danger">-8.6%</span></td>
-        <td>0.2139</td>
-        <td><span class="text-danger">-10.3%</span></td>
-        <td>0.2353</td>
-        <td>0.2365</td>
-        <td><span class="text-danger">-0.5%</span></td>
-        <td>0.2523</td>
-        <td><span class="text-danger">-7.2%</span></td>
+        <td>Premier League</td>
+        <td>91</td>
+        <td>0.2476</td>
+        <td>0.2660</td>
+        <td><span class="text-danger">-7.4%</span></td>
+        <td>0.2622</td>
+        <td><span class="text-danger">-5.9%</span></td>
+        <td>0.2500</td>
+        <td>0.2617</td>
+        <td><span class="text-danger">-4.7%</span></td>
+        <td>0.2624</td>
+        <td><span class="text-danger">-5.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Superliga</td>
-        <td>93</td>
-        <td>0.2477</td>
-        <td>0.2599</td>
-        <td><span class="text-danger">-4.9%</span></td>
-        <td>0.2653</td>
-        <td><span class="text-danger">-7.1%</span></td>
-        <td>0.2497</td>
-        <td>0.2619</td>
-        <td><span class="text-danger">-4.9%</span></td>
-        <td>0.2670</td>
-        <td><span class="text-danger">-6.9%</span></td>
+        <td>90</td>
+        <td>0.2469</td>
+        <td>0.2593</td>
+        <td><span class="text-danger">-5.0%</span></td>
+        <td>0.2543</td>
+        <td><span class="text-danger">-3.0%</span></td>
+        <td>0.2499</td>
+        <td>0.2618</td>
+        <td><span class="text-danger">-4.8%</span></td>
+        <td>0.2611</td>
+        <td><span class="text-danger">-4.5%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Liga 3</td>
-        <td>89</td>
-        <td>0.2500</td>
-        <td>0.2541</td>
-        <td><span class="text-danger">-1.6%</span></td>
-        <td>0.2685</td>
-        <td><span class="text-danger">-7.4%</span></td>
-        <td>0.2500</td>
-        <td>0.2468</td>
-        <td><span class="text-success">+1.3%</span></td>
-        <td>0.2685</td>
-        <td><span class="text-danger">-7.4%</span></td>
+        <td>Pro League</td>
+        <td>90</td>
+        <td>0.2351</td>
+        <td>0.2499</td>
+        <td><span class="text-danger">-6.3%</span></td>
+        <td>0.2441</td>
+        <td><span class="text-danger">-3.9%</span></td>
+        <td>0.2480</td>
+        <td>0.2585</td>
+        <td><span class="text-danger">-4.2%</span></td>
+        <td>0.2743</td>
+        <td><span class="text-danger">-10.6%</span></td>
     </tr>
-    
+
     <tr>
-        <td>Ligue 1</td>
-        <td>89</td>
-        <td>0.2462</td>
-        <td>0.2701</td>
-        <td><span class="text-danger">-9.7%</span></td>
-        <td>0.2621</td>
-        <td><span class="text-danger">-6.4%</span></td>
-        <td>0.2409</td>
-        <td>0.2567</td>
-        <td><span class="text-danger">-6.6%</span></td>
-        <td>0.2606</td>
-        <td><span class="text-danger">-8.2%</span></td>
+        <td>Champions League</td>
+        <td>86</td>
+        <td>0.1846</td>
+        <td>0.2148</td>
+        <td><span class="text-danger">-16.4%</span></td>
+        <td>0.1972</td>
+        <td><span class="text-danger">-6.8%</span></td>
+        <td>0.2271</td>
+        <td>0.2382</td>
+        <td><span class="text-danger">-4.9%</span></td>
+        <td>0.2515</td>
+        <td><span class="text-danger">-10.7%</span></td>
     </tr>
-    
+
     <tr>
         <td>Liga Portugal 2</td>
-        <td>88</td>
-        <td>0.2500</td>
-        <td>0.2688</td>
-        <td><span class="text-danger">-7.5%</span></td>
-        <td>0.2691</td>
-        <td><span class="text-danger">-7.6%</span></td>
-        <td>0.2500</td>
-        <td>0.2533</td>
-        <td><span class="text-danger">-1.3%</span></td>
-        <td>0.2692</td>
-        <td><span class="text-danger">-7.7%</span></td>
+        <td>82</td>
+        <td>0.2499</td>
+        <td>0.2707</td>
+        <td><span class="text-danger">-8.4%</span></td>
+        <td>0.2622</td>
+        <td><span class="text-danger">-4.9%</span></td>
+        <td>0.2499</td>
+        <td>0.2528</td>
+        <td><span class="text-danger">-1.2%</span></td>
+        <td>0.2650</td>
+        <td><span class="text-danger">-6.1%</span></td>
     </tr>
-    
+
     <tr>
-        <td>CAF Champions League</td>
-        <td>88</td>
-        <td>0.2247</td>
+        <td>Ligue 1</td>
+        <td>82</td>
+        <td>0.2427</td>
         <td>0.2714</td>
-        <td><span class="text-danger">-20.8%</span></td>
+        <td><span class="text-danger">-11.8%</span></td>
+        <td>0.2591</td>
+        <td><span class="text-danger">-6.7%</span></td>
         <td>0.2351</td>
-        <td><span class="text-danger">-4.6%</span></td>
-        <td>0.2127</td>
-        <td>0.2402</td>
-        <td><span class="text-danger">-13.0%</span></td>
-        <td>0.2238</td>
-        <td><span class="text-danger">-5.2%</span></td>
+        <td>0.2555</td>
+        <td><span class="text-danger">-8.7%</span></td>
+        <td>0.2728</td>
+        <td><span class="text-danger">-16.0%</span></td>
     </tr>
-    
+
     <tr>
         <td>Eliteserien</td>
-        <td>85</td>
-        <td>0.2123</td>
-        <td>0.2411</td>
-        <td><span class="text-danger">-13.6%</span></td>
-        <td>0.2346</td>
-        <td><span class="text-danger">-10.5%</span></td>
-        <td>0.2167</td>
-        <td>0.2402</td>
-        <td><span class="text-danger">-10.8%</span></td>
-        <td>0.2384</td>
-        <td><span class="text-danger">-10.0%</span></td>
-    </tr>
-    
-    <tr>
-        <td>K League 1</td>
-        <td>83</td>
-        <td>0.2471</td>
-        <td>0.2794</td>
-        <td><span class="text-danger">-13.1%</span></td>
-        <td>0.2684</td>
-        <td><span class="text-danger">-8.7%</span></td>
-        <td>0.2369</td>
-        <td>0.2637</td>
-        <td><span class="text-danger">-11.3%</span></td>
-        <td>0.2589</td>
-        <td><span class="text-danger">-9.3%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Taça de Portugal</td>
-        <td>81</td>
-        <td>0.2497</td>
-        <td>0.2800</td>
-        <td><span class="text-danger">-12.2%</span></td>
-        <td>0.2641</td>
-        <td><span class="text-danger">-5.8%</span></td>
-        <td>0.2436</td>
-        <td>0.2773</td>
-        <td><span class="text-danger">-13.9%</span></td>
-        <td>0.2598</td>
-        <td><span class="text-danger">-6.7%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Carabao Cup</td>
         <td>80</td>
-        <td>0.2461</td>
-        <td>0.2481</td>
-        <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2678</td>
-        <td><span class="text-danger">-8.8%</span></td>
-        <td>0.2444</td>
-        <td>0.2591</td>
-        <td><span class="text-danger">-6.0%</span></td>
-        <td>0.2664</td>
-        <td><span class="text-danger">-9.0%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Bundesliga</td>
-        <td>80</td>
-        <td>0.2100</td>
-        <td>0.2393</td>
-        <td><span class="text-danger">-14.0%</span></td>
-        <td>0.2212</td>
-        <td><span class="text-danger">-5.3%</span></td>
-        <td>0.2400</td>
-        <td>0.2423</td>
-        <td><span class="text-danger">-1.0%</span></td>
-        <td>0.2568</td>
-        <td><span class="text-danger">-7.0%</span></td>
-    </tr>
-    
-    <tr>
-        <td>CONCACAF Nations League</td>
-        <td>79</td>
-        <td>0.2323</td>
-        <td>0.2724</td>
-        <td><span class="text-danger">-17.2%</span></td>
-        <td>0.2547</td>
-        <td><span class="text-danger">-9.6%</span></td>
-        <td>0.2480</td>
-        <td>0.2622</td>
-        <td><span class="text-danger">-5.7%</span></td>
-        <td>0.2623</td>
-        <td><span class="text-danger">-5.7%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Liga F</td>
-        <td>78</td>
-        <td>0.2459</td>
-        <td>0.2413</td>
-        <td><span class="text-success">+1.9%</span></td>
-        <td>0.2637</td>
-        <td><span class="text-danger">-7.2%</span></td>
-        <td>0.2498</td>
-        <td>0.2655</td>
-        <td><span class="text-danger">-6.3%</span></td>
-        <td>0.2665</td>
-        <td><span class="text-danger">-6.7%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Chinese Super League</td>
-        <td>75</td>
-        <td>0.2372</td>
-        <td>0.2281</td>
-        <td><span class="text-success">+3.8%</span></td>
-        <td>0.2575</td>
-        <td><span class="text-danger">-8.6%</span></td>
-        <td>0.2340</td>
-        <td>0.2372</td>
-        <td><span class="text-danger">-1.4%</span></td>
-        <td>0.2509</td>
-        <td><span class="text-danger">-7.2%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Parva Liga</td>
-        <td>74</td>
-        <td>0.2498</td>
-        <td>0.2752</td>
-        <td><span class="text-danger">-10.2%</span></td>
-        <td>0.2720</td>
-        <td><span class="text-danger">-8.9%</span></td>
-        <td>0.2500</td>
-        <td>0.2660</td>
-        <td><span class="text-danger">-6.4%</span></td>
-        <td>0.2728</td>
-        <td><span class="text-danger">-9.1%</span></td>
-    </tr>
-    
-    <tr>
-        <td>International Friendly Games</td>
-        <td>72</td>
-        <td>0.2498</td>
-        <td>0.2688</td>
-        <td><span class="text-danger">-7.6%</span></td>
-        <td>0.2681</td>
-        <td><span class="text-danger">-7.3%</span></td>
-        <td>0.2452</td>
-        <td>0.2629</td>
-        <td><span class="text-danger">-7.2%</span></td>
-        <td>0.2622</td>
-        <td><span class="text-danger">-6.9%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Emperor Cup</td>
-        <td>71</td>
-        <td>0.2190</td>
-        <td>0.2371</td>
-        <td><span class="text-danger">-8.3%</span></td>
-        <td>0.2383</td>
-        <td><span class="text-danger">-8.8%</span></td>
-        <td>0.2500</td>
-        <td>0.2932</td>
-        <td><span class="text-danger">-17.3%</span></td>
-        <td>0.2676</td>
-        <td><span class="text-danger">-7.1%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Veikkausliiga</td>
-        <td>70</td>
-        <td>0.2400</td>
-        <td>0.2445</td>
-        <td><span class="text-danger">-1.9%</span></td>
-        <td>0.2616</td>
-        <td><span class="text-danger">-9.0%</span></td>
-        <td>0.2492</td>
-        <td>0.2553</td>
-        <td><span class="text-danger">-2.4%</span></td>
-        <td>0.2682</td>
-        <td><span class="text-danger">-7.6%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Danish Superliga</td>
-        <td>70</td>
-        <td>0.2427</td>
-        <td>0.2779</td>
-        <td><span class="text-danger">-14.5%</span></td>
-        <td>0.2609</td>
-        <td><span class="text-danger">-7.5%</span></td>
-        <td>0.2400</td>
-        <td>0.2732</td>
-        <td><span class="text-danger">-13.8%</span></td>
-        <td>0.2584</td>
+        <td>0.2048</td>
+        <td>0.2295</td>
+        <td><span class="text-danger">-12.0%</span></td>
+        <td>0.2307</td>
+        <td><span class="text-danger">-12.6%</span></td>
+        <td>0.2148</td>
+        <td>0.2361</td>
+        <td><span class="text-danger">-9.9%</span></td>
+        <td>0.2314</td>
         <td><span class="text-danger">-7.7%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Liga 3</td>
+        <td>80</td>
+        <td>0.2494</td>
+        <td>0.2620</td>
+        <td><span class="text-danger">-5.1%</span></td>
+        <td>0.2645</td>
+        <td><span class="text-danger">-6.1%</span></td>
+        <td>0.2494</td>
+        <td>0.2508</td>
+        <td><span class="text-danger">-0.6%</span></td>
+        <td>0.2635</td>
+        <td><span class="text-danger">-5.7%</span></td>
+    </tr>
+
+    <tr>
+        <td>K League 1</td>
+        <td>79</td>
+        <td>0.2468</td>
+        <td>0.2722</td>
+        <td><span class="text-danger">-10.3%</span></td>
+        <td>0.2538</td>
+        <td><span class="text-danger">-2.9%</span></td>
+        <td>0.2355</td>
+        <td>0.2586</td>
+        <td><span class="text-danger">-9.8%</span></td>
+        <td>0.2659</td>
+        <td><span class="text-danger">-12.9%</span></td>
+    </tr>
+
+    <tr>
+        <td>Bundesliga</td>
+        <td>72</td>
+        <td>0.2122</td>
+        <td>0.2337</td>
+        <td><span class="text-danger">-10.1%</span></td>
+        <td>0.2163</td>
+        <td><span class="text-danger">-1.9%</span></td>
+        <td>0.2377</td>
+        <td>0.2417</td>
+        <td><span class="text-danger">-1.7%</span></td>
+        <td>0.2398</td>
+        <td><span class="text-danger">-0.9%</span></td>
+    </tr>
+
+    <tr>
+        <td>CONCACAF Nations League</td>
+        <td>72</td>
+        <td>0.2307</td>
+        <td>0.2725</td>
+        <td><span class="text-danger">-18.1%</span></td>
+        <td>0.2665</td>
+        <td><span class="text-danger">-15.5%</span></td>
+        <td>0.2483</td>
+        <td>0.2598</td>
+        <td><span class="text-danger">-4.6%</span></td>
+        <td>0.2945</td>
+        <td><span class="text-danger">-18.6%</span></td>
+    </tr>
+
+    <tr>
+        <td>Chinese Super League</td>
+        <td>71</td>
+        <td>0.2281</td>
+        <td>0.2303</td>
+        <td><span class="text-danger">-1.0%</span></td>
+        <td>0.2440</td>
+        <td><span class="text-danger">-6.9%</span></td>
+        <td>0.2238</td>
+        <td>0.2380</td>
+        <td><span class="text-danger">-6.4%</span></td>
+        <td>0.2835</td>
+        <td><span class="text-danger">-26.7%</span></td>
+    </tr>
+
+    <tr>
+        <td>Parva Liga</td>
+        <td>71</td>
+        <td>0.2496</td>
+        <td>0.2710</td>
+        <td><span class="text-danger">-8.6%</span></td>
+        <td>0.2738</td>
+        <td><span class="text-danger">-9.7%</span></td>
+        <td>0.2500</td>
+        <td>0.2632</td>
+        <td><span class="text-danger">-5.3%</span></td>
+        <td>0.2550</td>
+        <td><span class="text-danger">-2.0%</span></td>
+    </tr>
+
+    <tr>
+        <td>Liga F</td>
+        <td>71</td>
+        <td>0.2460</td>
+        <td>0.2402</td>
+        <td><span class="text-success">+2.3%</span></td>
+        <td>0.2497</td>
+        <td><span class="text-danger">-1.5%</span></td>
+        <td>0.2496</td>
+        <td>0.2604</td>
+        <td><span class="text-danger">-4.3%</span></td>
+        <td>0.2586</td>
+        <td><span class="text-danger">-3.6%</span></td>
+    </tr>
+
+    <tr>
+        <td>International Friendly Games</td>
+        <td>70</td>
+        <td>0.2492</td>
+        <td>0.2680</td>
+        <td><span class="text-danger">-7.5%</span></td>
+        <td>0.3058</td>
+        <td><span class="text-danger">-22.7%</span></td>
+        <td>0.2467</td>
+        <td>0.2608</td>
+        <td><span class="text-danger">-5.7%</span></td>
+        <td>0.2977</td>
+        <td><span class="text-danger">-20.7%</span></td>
+    </tr>
+
+    <tr>
+        <td>Danish Superliga</td>
+        <td>68</td>
+        <td>0.2394</td>
+        <td>0.2730</td>
+        <td><span class="text-danger">-14.0%</span></td>
+        <td>0.2842</td>
+        <td><span class="text-danger">-18.7%</span></td>
+        <td>0.2362</td>
+        <td>0.2680</td>
+        <td><span class="text-danger">-13.5%</span></td>
+        <td>0.2815</td>
+        <td><span class="text-danger">-19.2%</span></td>
+    </tr>
+
+    <tr>
+        <td>Veikkausliiga</td>
+        <td>66</td>
+        <td>0.2417</td>
+        <td>0.2381</td>
+        <td><span class="text-success">+1.5%</span></td>
+        <td>0.2699</td>
+        <td><span class="text-danger">-11.6%</span></td>
+        <td>0.2491</td>
+        <td>0.2528</td>
+        <td><span class="text-danger">-1.5%</span></td>
+        <td>0.2641</td>
+        <td><span class="text-danger">-6.0%</span></td>
+    </tr>
+
+    <tr>
+        <td>Taça de Portugal</td>
+        <td>66</td>
+        <td>0.2500</td>
+        <td>0.2866</td>
+        <td><span class="text-danger">-14.6%</span></td>
+        <td>0.2619</td>
+        <td><span class="text-danger">-4.7%</span></td>
+        <td>0.2463</td>
+        <td>0.2770</td>
+        <td><span class="text-danger">-12.5%</span></td>
+        <td>0.2570</td>
+        <td><span class="text-danger">-4.3%</span></td>
+    </tr>
+
     <tr>
         <td>Scottish Premiership</td>
-        <td>68</td>
-        <td>0.2422</td>
-        <td>0.2730</td>
-        <td><span class="text-danger">-12.7%</span></td>
-        <td>0.2640</td>
-        <td><span class="text-danger">-9.0%</span></td>
-        <td>0.2465</td>
-        <td>0.2661</td>
-        <td><span class="text-danger">-7.9%</span></td>
-        <td>0.2674</td>
-        <td><span class="text-danger">-8.4%</span></td>
+        <td>63</td>
+        <td>0.2424</td>
+        <td>0.2635</td>
+        <td><span class="text-danger">-8.7%</span></td>
+        <td>0.2540</td>
+        <td><span class="text-danger">-4.8%</span></td>
+        <td>0.2449</td>
+        <td>0.2613</td>
+        <td><span class="text-danger">-6.7%</span></td>
+        <td>0.2630</td>
+        <td><span class="text-danger">-7.4%</span></td>
     </tr>
-    
+
     <tr>
         <td>Stoiximan Super League</td>
-        <td>68</td>
-        <td>0.2498</td>
-        <td>0.2391</td>
-        <td><span class="text-success">+4.3%</span></td>
-        <td>0.2704</td>
-        <td><span class="text-danger">-8.2%</span></td>
-        <td>0.2500</td>
-        <td>0.2434</td>
-        <td><span class="text-success">+2.6%</span></td>
-        <td>0.2739</td>
-        <td><span class="text-danger">-9.6%</span></td>
+        <td>63</td>
+        <td>0.2499</td>
+        <td>0.2381</td>
+        <td><span class="text-success">+4.7%</span></td>
+        <td>0.2651</td>
+        <td><span class="text-danger">-6.1%</span></td>
+        <td>0.2494</td>
+        <td>0.2428</td>
+        <td><span class="text-success">+2.7%</span></td>
+        <td>0.2572</td>
+        <td><span class="text-danger">-3.1%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>CAF Champions League</td>
+        <td>62</td>
+        <td>0.2458</td>
+        <td>0.2642</td>
+        <td><span class="text-danger">-7.5%</span></td>
+        <td>0.3136</td>
+        <td><span class="text-danger">-27.6%</span></td>
+        <td>0.2185</td>
+        <td>0.2175</td>
+        <td><span class="text-success">+0.5%</span></td>
+        <td>0.2264</td>
+        <td><span class="text-danger">-3.6%</span></td>
+    </tr>
+
     <tr>
         <td>Super League</td>
-        <td>65</td>
-        <td>0.1931</td>
-        <td>0.2700</td>
-        <td><span class="text-danger">-39.8%</span></td>
-        <td>0.2030</td>
-        <td><span class="text-danger">-5.1%</span></td>
-        <td>0.2187</td>
-        <td>0.2467</td>
-        <td><span class="text-danger">-12.8%</span></td>
-        <td>0.2340</td>
-        <td><span class="text-danger">-7.0%</span></td>
+        <td>60</td>
+        <td>0.2031</td>
+        <td>0.2545</td>
+        <td><span class="text-danger">-25.3%</span></td>
+        <td>0.2177</td>
+        <td><span class="text-danger">-7.2%</span></td>
+        <td>0.2222</td>
+        <td>0.2460</td>
+        <td><span class="text-danger">-10.7%</span></td>
+        <td>0.2390</td>
+        <td><span class="text-danger">-7.6%</span></td>
     </tr>
-    
+
     <tr>
         <td>2. Bundesliga</td>
-        <td>62</td>
-        <td>0.2500</td>
-        <td>0.2520</td>
-        <td><span class="text-danger">-0.8%</span></td>
-        <td>0.2715</td>
-        <td><span class="text-danger">-8.6%</span></td>
-        <td>0.2490</td>
-        <td>0.2389</td>
-        <td><span class="text-success">+4.1%</span></td>
-        <td>0.2671</td>
-        <td><span class="text-danger">-7.3%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Liga ID 100</td>
-        <td>59</td>
-        <td>0.2442</td>
-        <td>0.2579</td>
+        <td>54</td>
+        <td>0.2497</td>
+        <td>0.2554</td>
+        <td><span class="text-danger">-2.3%</span></td>
+        <td>0.2636</td>
         <td><span class="text-danger">-5.6%</span></td>
-        <td>0.2732</td>
-        <td><span class="text-danger">-11.9%</span></td>
-        <td>0.2482</td>
-        <td>0.2492</td>
-        <td><span class="text-danger">-0.4%</span></td>
-        <td>0.2705</td>
-        <td><span class="text-danger">-9.0%</span></td>
+        <td>0.2486</td>
+        <td>0.2429</td>
+        <td><span class="text-success">+2.3%</span></td>
+        <td>0.2588</td>
+        <td><span class="text-danger">-4.1%</span></td>
     </tr>
-    
-    <tr>
-        <td>Copa del Rey</td>
-        <td>57</td>
-        <td>0.2278</td>
-        <td>0.2337</td>
-        <td><span class="text-danger">-2.6%</span></td>
-        <td>0.2536</td>
-        <td><span class="text-danger">-11.4%</span></td>
-        <td>0.2481</td>
-        <td>0.2767</td>
-        <td><span class="text-danger">-11.6%</span></td>
-        <td>0.2648</td>
-        <td><span class="text-danger">-6.8%</span></td>
-    </tr>
-    
-    <tr>
-        <td>Tunisian Ligue Professionnelle 1</td>
-        <td>55</td>
-        <td>0.2261</td>
-        <td>0.2401</td>
-        <td><span class="text-danger">-6.2%</span></td>
-        <td>0.2425</td>
-        <td><span class="text-danger">-7.2%</span></td>
-        <td>0.2479</td>
-        <td>0.2682</td>
-        <td><span class="text-danger">-8.2%</span></td>
-        <td>0.2775</td>
-        <td><span class="text-danger">-11.9%</span></td>
-    </tr>
-    
+
     <tr>
         <td>Botola Pro</td>
-        <td>53</td>
-        <td>0.2243</td>
-        <td>0.2240</td>
-        <td><span class="text-success">+0.1%</span></td>
-        <td>0.2494</td>
-        <td><span class="text-danger">-11.2%</span></td>
-        <td>0.2478</td>
-        <td>0.2438</td>
+        <td>52</td>
+        <td>0.2200</td>
+        <td>0.2210</td>
+        <td><span class="text-danger">-0.4%</span></td>
+        <td>0.2817</td>
+        <td><span class="text-danger">-28.0%</span></td>
+        <td>0.2467</td>
+        <td>0.2427</td>
         <td><span class="text-success">+1.6%</span></td>
-        <td>0.2708</td>
-        <td><span class="text-danger">-9.3%</span></td>
+        <td>0.2916</td>
+        <td><span class="text-danger">-18.2%</span></td>
     </tr>
-    
+
+    <tr>
+        <td>Liga ID 100</td>
+        <td>50</td>
+        <td>0.2436</td>
+        <td>0.2594</td>
+        <td><span class="text-danger">-6.5%</span></td>
+        <td>0.2547</td>
+        <td><span class="text-danger">-4.5%</span></td>
+        <td>0.2464</td>
+        <td>0.2471</td>
+        <td><span class="text-danger">-0.3%</span></td>
+        <td>0.2606</td>
+        <td><span class="text-danger">-5.7%</span></td>
+    </tr>
+
     <tr>
         <td>Outras</td>
-        <td>604</td>
-        <td>0.2492</td>
-        <td>0.2545</td>
-        <td><span class="text-danger">-2.1%</span></td>
-        <td>0.2678</td>
-        <td><span class="text-danger">-7.5%</span></td>
-        <td>0.2489</td>
-        <td>0.2558</td>
-        <td><span class="text-danger">-2.8%</span></td>
-        <td>0.2806</td>
-        <td><span class="text-danger">-12.7%</span></td>
+        <td>678</td>
+        <td>0.2491</td>
+        <td>0.2541</td>
+        <td><span class="text-danger">-2.0%</span></td>
+        <td>0.2732</td>
+        <td><span class="text-danger">-9.7%</span></td>
+        <td>0.2498</td>
+        <td>0.2642</td>
+        <td><span class="text-danger">-5.7%</span></td>
+        <td>0.2713</td>
+        <td><span class="text-danger">-8.6%</span></td>
     </tr>
-    
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    
+
 
         <p class="text-muted small mt-4">
-            Verde = desvio dentro de 2 erros padrao (calibrado). Amarelo = desvio
+            Verde = desvio dentro de 2 erros padrao (não prova calibração). Amarelo = desvio
             significativo. Cinzento = amostra abaixo de 30, sem leitura possivel.
             Skill positivo significa que o modelo bate a taxa base da propria amostra.
         </p>

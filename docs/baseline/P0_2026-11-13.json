@@ -1,0 +1,413 @@
+{
+  "initial_sha": "d723974173a8a87026212f1936cd21b1841fe360",
+  "inventory": {
+    ".github/workflows/ci.yml": {
+      "bytes": 778,
+      "sha256": "2f611103973605045bcdcd7c6baccb2321488d5da00c8ae512a14660d8c16d5a"
+    },
+    ".github/workflows/ligas.yml": {
+      "bytes": 1221,
+      "sha256": "9050f57a464f03a6c4211d3e123337bf83788412860877e1ec1479b977c6dbfe"
+    },
+    ".github/workflows/monte_carlo.yml": {
+      "bytes": 5573,
+      "sha256": "6e67ccf5260ff2099e754da3c8d57b9a2e5497d27acb68bca94790c933d584db"
+    },
+    ".gitignore": {
+      "bytes": 4648,
+      "sha256": "c13a05fdc8cd8f5bfd16c82b05bec84bf25b4c8604fde442e545a3aef3f38072"
+    },
+    "README.md": {
+      "bytes": 5888,
+      "sha256": "00c91dba65626ab266b67159f1cdad079027408c6300dda29d28e01796d8de18"
+    },
+    "adjusted_xg.py": {
+      "bytes": 3815,
+      "sha256": "5aa0235c0dfc5d9122e105311472ca545e5256cdd819b4b67799e21f3b78e8e2"
+    },
+    "api.py": {
+      "bytes": 4116,
+      "sha256": "f99e198b4e3b90a02a2b5f103ed6bef21662e532984cb5f9faae5229dac5486e"
+    },
+    "backtest.html": {
+      "bytes": 148323,
+      "sha256": "b99131de43fcb8a0661985c258e069363c1454ada4c633fce6728ab963910a0e"
+    },
+    "backtest.py": {
+      "bytes": 30455,
+      "sha256": "aa2ad19e374dc5d88fdf8dc86eaa7c6d307ebb429074a1ec0b4c80c9329f5248"
+    },
+    "calibracao_o25_v2.json": {
+      "bytes": 648,
+      "sha256": "c58a745a71181ad36e2fec69cf5e0bf290d4cefd9b8ceb53a53c521b927adfdb"
+    },
+    "calibration_o25.py": {
+      "bytes": 5311,
+      "sha256": "887de4c6580efaee8034cf7695e4e349fba69f50ba10537cd02c94abf93cddf7"
+    },
+    "database.py": {
+      "bytes": 9889,
+      "sha256": "57b7ce321a41c2489e82618cfe4ad0f59af41804584e79be8c5a419def872970"
+    },
+    "docs/ALTERACOES_2026-10-23.md": {
+      "bytes": 2111,
+      "sha256": "991bf6088e287ad81c3ee8893137499be4c5895f64a4ba295c5573b77576d7a7"
+    },
+    "docs/METODOLOGIA_ROI.md": {
+      "bytes": 6788,
+      "sha256": "0eba63d6485e0447bfa1da9eb4a26d7227be00cc3a2d956edc3f867c8d70b267"
+    },
+    "index.html": {
+      "bytes": 194507,
+      "sha256": "ad26d883e05fe66fd04024a639784374c1ff6c18aefa910a2088b05edcc3d789"
+    },
+    "ligas_bsd.json": {
+      "bytes": 74841,
+      "sha256": "aea7e1004e8a4a76e0b1d6a893c1e0fc45c80594039a8c6b8e8ed33d1d39c391"
+    },
+    "ligas_bsd.py": {
+      "bytes": 4917,
+      "sha256": "8b0f630ae853bccb0c3b59498c5f12bd522a462bcc9fbf8fd01f64a016504d78"
+    },
+    "main.py": {
+      "bytes": 35228,
+      "sha256": "2da86a960b723d3bc6cc00a46e8a64ae6c4f3657d041e4787955dcfc5ae3b207"
+    },
+    "migrar_ligas.py": {
+      "bytes": 18158,
+      "sha256": "7b044b41e51701a0d96bc5d6d0af7ce02bc66e5cd54ee58132f898096a0ecb71"
+    },
+    "modelo_v2_backfill.json": {
+      "bytes": 2001,
+      "sha256": "14ceef81dd7990e745ba148e783b8d8e991d14ed05a3975eb3661530fc51529e"
+    },
+    "odds_tracking.py": {
+      "bytes": 4958,
+      "sha256": "15da0352dd8dc0acce404816201ed4c98d8e831a20f8f2673f082c27fefc3a65"
+    },
+    "predictions.db": {
+      "bytes": 2777088,
+      "sha256": "06aba338b63844a59b4b38c7eb4b2b628be814454278458641b8b86aecebb818"
+    },
+    "predictor.py": {
+      "bytes": 6585,
+      "sha256": "2218cad11c03ab429459cd9f98576d7d17708b550377aa80b8409f1ded93c3be"
+    },
+    "recalibracao.json": {
+      "bytes": 609,
+      "sha256": "51d8a4ffe5075d115027ab77c3cc02318deee8f2283db352b426fcfe5b587953"
+    },
+    "recalibracao.py": {
+      "bytes": 8444,
+      "sha256": "d52bd20153da4187612b8c1d1b4fa6d8e5168bf1ff4047f2922743456023fb21"
+    },
+    "requirements.txt": {
+      "bytes": 16,
+      "sha256": "b9cfff1041a831ead822b974a44f66e1ab2168013b5b36b2d7010fbf8bfdfc9a"
+    },
+    "roi.html": {
+      "bytes": 7860,
+      "sha256": "fb28bfd25f1f9a3d70f47ef8dc38136e3838dcd43dfca5dcbdc77cc3623113ba"
+    },
+    "roi_jogos.csv": {
+      "bytes": 167895,
+      "sha256": "9158ed5908a3375276681e2816e3f595f560ad51e5a8d796ef18c0e395cefb32"
+    },
+    "roi_report.py": {
+      "bytes": 14601,
+      "sha256": "75638e087ff646fc7a24d814c504af83bb08dab3ef332aa087804b5d1874e2a5"
+    },
+    "settlement.py": {
+      "bytes": 19098,
+      "sha256": "a6fa6a44be9304d1beb1f73d59baed61b7b68d6c77f67ddd706fa67251e0cbb7"
+    },
+    "team_stats.py": {
+      "bytes": 3607,
+      "sha256": "d439271c2a6541e7c9cefcaf15de3170ae03f81246a9ea75544c5606149b5cca"
+    },
+    "tests/test_calibracao.py": {
+      "bytes": 2171,
+      "sha256": "2fb50551e956ee45f2a07edc3c3b86b703a089dc7e1071897672621e2713601a"
+    },
+    "tests/test_roi_pipeline.py": {
+      "bytes": 7535,
+      "sha256": "414bd8423afc26f5375aa660366deef03f7a5acc4a54417e7841000a366c5b4c"
+    }
+  },
+  "sqlite_integrity": [
+    [
+      "ok"
+    ]
+  ],
+  "schema": [
+    [
+      "index",
+      "idx_odds_match_source",
+      "CREATE INDEX idx_odds_match_source\n        ON odds_snapshots(match_id, fonte, capturado_em)\n    "
+    ],
+    [
+      "index",
+      "idx_predictions_league_id",
+      "CREATE INDEX idx_predictions_league_id\n        ON predictions (league_id)\n    "
+    ],
+    [
+      "index",
+      "sqlite_autoindex_odds_snapshots_1",
+      null
+    ],
+    [
+      "index",
+      "sqlite_autoindex_predictions_1",
+      null
+    ],
+    [
+      "table",
+      "odds_snapshots",
+      "CREATE TABLE odds_snapshots (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            match_id TEXT NOT NULL,\n            capturado_em TEXT NOT NULL,\n            quote_at TEXT,\n            fonte TEXT NOT NULL DEFAULT 'bsd_consensus',\n            mercado TEXT NOT NULL DEFAULT 'over_25_goals',\n            odd REAL,\n            estado TEXT NOT NULL,\n            detalhe TEXT,\n            prob_o25_no_instante REAL,\n            prob_o25_base_no_instante REAL,\n            calibracao_o25_no_instante TEXT, prob_btts_no_instante REAL, baixa_confianca_no_instante INTEGER,\n            UNIQUE(match_id, capturado_em, fonte)\n        )"
+    ],
+    [
+      "table",
+      "predictions",
+      "CREATE TABLE predictions (\n            match_id TEXT PRIMARY KEY,\n            event_date TEXT,\n            timestamp INTEGER,\n            league TEXT,\n            home_team TEXT,\n            away_team TEXT,\n            xg_home REAL,\n            xg_away REAL,\n            prob_o25 REAL,\n            prob_btts REAL,\n            created_at TEXT,\n            status TEXT DEFAULT 'pending',\n            home_score INTEGER,\n            away_score INTEGER,\n            result_o25 INTEGER,\n            result_btts INTEGER\n        , n_h2h INTEGER, media_h2h_bruta REAL, media_liga_usada REAL, origem_xg TEXT, baixa_confianca INTEGER, league_id INTEGER, modelo TEXT, prob_o25_base REAL, calibracao_o25_id TEXT)"
+    ],
+    [
+      "table",
+      "sqlite_sequence",
+      "CREATE TABLE sqlite_sequence(name,seq)"
+    ],
+    [
+      "table",
+      "team_stats",
+      "CREATE TABLE team_stats (\n            team_id INTEGER PRIMARY KEY,\n            team_name TEXT,\n            attack REAL,\n            defense REAL,\n            goals_for REAL,\n            goals_against REAL,\n            over25 REAL,\n            btts REAL,\n            form REAL,\n            updated_at TEXT\n        , origem TEXT, games INTEGER, jogos_truncados INTEGER)"
+    ]
+  ],
+  "counts": {
+    "predictions": 8299,
+    "team_stats": 2084,
+    "odds_snapshots": 1531,
+    "sqlite_sequence": 1
+  },
+  "groups": [
+    [
+      "v1",
+      "finished",
+      4368,
+      4368,
+      4368
+    ],
+    [
+      "v1",
+      "stale",
+      89,
+      0,
+      0
+    ],
+    [
+      "v1",
+      "void",
+      159,
+      0,
+      0
+    ],
+    [
+      "v2",
+      "finished",
+      3164,
+      3164,
+      3164
+    ],
+    [
+      "v2",
+      "pending",
+      364,
+      0,
+      0
+    ],
+    [
+      "v2",
+      "stale",
+      33,
+      0,
+      0
+    ],
+    [
+      "v2",
+      "void",
+      122,
+      0,
+      0
+    ]
+  ],
+  "metrics": {
+    "v1": {
+      "n": 4368,
+      "over": [
+        0.26373084915979855,
+        0.2468282061345248,
+        4368
+      ],
+      "btts": [
+        0.2606089383035714,
+        0.2477541774846033,
+        4368
+      ],
+      "period": [
+        1786041000,
+        1791152100
+      ],
+      "over_brackets": {
+        "0% - 39%": {
+          "total": 1386,
+          "hits": 715,
+          "soma_prob": 43861.22
+        },
+        "40% - 49%": {
+          "total": 1343,
+          "hits": 740,
+          "soma_prob": 61229.62999999998
+        },
+        "50% - 59%": {
+          "total": 1169,
+          "hits": 678,
+          "soma_prob": 63424.11000000003
+        },
+        "60% - 69%": {
+          "total": 327,
+          "hits": 203,
+          "soma_prob": 20957.480000000007
+        },
+        "70% - 79%": {
+          "total": 104,
+          "hits": 67,
+          "soma_prob": 7748.799999999999
+        },
+        "80%+": {
+          "total": 39,
+          "hits": 27,
+          "soma_prob": 3465.670000000001
+        }
+      }
+    },
+    "v2": {
+      "n": 3164,
+      "over": [
+        0.24439730505372945,
+        0.2479857946781187,
+        3164
+      ],
+      "btts": [
+        0.24741854584070797,
+        0.24769211467185354,
+        3164
+      ],
+      "period": [
+        1791122400,
+        1794528000
+      ],
+      "over_brackets": {
+        "0% - 39%": {
+          "total": 319,
+          "hits": 119,
+          "soma_prob": 10963.690000000006
+        },
+        "40% - 49%": {
+          "total": 639,
+          "hits": 331,
+          "soma_prob": 29215.360000000033
+        },
+        "50% - 59%": {
+          "total": 955,
+          "hits": 504,
+          "soma_prob": 52573.91999999998
+        },
+        "60% - 69%": {
+          "total": 744,
+          "hits": 427,
+          "soma_prob": 48030.88000000008
+        },
+        "70% - 79%": {
+          "total": 396,
+          "hits": 260,
+          "soma_prob": 29371.87000000001
+        },
+        "80%+": {
+          "total": 111,
+          "hits": 83,
+          "soma_prob": 9218.210000000001
+        }
+      }
+    }
+  },
+  "roi": {
+    "all": {
+      "n": 933,
+      "wins": 518,
+      "stake": 933,
+      "profit": -63.61999999999999,
+      "roi": -6.818863879957126,
+      "avg_odds": 1.7233226152197212,
+      "hit_rate": 55.519828510182215
+    },
+    "original_over": {
+      "n": 401,
+      "wins": 237,
+      "stake": 401,
+      "profit": -43.56999999999999,
+      "roi": -10.865336658354114,
+      "avg_odds": 1.5411970074812966,
+      "hit_rate": 59.10224438902743
+    },
+    "original_over_btts": {
+      "n": 344,
+      "wins": 213,
+      "stake": 344,
+      "profit": -24.02,
+      "roi": -6.982558139534883,
+      "avg_odds": 1.5298546511627906,
+      "hit_rate": 61.91860465116279
+    },
+    "mc_o70": {
+      "n": 158,
+      "wins": 104,
+      "stake": 158,
+      "profit": -10.929999999999996,
+      "roi": -6.91772151898734,
+      "avg_odds": 1.4325316455696202,
+      "hit_rate": 65.82278481012658
+    },
+    "mc_o70_ev5": {
+      "n": 107,
+      "wins": 70,
+      "stake": 107,
+      "profit": -3.5200000000000014,
+      "roi": -3.2897196261682256,
+      "avg_odds": 1.4917757009345796,
+      "hit_rate": 65.42056074766354
+    }
+  },
+  "odds_states": [
+    [
+      "cotacao_desatualizada_ou_futura",
+      16
+    ],
+    [
+      "ok",
+      968
+    ],
+    [
+      "resposta_sem_objeto_odds",
+      6
+    ],
+    [
+      "sem_odd_over_25",
+      271
+    ],
+    [
+      "sem_timestamp_da_cotacao",
+      270
+    ]
+  ],
+  "duplicate_valid_odds": 0,
+  "result_contradictions": 0,
+  "post_kickoff_created": 12
+}

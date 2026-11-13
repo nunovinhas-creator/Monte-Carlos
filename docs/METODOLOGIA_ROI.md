@@ -54,3 +54,12 @@ O ficheiro `roi_jogos.csv` inclui flags `original_over_verde_60`, `original_over
 3. A seleção de filtros a posteriori eleva o risco de **sobreajuste**. É necessário medir em jogos posteriores à definição da regra e evitar retreinar com resultados do próprio holdout.
 4. Os valores de xG utilizados pelo modelo são estimativas algorítmicas, não necessariamente xG por eventos de remate.
 5. Um run verde com zero odds válidas não confirma cobertura. Exigir logs de recolha real, persistência e publicação.
+## Atualização de integridade de 13/11/2026
+
+As cinco regras acima mantêm-se. A seleção é explicitamente a **primeira odd válida**, com captura e cotação estritamente pré-jogo, sem tolerância para cotações futuras e sem preencher dados históricos ausentes. Os snapshots e resultados liquidados são protegidos; novas observações identificam a versão do modelo e o snapshot de previsão associado.
+
+O laboratório acrescenta intervalos Wilson para acerto e bootstrap por dias UTC para ROI (1000 réplicas, seed 20261113; N/D com menos de cinco dias). Estes intervalos são exploratórios, condicionais à cobertura e não corrigem toda a dependência temporal. O estado NO-GO aplica-se a falha de integridade ou IC ROI inteiramente negativo; nos restantes dados históricos há INCONCLUSIVO, ou EXPERIMENTAL quando não há amostra. CANDIDATO/VALIDADO requerem confirmação futura separada, nunca inferida automaticamente deste histórico.
+
+Cobertura acumulada e recente têm denominadores explícitos. A falta de versão congelada antiga é indicada como N/D, com o rótulo v2 histórico inferido de `predictions` apresentado separadamente. O CSV conserva os campos anteriores e acrescenta essa proveniência.
+
+A calibração experimental de produção permanece bloqueada. O [registo de hipóteses](../research/hypotheses.json), o [estudo offline](../research/results_2026-11/CALIBRACAO_2026-11.md) e a [auditoria final](AUDITORIA_FINAL_2026-11.md) documentam as alterações, as limitações e o rollback.

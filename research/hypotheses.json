@@ -1,0 +1,25 @@
+{
+  "registry_version": 1,
+  "registered_on": "2026-11-13",
+  "nature": "Exploratory historical registry; no claim of pre-registration of existing outcomes",
+  "rules_version": "existing-20261023-preserved",
+  "states": ["EXPERIMENTAL", "NO-GO", "INCONCLUSIVO", "CANDIDATO", "VALIDADO"],
+  "classification_protocol": {
+    "empty": "EXPERIMENTAL",
+    "integrity_failure": "NO-GO",
+    "negative_roi_upper_ci95": "NO-GO",
+    "otherwise_current_historical": "INCONCLUSIVO",
+    "candidate_future": "Separate data after registration, >=1000 observations and 90 UTC days, >=80% odds coverage, lower day-bootstrap ROI CI95 >0; manual documented review",
+    "validated_future": "Separate prospective confirmation protocol registered before collection, >=2000 observations and 180 UTC days, >=80% coverage, independent review and recorded approval; never assigned automatically",
+    "price_limitation": "BSD consensus cannot validate executable profitability"
+  },
+  "hypotheses": [
+    {"id":"ROI-ALL-v1","rule":"all eligible games with frozen pre-match BSD odds","original_registration":"2026-10-23 code/docs; not an independent confirmation"},
+    {"id":"ROI-GREEN60-v1","rule":"frozen published Over >=60 and frozen baixa_confianca=0"},
+    {"id":"ROI-DOUBLE60-v1","rule":"frozen published Over and BTTS >=60 and frozen baixa_confianca=0"},
+    {"id":"ROI-O70-v1","rule":"frozen base Over >=70; no BTTS/confidence requirement"},
+    {"id":"ROI-O70-EV5-v1","rule":"ROI-O70 and frozen published Over/100 * frozen consensus odd - 1 >=0.05"}
+  ],
+  "calibration_protocol": "MC-CAL-O25-20261113-v1",
+  "production_calibration_enabled": false
+}
