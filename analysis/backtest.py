@@ -550,28 +550,23 @@ def calcular_trivial_walk_forward(rows):
     campos extra no fim -- (trivial_o25, trivial_btts) -- cada um
     None ou um float em [0, 1].
     """
-    estado = {}
-    saida = []
-
-    for row in rows:
-        league_id = row[5]
-        s = estado.setdefault(
-            league_id, {"o25_hits": 0, "o25_n": 0, "btts_hits": 0, "btts_n": 0}
-        )
-
-        trivial_o25 = s["o25_hits"] / s["o25_n"] if s["o25_n"] > 0 else None
-        trivial_btts = s["btts_hits"] / s["btts_n"] if s["btts_n"] > 0 else None
-
-        saida.append(row + (trivial_o25, trivial_btts))
-
-        result_o25 = row[2]
-        result_btts = row[3]
-        if result_o25 is not None:
-            s["o25_n"] += 1
-            s["o25_hits"] += int(result_o25)
-        if result_btts is not None:
-            s["btts_n"] += 1
-            s["btts_hits"] += int(result_btts)
+    import heapq
+    estado, awaiting, saida = {}, [], []
+    for sequence,row in enumerate(rows):
+        kickoff = row[6]
+        while awaiting and awaiting[0][0] <= kickoff:
+            _, _, previous = heapq.heappop(awaiting)
+            league = previous[5]
+            if league is None:
+                continue
+            state = estado.setdefault(league, [0,0,0,0])
+            for idx,result_idx in [(0,2),(2,3)]:
+                if previous[result_idx] is not None:
+                    state[idx] += int(previous[result_idx]); state[idx+1] += 1
+        state = estado.get(row[5],[0,0,0,0]) if row[5] is not None else [0,0,0,0]
+        saida.append(row+(state[0]/state[1] if state[1] else None,
+                          state[2]/state[3] if state[3] else None))
+        heapq.heappush(awaiting,(kickoff+48*3600,sequence,row))
 
     return saida
 
@@ -769,6 +764,8 @@ def render_bloco(titulo, rows, league_map, destaque=False):
 
 def main():
     rows, total_registos, total_finished = carregar_dados()
+    from analysis.validation_view import render
+    scientific = render(DB_NAME, rows)
     rows = calcular_trivial_walk_forward(rows)
     league_map = carregar_league_map()
 
@@ -829,10 +826,12 @@ def main():
 
         {aviso}
 
+        {scientific}
+
         {blocos_html}
 
         <p class="text-muted small mt-4">
-            Verde = desvio dentro de 2 erros padrao (calibrado). Amarelo = desvio
+            Verde = desvio dentro de 2 erros padrao (não prova calibração). Amarelo = desvio
             significativo. Cinzento = amostra abaixo de 30, sem leitura possivel.
             Skill positivo significa que o modelo bate a taxa base da propria amostra.
         </p>
@@ -847,7 +846,7 @@ def main():
 """
 
     with open("backtest.html", "w", encoding="utf-8") as f:
-        f.write(html_content)
+        f.write("\n".join(line.rstrip() for line in html_content.splitlines())+"\n")
 
     print(f"OK: backtest.html gerado. Amostra liquidada: {n} jogos.")
 

@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import sqlite3
+from html import escape as escape_html
 import numpy as np
 import requests
 from datetime import datetime, timezone, timedelta
@@ -707,7 +708,8 @@ def analisar():
 
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
-    salvar_previsoes_db(jogos_processados)
+    saved_ids = salvar_previsoes_db(jogos_processados)
+    jogos_processados = [j for j in jogos_processados if j['match_id'] in saved_ids]
 
     n_adjusted = sum(1 for j in jogos_processados if j['origem_xg'] == 'adjusted')
     n_h2h_path = len(jogos_processados) - n_adjusted
@@ -738,7 +740,7 @@ def gerar_dashboard_html(jogos):
     ligas_unicas = sorted(list(set(j['liga'] for j in jogos)))
     options_ligas = '<option value="">Todas as Ligas</option>'
     for l in ligas_unicas:
-        options_ligas += f'<option value="{l}">{l}</option>'
+        options_ligas += f'<option value="{escape_html(l)}">{escape_html(l)}</option>'
 
     linhas_tabela = ""
     for j in jogos:
@@ -758,10 +760,10 @@ def gerar_dashboard_html(jogos):
         ) if baixa_confianca else ""
 
         linhas_tabela += f"""
-        <tr data-liga="{j['liga']}" data-data="{j['data_dia']}" data-baixa-confianca="{baixa_confianca}">
+        <tr data-liga="{escape_html(j['liga'])}" data-data="{j['data_dia']}" data-baixa-confianca="{baixa_confianca}">
             <td data-value="{j['timestamp']}"><b>{j['data_str']}</b></td>
-            <td><span class="badge-liga">{j['liga']}</span></td>
-            <td>{j['home']} vs {j['away']} {tag_baixa_confianca} <small>({j.get('modelo', MODELO_ACTUAL)} · {j.get('origem_xg', 'N/D')})</small></td>
+            <td><span class="badge-liga">{escape_html(j['liga'])}</span></td>
+            <td>{escape_html(j['home'])} vs {escape_html(j['away'])} {tag_baixa_confianca} <small>({escape_html(j.get('modelo', MODELO_ACTUAL))} · {escape_html(j.get('origem_xg', 'N/D'))})</small></td>
             <td data-value="{j['o25']}" style="color: {cor_o25}; font-weight: bold;">{j['o25']:.1f}%</td>
             <td data-value="{j['btts']}" style="color: {cor_btts}; font-weight: bold;">{j['btts']:.1f}%</td>
         </tr>

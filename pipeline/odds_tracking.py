@@ -98,7 +98,7 @@ def capturar(db_path=DB_NAME, max_calls=None, delay=None, api_client=obter_odds,
                 VALUES (?, ?, ?, ?, 'over_25_goals', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (match_id, observed.isoformat(), quote_time.isoformat() if quote_time else None,
                   FONTE, odd, estado, 'consenso não executável' if odd else estado,
-                  prob, prob_base if prob_base is not None else prob, cal_id,
+                  prob, prob_base, cal_id,
                   prob_btts, baixa_conf, modelo, snapshot_id))
             db.commit()
             results['tentativas'] += 1

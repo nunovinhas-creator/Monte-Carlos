@@ -50,6 +50,8 @@ def migrate(conn):
     )''')
     conn.execute('''CREATE INDEX IF NOT EXISTS idx_prediction_snapshot_time
         ON prediction_snapshots(match_id, predicted_at, id)''')
+    conn.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_one_valid_odds
+        ON odds_snapshots(match_id, fonte) WHERE estado='ok' ''')
     for table in ('prediction_snapshots', 'odds_snapshots'):
         for action in ('UPDATE', 'DELETE'):
             conn.execute(f'''CREATE TRIGGER IF NOT EXISTS {table}_no_{action.lower()}

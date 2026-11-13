@@ -1,6 +1,8 @@
 from project_paths import ROOT, DB_PATH
 from contextlib import closing
 import json
+import hashlib
+from functools import lru_cache
 import os
 import sqlite3
 from datetime import datetime, timezone, timedelta
@@ -180,16 +182,22 @@ def _backfill_modelo(cursor):
     )
 
 
+@lru_cache(maxsize=1)
+def model_fingerprint():
+    return {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
+            for name in ('src/predictor.py', 'src/adjusted_xg.py', 'src/main.py')}
+
+
 def salvar_previsoes_db(jogos):
     """Save current pending view and append observed snapshot in one transaction.
 
     No historical import, result update or invented observation timestamp.
     """
     if not jogos:
-        return
+        return set()
     now = datetime.now(timezone.utc)
     observed, now_ts = now.isoformat(), now.timestamp()
-    saved = 0
+    saved_ids = set()
     with closing(get_connection()) as conn, conn:
         conn.execute("BEGIN IMMEDIATE")
         for j in jogos:
@@ -199,6 +207,9 @@ def salvar_previsoes_db(jogos):
             existing = conn.execute('SELECT status,result_o25,result_btts,timestamp FROM predictions WHERE match_id=?', (match_id,)).fetchone()
             if existing and (existing[0] not in ('pending', None) or
                              existing[1] is not None or existing[2] is not None or existing[3] <= now_ts):
+                continue
+            if existing and existing[3] != j['timestamp']:
+                print(f'Horário divergente em {match_id}; preservar o original e excluir nova previsão até revisão.')
                 continue
             conn.execute("""INSERT OR IGNORE INTO predictions
                 (match_id,event_date,timestamp,league,league_id,home_team,away_team,created_at,status)
@@ -217,6 +228,7 @@ def salvar_previsoes_db(jogos):
                                             'n_h2h':j.get('n_h2h')})
             parameters = j.get('parameters', {'xg_home':j['xg_home'],'xg_away':j['xg_away'],
                                               'media_liga_usada':j.get('media_liga_usada')})
+            parameters = dict(parameters, source_sha256=model_fingerprint())
             conn.execute("""INSERT INTO prediction_snapshots
                 (match_id,predicted_at,kickoff,modelo,prob_o25,prob_btts,prob_o25_base,
                 baixa_confianca,calibracao_o25_id,prob_btts_base,provenance_json,parameters_json)
@@ -224,8 +236,9 @@ def salvar_previsoes_db(jogos):
                 (match_id,observed,*row,j.get('btts_base'),
                  json.dumps(provenance,ensure_ascii=False,sort_keys=True,allow_nan=False),
                  json.dumps(parameters,ensure_ascii=False,sort_keys=True,allow_nan=False)))
-            saved += 1
-    print(f"Snapshots pré-jogo guardados: {saved}; base compatível: {DB_NAME}")
+            saved_ids.add(match_id)
+    print(f"Snapshots pré-jogo guardados: {len(saved_ids)}; base compatível: {DB_NAME}")
+    return saved_ids
 
 
 def guardar_team_stats(team_id, team_name, stats):
