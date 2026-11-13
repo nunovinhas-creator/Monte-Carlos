@@ -20,6 +20,7 @@ from collections import Counter
 from datetime import datetime, timezone, timedelta
 
 import requests
+from pipeline.kickoffs import event_kickoff, observe, current
 
 API_TOKEN = os.getenv("BSD_API_TOKEN")
 BASE_URL = "https://sports.bzzoiro.com/api/v2"
@@ -113,11 +114,12 @@ def obter_jogos_pendentes_passados(limite=200):
 
     cursor.execute(
         """
-        SELECT match_id, home_team, away_team, timestamp
-        FROM predictions
-        WHERE status = 'pending' AND timestamp <= ?
+        SELECT p.match_id, home_team, away_team, operational_kickoff
+        FROM predictions p JOIN operational_schedule o USING(match_id)
+        WHERE status = 'pending' AND operational_kickoff <= ?
+          AND schedule_state != 'quarantined'
           AND result_o25 IS NULL AND result_btts IS NULL
-        ORDER BY timestamp DESC
+        ORDER BY operational_kickoff DESC
         LIMIT ?
         """,
         (agora_ts, limite),
@@ -306,7 +308,8 @@ def _obter_payload(match_id, motivos, ts=None, agora_ts=None):
     return data
 
 
-def consultar_resultado_api(match_id, motivos, redirecionamentos=None, ts=None, agora_ts=None):
+def consultar_resultado_api(match_id, motivos, redirecionamentos=None, ts=None, agora_ts=None,
+                           schedule_observations=None):
     id_original = str(match_id)
     id_atual = id_original
 
@@ -319,6 +322,8 @@ def consultar_resultado_api(match_id, motivos, redirecionamentos=None, ts=None, 
 
         etiqueta = id_atual if id_atual == id_original else f"{id_original}->{id_atual}"
         status = _extrair_status(data)
+        if schedule_observations is not None and id_atual == id_original:
+            schedule_observations[id_original] = data
 
         # DEBUG dump ANTES do desvio por replaced_by: cada payload obtido em
         # cada salto da cadeia fica registado, incluindo o evento original
@@ -395,9 +400,11 @@ def resolver_jogos():
     agora_ts = int(datetime.now(timezone.utc).timestamp())
 
     for match_id, home, away, ts in pendentes:
+        observations = {}
         try:
             home_score, away_score, status = consultar_resultado_api(
-                match_id, motivos, redirecionamentos, ts=ts, agora_ts=agora_ts
+                match_id, motivos, redirecionamentos, ts=ts, agora_ts=agora_ts,
+                schedule_observations=observations
             )
         except RateLimitPersistente:
             interrompido_por_rate_limit = True
@@ -409,6 +416,27 @@ def resolver_jogos():
             break
 
         verificados += 1
+        conn.execute('BEGIN IMMEDIATE')
+        payload = observations.get(str(match_id))
+        if payload is not None:
+            kickoff, field = event_kickoff(payload)
+            reason = None
+            if str(match_id) in redirecionamentos:
+                reason = 'replacement_identity_requires_manual_review'
+            elif status == 'postponed' and (kickoff is None or kickoff <= agora_ts):
+                reason = 'postponed_without_evidenced_future_kickoff'
+            elif status in STATUS_FINAL and kickoff is not None and kickoff > agora_ts:
+                reason = 'finished_with_future_schedule'
+            if kickoff is not None or reason:
+                observe(conn,match_id,kickoff,detected_at=datetime.now(timezone.utc),
+                        source=f'bsd:event_detail:{field or "missing"}',reason=reason)
+        schedule = current(conn,match_id)
+        if schedule is not None:
+            operational_ts, _, schedule_state = schedule
+            if schedule_state == 'quarantined' or (operational_ts != ts and operational_ts > agora_ts):
+                conn.commit()
+                continue
+            ts = operational_ts
 
         if home_score is not None and away_score is not None:
             res_o25 = 1 if (home_score + away_score) > 2.5 else 0
@@ -460,6 +488,7 @@ def resolver_jogos():
             # de saude a vigiar (ex: API a devolver 'notstarted'/'unresolved'
             # para tudo e o pipeline silenciosamente parado).
             pendentes_envelhecidos += 1
+        conn.commit()
 
     conn.commit()
     conn.close()

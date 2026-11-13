@@ -10,6 +10,7 @@ from analysis.roi_report import load_rows
 def render(db_path, legacy):
     out = ['<section class="card p-3 mb-4"><h3>Definições e métricas científicas</h3>',
            '<p>Histórico de predictions = vista legada mutável antes do jogo; created_at não prova a hora da última previsão. Primeira, última pré-jogo e congelada na odd são séries separadas. Não se reconstroem snapshots antigos. N/D = comparação indisponível.</p>',
+           '<p>Primeira e última observadas usam o horário conhecido em cada snapshot. Uma mudança posterior não reclassifica essas observações como provas pré-jogo do novo horário. O ROI corrente exige odds da revisão operacional atual; conflitos ambíguos ficam em quarentena. As 12 previsões legadas tardias permanecem no histórico descritivo e não contam como previsões prospetivas congeladas.</p>',
            '<div class="table-responsive"><table class="table"><thead><tr><th>Série</th><th>Mercado</th><th>n</th><th>Período UTC</th><th>Brier</th><th>Log Loss</th><th>Skill vs 0,5</th><th>ECE</th><th>Brier IC95%</th></tr></thead><tbody>']
     groups = []
     for model in ('v1','v2'):

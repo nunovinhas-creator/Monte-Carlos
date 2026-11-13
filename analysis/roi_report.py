@@ -20,33 +20,47 @@ from analysis.strategy_status import scientific_status
 MAX_AGE_SECONDS = 6 * 3600
 
 
-def load_rows(db_path=DB_NAME):
+def load_rows(db_path=DB_NAME, definition="current"):
     """Uma cotação válida pré-jogo por evento terminado, sem olhar para odds futuras."""
+    if definition not in ('current','as_observed','revision_history','prospective'):
+        raise ValueError('unknown temporal definition')
     conn = sqlite3.connect(f'file:{Path(db_path).resolve()}?mode=ro', uri=True)
     conn.row_factory = sqlite3.Row
     try:
         columns = {r[1] for r in conn.execute('PRAGMA table_info(odds_snapshots)')}
         frozen_model = 's.modelo_no_instante' if 'modelo_no_instante' in columns else 'NULL'
-        return [dict(r) for r in conn.execute(f'''
+        revised = 'kickoff_at_capture' in columns
+        kickoff = 'COALESCE(s.kickoff_at_capture,p.timestamp)' if revised else 'p.timestamp'
+        revision = 's.kickoff_revision_id' if revised else 'NULL'
+        schedule_join = 'JOIN operational_schedule o ON o.match_id=p.match_id' if revised else ''
+        schedule_filter = "AND o.schedule_state!='quarantined' AND s.kickoff_revision_id IS o.revision_id" if revised and definition in ('current','prospective') else ''
+        partition = 'p.match_id,COALESCE(s.kickoff_revision_id,0)' if revised and definition=='revision_history' else 'p.match_id'
+        prospective_filter = "AND s.prediction_snapshot_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM legacy_prediction_flags f WHERE f.match_id=p.match_id AND s.kickoff_revision_id IS NULL)" if revised and definition=='prospective' else ''
+        if definition=='prospective' and not revised:
+            return []
+        return [dict(r,temporal_definition=definition) for r in conn.execute(f'''
             WITH candidates AS (
                 SELECT p.match_id, p.home_team, p.away_team, p.league,
-                    p.timestamp, s.prob_o25_no_instante AS prob_o25,
+                    {kickoff} AS timestamp, s.prob_o25_no_instante AS prob_o25,
                     s.prob_o25_base_no_instante AS prob_o25_base,
                     s.prob_btts_no_instante AS prob_btts,
                     s.baixa_confianca_no_instante AS baixa_confianca,
                     s.calibracao_o25_no_instante AS calibracao_o25_id,
                     p.result_o25, p.result_btts, p.status, s.odd, s.capturado_em, s.quote_at,
                     s.fonte, p.league_id, p.modelo AS modelo_atual,
+                    s.id AS odds_snapshot_id, {revision} AS kickoff_revision_id,
+                    {'s.prediction_snapshot_id' if 'prediction_snapshot_id' in columns else 'NULL'} AS prediction_snapshot_id,
+                    {'o.schedule_state' if revised else "'original'"} AS schedule_state,
                     {frozen_model} AS modelo_no_instante, COALESCE({frozen_model},p.modelo) AS modelo,
-                    ROW_NUMBER() OVER (PARTITION BY p.match_id ORDER BY julianday(s.capturado_em) ASC, s.id ASC) AS pos
-                FROM predictions p JOIN odds_snapshots s ON p.match_id = s.match_id
+                    ROW_NUMBER() OVER (PARTITION BY {partition} ORDER BY julianday(s.capturado_em) ASC, s.id ASC) AS pos
+                FROM predictions p JOIN odds_snapshots s ON p.match_id = s.match_id {schedule_join}
                 WHERE COALESCE({frozen_model},p.modelo) = 'v2' AND p.status = 'finished' AND p.result_o25 IN (0,1)
-                  AND s.estado = 'ok' AND s.fonte = 'bsd_consensus'
+                  AND s.estado = 'ok' AND s.fonte = 'bsd_consensus' {schedule_filter} {prospective_filter}
                   AND s.odd BETWEEN 1.01 AND 100
                   AND s.prob_o25_no_instante BETWEEN 0 AND 100
                   AND s.prob_o25_base_no_instante BETWEEN 0 AND 100
-                  AND CAST(strftime('%s', s.capturado_em) AS INTEGER) < p.timestamp
-                  AND p.timestamp - CAST(strftime('%s', s.capturado_em) AS INTEGER) <= ?
+                  AND CAST(strftime('%s', s.capturado_em) AS INTEGER) < {kickoff}
+                  AND {kickoff} - CAST(strftime('%s', s.capturado_em) AS INTEGER) <= ?
                   AND CAST(strftime('%s', s.quote_at) AS INTEGER) <= CAST(strftime('%s', s.capturado_em) AS INTEGER)
                   AND CAST(strftime('%s', s.capturado_em) AS INTEGER) - CAST(strftime('%s', s.quote_at) AS INTEGER) BETWEEN 0 AND 21600
             ) SELECT * FROM candidates WHERE pos = 1 ORDER BY timestamp, match_id
@@ -140,7 +154,7 @@ def gerar(db_path=DB_NAME, html_path='roi.html', csv_path='roi_jogos.csv'):
             'prob_btts_no_instante_pct', 'baixa_confianca_no_instante', 'calibracao_id',
             'odd_consenso_bsd', 'capturado_em_utc', 'quote_at_utc', 'resultado_over25',
             'lucro_teorico_1u', 'ev_modelado_pct', 'original_over_verde_60',
-            'original_over_e_btts_verdes_60', 'mc_o70', 'mc_o70_ev5', 'modelo_no_instante', 'modelo_legado_inferido'
+            'original_over_e_btts_verdes_60', 'mc_o70', 'mc_o70_ev5', 'modelo_no_instante', 'modelo_legado_inferido', 'odds_snapshot_id', 'prediction_snapshot_id', 'kickoff_revision_id', 'definicao_temporal', 'estado_horario'
         ])
         for r, c in classes:
             writer.writerow([
@@ -154,7 +168,7 @@ def gerar(db_path=DB_NAME, html_path='roi.html', csv_path='roi_jogos.csv'):
                 'N/D' if c['original_over'] is None else int(c['original_over']),
                 'N/D' if c['original_over_btts'] is None else int(c['original_over_btts']),
                 int(c['mc_o70']), int(c['mc_o70_ev5']),r['modelo_no_instante'] or 'N/D',
-                r['modelo'] if r['modelo_no_instante'] is None else ''
+                r['modelo'] if r['modelo_no_instante'] is None else '', r['odds_snapshot_id'], r['prediction_snapshot_id'] or 'N/D', r['kickoff_revision_id'] or 'original', r['temporal_definition'], r['schedule_state']
             ])
 
     def percent(v):
@@ -223,7 +237,7 @@ def gerar(db_path=DB_NAME, html_path='roi.html', csv_path='roi_jogos.csv'):
       <div class="stat"><span>Liquidados sem BTTS / confiança históricos completos</span><b>{incompletos}</b></div></div>
     <div class="scroll"><table><thead><tr><th>Conjunto de jogos / filtro</th><th>Estado científico</th><th>Jogos</th><th>Acertos Over</th><th>Taxa</th><th>IC95% acerto</th><th>Odd média</th><th>Prob. média</th><th>Lucro (1u/jogo)</th><th>ROI teórico</th><th>IC95% ROI</th><th>Período UTC</th><th>Modelo</th></tr></thead><tbody>{trs}</tbody></table></div>
     <p class="hint">Cada linha é uma simulação independente sobre os mesmos jogos elegíveis quando as variáveis da regra estão disponíveis. As linhas sobrepõem-se: <strong>não se somam lucros entre estratégias</strong>. «Sem amostra» significa que ainda não existem jogos liquidados aptos para aquela regra; não significa ROI de 0%.</p>
-    <p class="hint">Cobertura acumulada: <strong>{coverage}</strong> dos jogos v2 liquidados têm odd elegível. O denominador inclui o período anterior à recolha; não é uma taxa de captura prospetiva. Versão v2 inferida da tabela histórica em {legacy_versions} jogos; sem versão congelada antiga, esta proveniência é explícita.</p>
+    <p class="hint">Viés de seleção: o ROI descreve apenas jogos com odds elegíveis; não representa os jogos sem preço. Odds de revisões anteriores não são reutilizadas. Cobertura acumulada: <strong>{coverage}</strong> dos jogos v2 liquidados têm odd elegível. O denominador inclui o período anterior à recolha; não é uma taxa de captura prospetiva. Versão v2 inferida da tabela histórica em {legacy_versions} jogos; sem versão congelada antiga, esta proveniência é explícita.</p>
     <p class="notice"><strong>Exploratório histórico.</strong> NO-GO = IC95% do ROI inteiramente negativo ou falha de integridade; INCONCLUSIVO = não permite decisão; EXPERIMENTAL = sem amostra. CANDIDATO e VALIDADO exigem protocolos prospetivos separados e revisão registada; nenhum é atribuído automaticamente. IC de acerto: Wilson; IC de ROI: bootstrap de dias UTC (1000 réplicas), N/D com menos de 5 dias. Dependência entre dias e seleção de cobertura limitam estes intervalos.</p>
     <h2>Evolução semanal (UTC)</h2><div class="scroll"><table><thead><tr><th>Hipótese</th><th>Semana</th><th>n</th><th>ROI</th></tr></thead><tbody>{evolution}</tbody></table></div>
     <h2>Metodologia e limitações — para analisar mais tarde</h2>

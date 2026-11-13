@@ -1,0 +1,1307 @@
+{
+  "base_sha": "6eaa16cc0b53542c8ab6c59d54e775a943fa42ec",
+  "reference_utc": "2026-11-13T12:50:40+00:00",
+  "preserved_file_sha256": {
+    "predictions.db": "0f31d652d9a9fe36176b376aca61aaf1c3c5b6002051cef8645a62aac0a6e1cb",
+    "index.html": "cf059e60aef5b0dcbc6b70c5c0136f3a7b8b64da1ca629068eae32bb3c5e66df",
+    "backtest.html": "3786d31e78bdbbc9ee8cb70d0f64bda92f41c6f4ea91d103ed12302356e33848",
+    "roi.html": "90dfac7db88510397014a5cf29ba177e9241cbe3617d9e0c429b56509bc167c2",
+    "roi_jogos.csv": "c6488303d0c8ba24e588e1c5b3dc6ab47fa2b6393093968fc0dd55370582d577",
+    "calibracao_o25_v2.json": "c58a745a71181ad36e2fec69cf5e0bf290d4cefd9b8ceb53a53c521b927adfdb",
+    "recalibracao.json": "51d8a4ffe5075d115027ab77c3cc02318deee8f2283db352b426fcfe5b587953",
+    "modelo_v2_backfill.json": "14ceef81dd7990e745ba148e783b8d8e991d14ed05a3975eb3661530fc51529e",
+    "ligas_bsd.json": "aea7e1004e8a4a76e0b1d6a893c1e0fc45c80594039a8c6b8e8ed33d1d39c391"
+  },
+  "original_counts": {
+    "team_stats": 2107,
+    "odds_snapshots": 1541,
+    "prediction_snapshots": 340,
+    "sqlite_sequence": 2,
+    "predictions": 8301
+  },
+  "migrated_counts": {
+    "team_stats": 2107,
+    "odds_snapshots": 1541,
+    "kickoff_revisions": 6,
+    "legacy_prediction_flags": 12,
+    "prediction_snapshots": 340,
+    "sqlite_sequence": 3,
+    "odds_capture_audit": 0,
+    "predictions": 8301
+  },
+  "preservation_errors": [],
+  "all_original_columns_equal": true,
+  "idempotent_database_bytes": true,
+  "audit_of_copy": {
+    "errors": [],
+    "warnings": [
+      "12 legacy predictions created at/after kickoff; no first/last reconstruction"
+    ],
+    "coverage_7d": 0.4351687388987567,
+    "coverage_n": 563,
+    "coverage_quoted": 245,
+    "db_sha256": "26992696cc9edf8eefb12a0b5b8f9b248e35d720c1962a4d634666dca8d0e172"
+  },
+  "six_conflicts": [
+    {
+      "match_id": "604616",
+      "home_team": "Shooting Stars",
+      "away_team": "Bendel Insurance FC",
+      "original_timestamp": 1794754800,
+      "original_utc": "2026-11-15 15:00:00",
+      "detected_at": "2026-11-13T12:50:25.426004+00:00",
+      "received_api_timestamp": null,
+      "source": "github:actions/runs/43428215133:job/131894823856:bsd_warning",
+      "state": "quarantined",
+      "reason": "run_820_conflict_new_time_not_logged"
+    },
+    {
+      "match_id": "604619",
+      "home_team": "Kano Pillars",
+      "away_team": "Ranchers Bees",
+      "original_timestamp": 1794754800,
+      "original_utc": "2026-11-15 15:00:00",
+      "detected_at": "2026-11-13T12:50:25.426351+00:00",
+      "received_api_timestamp": null,
+      "source": "github:actions/runs/43428215133:job/131894823856:bsd_warning",
+      "state": "quarantined",
+      "reason": "run_820_conflict_new_time_not_logged"
+    },
+    {
+      "match_id": "604620",
+      "home_team": "Plateau United",
+      "away_team": "Kun Khalifat FC",
+      "original_timestamp": 1794754800,
+      "original_utc": "2026-11-15 15:00:00",
+      "detected_at": "2026-11-13T12:50:25.426490+00:00",
+      "received_api_timestamp": null,
+      "source": "github:actions/runs/43428215133:job/131894823856:bsd_warning",
+      "state": "quarantined",
+      "reason": "run_820_conflict_new_time_not_logged"
+    },
+    {
+      "match_id": "606209",
+      "home_team": "Grenada",
+      "away_team": "Saint Kitts and Nevis",
+      "original_timestamp": 1794600000,
+      "original_utc": "2026-11-13 20:00:00",
+      "detected_at": "2026-11-13T12:50:25.426114+00:00",
+      "received_api_timestamp": null,
+      "source": "github:actions/runs/43428215133:job/131894823856:bsd_warning",
+      "state": "quarantined",
+      "reason": "run_820_conflict_new_time_not_logged"
+    },
+    {
+      "match_id": "649924",
+      "home_team": "United Arab Emirates",
+      "away_team": "Honduras",
+      "original_timestamp": 1794574800,
+      "original_utc": "2026-11-13 13:00:00",
+      "detected_at": "2026-11-13T12:50:25.425867+00:00",
+      "received_api_timestamp": null,
+      "source": "github:actions/runs/43428215133:job/131894823856:bsd_warning",
+      "state": "quarantined",
+      "reason": "run_820_conflict_new_time_not_logged"
+    },
+    {
+      "match_id": "654308",
+      "home_team": "PAOK",
+      "away_team": "FK Partizan",
+      "original_timestamp": 1794661200,
+      "original_utc": "2026-11-14 13:00:00",
+      "detected_at": "2026-11-13T12:50:25.426229+00:00",
+      "received_api_timestamp": null,
+      "source": "github:actions/runs/43428215133:job/131894823856:bsd_warning",
+      "state": "quarantined",
+      "reason": "run_820_conflict_new_time_not_logged"
+    }
+  ],
+  "legacy_unverifiable": [
+    {
+      "match_id": "587937",
+      "created_at": "2026-08-15T10:41:10.586639+00:00",
+      "kickoff_utc": "2026-08-15 09:30:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "601004",
+      "created_at": "2026-08-26T17:39:20.875086+00:00",
+      "kickoff_utc": "2026-08-26 17:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "603778",
+      "created_at": "2026-09-13T16:14:00.010417+00:00",
+      "kickoff_utc": "2026-09-13 15:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605517",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 11:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605518",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 12:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605519",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 12:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605520",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 12:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605521",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 12:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605522",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 12:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605523",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 12:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "605529",
+      "created_at": "2026-10-02T12:47:18.945695+00:00",
+      "kickoff_utc": "2026-10-02 11:00:00",
+      "classification": "legacy_unverifiable"
+    },
+    {
+      "match_id": "654298",
+      "created_at": "2026-11-10T12:44:42.533040+00:00",
+      "kickoff_utc": "2026-11-10 12:00:00",
+      "classification": "legacy_unverifiable"
+    }
+  ],
+  "roi_before": {
+    "all": {
+      "n": 933,
+      "wins": 518,
+      "stake": 933,
+      "profit": -63.61999999999999,
+      "roi": -6.818863879957126,
+      "avg_odds": 1.7233226152197212,
+      "hit_rate": 55.519828510182215,
+      "avg_probability": 58.56257234726688,
+      "roi_ci95": [
+        -13.239285735396692,
+        -0.7970666013712085
+      ],
+      "hit_ci95": [
+        52.314952023708805,
+        58.67943758514321
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-13"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 22
+    },
+    "green60": {
+      "n": 401,
+      "wins": 237,
+      "stake": 401,
+      "profit": -43.56999999999999,
+      "roi": -10.865336658354114,
+      "avg_odds": 1.5411970074812966,
+      "hit_rate": 59.10224438902743,
+      "avg_probability": 69.03084788029925,
+      "roi_ci95": [
+        -20.08194736842105,
+        -2.4779391021709807
+      ],
+      "hit_ci95": [
+        54.22595857698226,
+        63.80579148454789
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-13"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 22
+    },
+    "double60": {
+      "n": 344,
+      "wins": 213,
+      "stake": 344,
+      "profit": -24.02,
+      "roi": -6.982558139534883,
+      "avg_odds": 1.5298546511627906,
+      "hit_rate": 61.91860465116279,
+      "avg_probability": 69.92793604651162,
+      "roi_ci95": [
+        -15.081025535320222,
+        0.641017335616212
+      ],
+      "hit_ci95": [
+        56.68229522491839,
+        66.891662944993
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-13"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 21
+    },
+    "o70": {
+      "n": 158,
+      "wins": 104,
+      "stake": 158,
+      "profit": -10.929999999999996,
+      "roi": -6.91772151898734,
+      "avg_odds": 1.4325316455696202,
+      "hit_rate": 65.82278481012658,
+      "avg_probability": 76.29177215189874,
+      "roi_ci95": [
+        -15.625633741258742,
+        3.443352813852812
+      ],
+      "hit_ci95": [
+        58.13022533705542,
+        72.76420700700515
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-12"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 19
+    },
+    "o70_ev5": {
+      "n": 107,
+      "wins": 70,
+      "stake": 107,
+      "profit": -3.5200000000000014,
+      "roi": -3.2897196261682256,
+      "avg_odds": 1.4917757009345796,
+      "hit_rate": 65.42056074766354,
+      "avg_probability": 77.34233644859812,
+      "roi_ci95": [
+        -15.000892857142857,
+        9.562192464161177
+      ],
+      "hit_ci95": [
+        56.015532464613784,
+        73.75672094228462
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-12"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 18
+    }
+  },
+  "roi_after": {
+    "all": {
+      "n": 933,
+      "wins": 518,
+      "stake": 933,
+      "profit": -63.61999999999999,
+      "roi": -6.818863879957126,
+      "avg_odds": 1.7233226152197212,
+      "hit_rate": 55.519828510182215,
+      "avg_probability": 58.56257234726688,
+      "roi_ci95": [
+        -13.239285735396692,
+        -0.7970666013712085
+      ],
+      "hit_ci95": [
+        52.314952023708805,
+        58.67943758514321
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-13"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 22
+    },
+    "green60": {
+      "n": 401,
+      "wins": 237,
+      "stake": 401,
+      "profit": -43.56999999999999,
+      "roi": -10.865336658354114,
+      "avg_odds": 1.5411970074812966,
+      "hit_rate": 59.10224438902743,
+      "avg_probability": 69.03084788029925,
+      "roi_ci95": [
+        -20.08194736842105,
+        -2.4779391021709807
+      ],
+      "hit_ci95": [
+        54.22595857698226,
+        63.80579148454789
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-13"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 22
+    },
+    "double60": {
+      "n": 344,
+      "wins": 213,
+      "stake": 344,
+      "profit": -24.02,
+      "roi": -6.982558139534883,
+      "avg_odds": 1.5298546511627906,
+      "hit_rate": 61.91860465116279,
+      "avg_probability": 69.92793604651162,
+      "roi_ci95": [
+        -15.081025535320222,
+        0.641017335616212
+      ],
+      "hit_ci95": [
+        56.68229522491839,
+        66.891662944993
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-13"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 21
+    },
+    "o70": {
+      "n": 158,
+      "wins": 104,
+      "stake": 158,
+      "profit": -10.929999999999996,
+      "roi": -6.91772151898734,
+      "avg_odds": 1.4325316455696202,
+      "hit_rate": 65.82278481012658,
+      "avg_probability": 76.29177215189874,
+      "roi_ci95": [
+        -15.625633741258742,
+        3.443352813852812
+      ],
+      "hit_ci95": [
+        58.13022533705542,
+        72.76420700700515
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-12"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 19
+    },
+    "o70_ev5": {
+      "n": 107,
+      "wins": 70,
+      "stake": 107,
+      "profit": -3.5200000000000014,
+      "roi": -3.2897196261682256,
+      "avg_odds": 1.4917757009345796,
+      "hit_rate": 65.42056074766354,
+      "avg_probability": 77.34233644859812,
+      "roi_ci95": [
+        -15.000892857142857,
+        9.562192464161177
+      ],
+      "hit_ci95": [
+        56.015532464613784,
+        73.75672094228462
+      ],
+      "period": [
+        "2026-10-23",
+        "2026-11-12"
+      ],
+      "models": [
+        "v2"
+      ],
+      "days": 18
+    }
+  },
+  "coverage_run820": {
+    "from_utc": "2026-11-06T12:50:40+00:00",
+    "to_utc": "2026-11-13T12:50:40+00:00",
+    "settled": 563,
+    "eligible": 245,
+    "queried": 394,
+    "coverage_pct": 43.51687388987567,
+    "queried_pct": 69.9822380106572,
+    "eligible_among_queried_pct": 62.182741116751274,
+    "event_reasons": {
+      "not_observed_cause_ND": 169,
+      "eligible": 245,
+      "sem_timestamp_da_cotacao": 75,
+      "sem_odd_over_25": 71,
+      "cotacao_desatualizada_ou_futura": 3
+    },
+    "by_league": {
+      "Girabola": {
+        "settled": 8,
+        "queried": 6,
+        "eligible": 0,
+        "reasons": {
+          "not_observed_cause_ND": 2,
+          "sem_odd_over_25": 6
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 75.0
+      },
+      "Parva Liga": {
+        "settled": 7,
+        "queried": 5,
+        "eligible": 4,
+        "reasons": {
+          "not_observed_cause_ND": 2,
+          "eligible": 4,
+          "sem_timestamp_da_cotacao": 1
+        },
+        "coverage_pct": 57.14285714285714,
+        "queried_pct": 71.42857142857143
+      },
+      "Superliga": {
+        "settled": 8,
+        "queried": 5,
+        "eligible": 5,
+        "reasons": {
+          "not_observed_cause_ND": 3,
+          "eligible": 5
+        },
+        "coverage_pct": 62.5,
+        "queried_pct": 62.5
+      },
+      "Liga ID 107": {
+        "settled": 10,
+        "queried": 8,
+        "eligible": 2,
+        "reasons": {
+          "eligible": 2,
+          "sem_odd_over_25": 6,
+          "not_observed_cause_ND": 2
+        },
+        "coverage_pct": 20.0,
+        "queried_pct": 80.0
+      },
+      "Botola Pro": {
+        "settled": 8,
+        "queried": 6,
+        "eligible": 1,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 3,
+          "not_observed_cause_ND": 2,
+          "sem_odd_over_25": 2,
+          "eligible": 1
+        },
+        "coverage_pct": 12.5,
+        "queried_pct": 75.0
+      },
+      "Trendyol Super Lig": {
+        "settled": 9,
+        "queried": 6,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6,
+          "not_observed_cause_ND": 3
+        },
+        "coverage_pct": 66.66666666666666,
+        "queried_pct": 66.66666666666666
+      },
+      "Ekstraklasa": {
+        "settled": 9,
+        "queried": 7,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6,
+          "not_observed_cause_ND": 2,
+          "sem_timestamp_da_cotacao": 1
+        },
+        "coverage_pct": 66.66666666666666,
+        "queried_pct": 77.77777777777779
+      },
+      "2. Bundesliga": {
+        "settled": 9,
+        "queried": 9,
+        "eligible": 9,
+        "reasons": {
+          "eligible": 9
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Danish Superliga": {
+        "settled": 6,
+        "queried": 6,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Allsvenskan": {
+        "settled": 8,
+        "queried": 3,
+        "eligible": 3,
+        "reasons": {
+          "eligible": 3,
+          "not_observed_cause_ND": 5
+        },
+        "coverage_pct": 37.5,
+        "queried_pct": 37.5
+      },
+      "Austrian Bundesliga": {
+        "settled": 6,
+        "queried": 4,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 4,
+          "not_observed_cause_ND": 2
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 66.66666666666666
+      },
+      "Liga Portugal 2": {
+        "settled": 9,
+        "queried": 7,
+        "eligible": 7,
+        "reasons": {
+          "eligible": 7,
+          "not_observed_cause_ND": 2
+        },
+        "coverage_pct": 77.77777777777779,
+        "queried_pct": 77.77777777777779
+      },
+      "Liga ID 108": {
+        "settled": 9,
+        "queried": 7,
+        "eligible": 6,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 1,
+          "eligible": 6,
+          "not_observed_cause_ND": 2
+        },
+        "coverage_pct": 66.66666666666666,
+        "queried_pct": 77.77777777777779
+      },
+      "Challenger Pro League": {
+        "settled": 7,
+        "queried": 4,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 4,
+          "not_observed_cause_ND": 3
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 57.14285714285714
+      },
+      "Ligue 2": {
+        "settled": 9,
+        "queried": 9,
+        "eligible": 7,
+        "reasons": {
+          "eligible": 7,
+          "sem_odd_over_25": 2
+        },
+        "coverage_pct": 77.77777777777779,
+        "queried_pct": 100.0
+      },
+      "Eredivisie": {
+        "settled": 9,
+        "queried": 6,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6,
+          "not_observed_cause_ND": 3
+        },
+        "coverage_pct": 66.66666666666666,
+        "queried_pct": 66.66666666666666
+      },
+      "FA Cup": {
+        "settled": 40,
+        "queried": 7,
+        "eligible": 7,
+        "reasons": {
+          "eligible": 7,
+          "not_observed_cause_ND": 33
+        },
+        "coverage_pct": 17.5,
+        "queried_pct": 17.5
+      },
+      "Liga ID 101": {
+        "settled": 10,
+        "queried": 5,
+        "eligible": 2,
+        "reasons": {
+          "eligible": 2,
+          "sem_odd_over_25": 3,
+          "not_observed_cause_ND": 5
+        },
+        "coverage_pct": 20.0,
+        "queried_pct": 50.0
+      },
+      "Liga ID 100": {
+        "settled": 10,
+        "queried": 8,
+        "eligible": 7,
+        "reasons": {
+          "eligible": 7,
+          "sem_timestamp_da_cotacao": 1,
+          "not_observed_cause_ND": 2
+        },
+        "coverage_pct": 70.0,
+        "queried_pct": 80.0
+      },
+      "Bundesliga": {
+        "settled": 9,
+        "queried": 8,
+        "eligible": 8,
+        "reasons": {
+          "eligible": 8,
+          "not_observed_cause_ND": 1
+        },
+        "coverage_pct": 88.88888888888889,
+        "queried_pct": 88.88888888888889
+      },
+      "Pro League": {
+        "settled": 9,
+        "queried": 8,
+        "eligible": 7,
+        "reasons": {
+          "eligible": 7,
+          "not_observed_cause_ND": 1,
+          "sem_timestamp_da_cotacao": 1
+        },
+        "coverage_pct": 77.77777777777779,
+        "queried_pct": 88.88888888888889
+      },
+      "Ligue 1": {
+        "settled": 9,
+        "queried": 4,
+        "eligible": 4,
+        "reasons": {
+          "eligible": 4,
+          "not_observed_cause_ND": 5
+        },
+        "coverage_pct": 44.44444444444444,
+        "queried_pct": 44.44444444444444
+      },
+      "Serie A": {
+        "settled": 10,
+        "queried": 10,
+        "eligible": 10,
+        "reasons": {
+          "eligible": 10
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Liga 3": {
+        "settled": 10,
+        "queried": 7,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6,
+          "not_observed_cause_ND": 3,
+          "cotacao_desatualizada_ou_futura": 1
+        },
+        "coverage_pct": 60.0,
+        "queried_pct": 70.0
+      },
+      "Championship": {
+        "settled": 12,
+        "queried": 4,
+        "eligible": 4,
+        "reasons": {
+          "eligible": 4,
+          "not_observed_cause_ND": 8
+        },
+        "coverage_pct": 33.33333333333333,
+        "queried_pct": 33.33333333333333
+      },
+      "La Liga": {
+        "settled": 10,
+        "queried": 8,
+        "eligible": 8,
+        "reasons": {
+          "eligible": 8,
+          "not_observed_cause_ND": 2
+        },
+        "coverage_pct": 80.0,
+        "queried_pct": 80.0
+      },
+      "Premier League": {
+        "settled": 10,
+        "queried": 7,
+        "eligible": 7,
+        "reasons": {
+          "eligible": 7,
+          "not_observed_cause_ND": 3
+        },
+        "coverage_pct": 70.0,
+        "queried_pct": 70.0
+      },
+      "Liga Portugal Betclic": {
+        "settled": 7,
+        "queried": 6,
+        "eligible": 5,
+        "reasons": {
+          "eligible": 5,
+          "not_observed_cause_ND": 1,
+          "sem_timestamp_da_cotacao": 1
+        },
+        "coverage_pct": 71.42857142857143,
+        "queried_pct": 85.71428571428571
+      },
+      "Brasileirão Serie B": {
+        "settled": 11,
+        "queried": 11,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6,
+          "cotacao_desatualizada_ou_futura": 1,
+          "sem_timestamp_da_cotacao": 4
+        },
+        "coverage_pct": 54.54545454545454,
+        "queried_pct": 100.0
+      },
+      "Brasileirão Serie A": {
+        "settled": 1,
+        "queried": 1,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 1
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 100.0
+      },
+      "Categoría Primera A": {
+        "settled": 12,
+        "queried": 12,
+        "eligible": 10,
+        "reasons": {
+          "eligible": 10,
+          "cotacao_desatualizada_ou_futura": 1,
+          "sem_timestamp_da_cotacao": 1
+        },
+        "coverage_pct": 83.33333333333334,
+        "queried_pct": 100.0
+      },
+      "Liga MX Apertura": {
+        "settled": 9,
+        "queried": 9,
+        "eligible": 9,
+        "reasons": {
+          "eligible": 9
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "NWSL": {
+        "settled": 4,
+        "queried": 4,
+        "eligible": 4,
+        "reasons": {
+          "eligible": 4
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Liga ID 104": {
+        "settled": 5,
+        "queried": 4,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 4,
+          "not_observed_cause_ND": 1
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 80.0
+      },
+      "J1 League": {
+        "settled": 10,
+        "queried": 9,
+        "eligible": 9,
+        "reasons": {
+          "eligible": 9,
+          "not_observed_cause_ND": 1
+        },
+        "coverage_pct": 90.0,
+        "queried_pct": 90.0
+      },
+      "K League 1": {
+        "settled": 6,
+        "queried": 6,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Liga F": {
+        "settled": 7,
+        "queried": 3,
+        "eligible": 0,
+        "reasons": {
+          "sem_odd_over_25": 3,
+          "not_observed_cause_ND": 4
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 42.857142857142854
+      },
+      "Segunda División": {
+        "settled": 7,
+        "queried": 4,
+        "eligible": 4,
+        "reasons": {
+          "eligible": 4,
+          "not_observed_cause_ND": 3
+        },
+        "coverage_pct": 57.14285714285714,
+        "queried_pct": 57.14285714285714
+      },
+      "Tunisian Ligue Professionnelle 1": {
+        "settled": 4,
+        "queried": 4,
+        "eligible": 3,
+        "reasons": {
+          "sem_odd_over_25": 1,
+          "eligible": 3
+        },
+        "coverage_pct": 75.0,
+        "queried_pct": 100.0
+      },
+      "Liga ID 103": {
+        "settled": 10,
+        "queried": 5,
+        "eligible": 0,
+        "reasons": {
+          "sem_odd_over_25": 5,
+          "not_observed_cause_ND": 5
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 50.0
+      },
+      "Liga ID 102": {
+        "settled": 10,
+        "queried": 6,
+        "eligible": 0,
+        "reasons": {
+          "sem_odd_over_25": 6,
+          "not_observed_cause_ND": 4
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 60.0
+      },
+      "Liga ID 105": {
+        "settled": 8,
+        "queried": 8,
+        "eligible": 0,
+        "reasons": {
+          "sem_odd_over_25": 8
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 100.0
+      },
+      "Liga ID 106": {
+        "settled": 8,
+        "queried": 8,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 8
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 100.0
+      },
+      "Liga ID 99": {
+        "settled": 8,
+        "queried": 8,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 8
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 100.0
+      },
+      "Stoiximan Super League": {
+        "settled": 7,
+        "queried": 4,
+        "eligible": 4,
+        "reasons": {
+          "not_observed_cause_ND": 3,
+          "eligible": 4
+        },
+        "coverage_pct": 57.14285714285714,
+        "queried_pct": 57.14285714285714
+      },
+      "Scottish Premiership": {
+        "settled": 6,
+        "queried": 3,
+        "eligible": 3,
+        "reasons": {
+          "not_observed_cause_ND": 3,
+          "eligible": 3
+        },
+        "coverage_pct": 50.0,
+        "queried_pct": 50.0
+      },
+      "Super League": {
+        "settled": 6,
+        "queried": 4,
+        "eligible": 4,
+        "reasons": {
+          "eligible": 4,
+          "not_observed_cause_ND": 2
+        },
+        "coverage_pct": 66.66666666666666,
+        "queried_pct": 66.66666666666666
+      },
+      "Eliteserien": {
+        "settled": 8,
+        "queried": 3,
+        "eligible": 3,
+        "reasons": {
+          "eligible": 3,
+          "not_observed_cause_ND": 5
+        },
+        "coverage_pct": 37.5,
+        "queried_pct": 37.5
+      },
+      "Copa do Brasil": {
+        "settled": 2,
+        "queried": 2,
+        "eligible": 1,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 1,
+          "eligible": 1
+        },
+        "coverage_pct": 50.0,
+        "queried_pct": 100.0
+      },
+      "MLS": {
+        "settled": 15,
+        "queried": 15,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 15
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 100.0
+      },
+      "Nigeria Premier Football League": {
+        "settled": 9,
+        "queried": 1,
+        "eligible": 0,
+        "reasons": {
+          "sem_odd_over_25": 1,
+          "not_observed_cause_ND": 8
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 11.11111111111111
+      },
+      "USL Championship": {
+        "settled": 4,
+        "queried": 4,
+        "eligible": 4,
+        "reasons": {
+          "eligible": 4
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Chinese Super League": {
+        "settled": 8,
+        "queried": 8,
+        "eligible": 7,
+        "reasons": {
+          "eligible": 7,
+          "sem_timestamp_da_cotacao": 1
+        },
+        "coverage_pct": 87.5,
+        "queried_pct": 100.0
+      },
+      "Campeonato de Portugal": {
+        "settled": 26,
+        "queried": 8,
+        "eligible": 0,
+        "reasons": {
+          "sem_odd_over_25": 8,
+          "not_observed_cause_ND": 18
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 30.76923076923077
+      },
+      "Veikkausliiga": {
+        "settled": 3,
+        "queried": 3,
+        "eligible": 3,
+        "reasons": {
+          "eligible": 3
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Liga Profesional de Fútbol": {
+        "settled": 15,
+        "queried": 15,
+        "eligible": 0,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 15
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 100.0
+      },
+      "Liga ID 109": {
+        "settled": 6,
+        "queried": 6,
+        "eligible": 0,
+        "reasons": {
+          "sem_odd_over_25": 6
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 100.0
+      },
+      "Copa del Rey": {
+        "settled": 9,
+        "queried": 2,
+        "eligible": 2,
+        "reasons": {
+          "eligible": 2,
+          "not_observed_cause_ND": 7
+        },
+        "coverage_pct": 22.22222222222222,
+        "queried_pct": 22.22222222222222
+      },
+      "Copa Colombia": {
+        "settled": 2,
+        "queried": 2,
+        "eligible": 2,
+        "reasons": {
+          "eligible": 2
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "International Friendly Games": {
+        "settled": 6,
+        "queried": 4,
+        "eligible": 3,
+        "reasons": {
+          "eligible": 3,
+          "not_observed_cause_ND": 2,
+          "sem_odd_over_25": 1
+        },
+        "coverage_pct": 50.0,
+        "queried_pct": 66.66666666666666
+      },
+      "UEFA Nations League": {
+        "settled": 8,
+        "queried": 6,
+        "eligible": 6,
+        "reasons": {
+          "not_observed_cause_ND": 2,
+          "eligible": 6
+        },
+        "coverage_pct": 75.0,
+        "queried_pct": 75.0
+      },
+      "CONCACAF Nations League": {
+        "settled": 6,
+        "queried": 6,
+        "eligible": 6,
+        "reasons": {
+          "eligible": 6
+        },
+        "coverage_pct": 100.0,
+        "queried_pct": 100.0
+      },
+      "Club Friendlies": {
+        "settled": 19,
+        "queried": 16,
+        "eligible": 3,
+        "reasons": {
+          "eligible": 3,
+          "not_observed_cause_ND": 3,
+          "sem_odd_over_25": 13
+        },
+        "coverage_pct": 15.789473684210526,
+        "queried_pct": 84.21052631578947
+      },
+      "Coupe de France": {
+        "settled": 1,
+        "queried": 0,
+        "eligible": 0,
+        "reasons": {
+          "not_observed_cause_ND": 1
+        },
+        "coverage_pct": 0.0,
+        "queried_pct": 0.0
+      }
+    },
+    "by_day_utc": {
+      "2026-11-06": {
+        "settled": 52,
+        "queried": 49,
+        "eligible": 38,
+        "reasons": {
+          "not_observed_cause_ND": 3,
+          "eligible": 38,
+          "sem_timestamp_da_cotacao": 7,
+          "sem_odd_over_25": 3,
+          "cotacao_desatualizada_ou_futura": 1
+        },
+        "coverage_pct": 73.07692307692307,
+        "queried_pct": 94.23076923076923
+      },
+      "2026-11-07": {
+        "settled": 213,
+        "queried": 138,
+        "eligible": 83,
+        "reasons": {
+          "eligible": 83,
+          "sem_timestamp_da_cotacao": 28,
+          "not_observed_cause_ND": 75,
+          "sem_odd_over_25": 27
+        },
+        "coverage_pct": 38.967136150234744,
+        "queried_pct": 64.7887323943662
+      },
+      "2026-11-08": {
+        "settled": 229,
+        "queried": 164,
+        "eligible": 96,
+        "reasons": {
+          "eligible": 96,
+          "sem_timestamp_da_cotacao": 39,
+          "not_observed_cause_ND": 65,
+          "sem_odd_over_25": 27,
+          "cotacao_desatualizada_ou_futura": 2
+        },
+        "coverage_pct": 41.92139737991266,
+        "queried_pct": 71.61572052401746
+      },
+      "2026-11-09": {
+        "settled": 14,
+        "queried": 3,
+        "eligible": 3,
+        "reasons": {
+          "eligible": 3,
+          "not_observed_cause_ND": 11
+        },
+        "coverage_pct": 21.428571428571427,
+        "queried_pct": 21.428571428571427
+      },
+      "2026-11-10": {
+        "settled": 9,
+        "queried": 4,
+        "eligible": 3,
+        "reasons": {
+          "sem_timestamp_da_cotacao": 1,
+          "eligible": 3,
+          "not_observed_cause_ND": 5
+        },
+        "coverage_pct": 33.33333333333333,
+        "queried_pct": 44.44444444444444
+      },
+      "2026-11-11": {
+        "settled": 6,
+        "queried": 6,
+        "eligible": 3,
+        "reasons": {
+          "eligible": 3,
+          "sem_odd_over_25": 3
+        },
+        "coverage_pct": 50.0,
+        "queried_pct": 100.0
+      },
+      "2026-11-12": {
+        "settled": 37,
+        "queried": 27,
+        "eligible": 17,
+        "reasons": {
+          "eligible": 17,
+          "not_observed_cause_ND": 10,
+          "sem_odd_over_25": 10
+        },
+        "coverage_pct": 45.94594594594595,
+        "queried_pct": 72.97297297297297
+      },
+      "2026-11-13": {
+        "settled": 3,
+        "queried": 3,
+        "eligible": 2,
+        "reasons": {
+          "eligible": 2,
+          "sem_odd_over_25": 1
+        },
+        "coverage_pct": 66.66666666666666,
+        "queried_pct": 100.0
+      }
+    },
+    "latest_run": null,
+    "limitations": [
+      "not_observed is missing evidence, not proof of a missed cron",
+      "legacy API/quota errors may have been collapsed into missing odds",
+      "ROI is conditional on price coverage; selection bias remains",
+      "6h window, 2h cron and 80-call budget unchanged; no historical backfill"
+    ]
+  },
+  "operational_evidence": {
+    "pr24_merged_at_utc": "2026-11-13T12:47:52Z",
+    "pr24_merge_sha": "2fe1132bbe5a5f9bda573e5af1e30b5ce7a4d6b1",
+    "production_run": 43428215133,
+    "production_conclusion": "success",
+    "pages_same_sha": [
+      {
+        "run_id": 43428611615,
+        "conclusion": "cancelled"
+      },
+      {
+        "run_id": 43428615452,
+        "conclusion": "success"
+      }
+    ],
+    "odds_run820": {
+      "attempts": 10,
+      "valid": 1,
+      "sem_odd_over_25": 8,
+      "sem_timestamp_da_cotacao": 1
+    },
+    "new_api_kickoffs": "N/D: run820 logged IDs only; no BSD secret configured in this environment; no real BSD call performed"
+  }
+}

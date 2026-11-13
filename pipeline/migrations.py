@@ -9,12 +9,12 @@ def backup_before_migration(db_path):
     if not path.exists():
         return None
     with sqlite3.connect(path) as source:
-        if source.execute("SELECT 1 FROM sqlite_master WHERE name='prediction_snapshots'").fetchone():
+        if source.execute("SELECT 1 FROM sqlite_master WHERE name='odds_capture_audit'").fetchone():
             return None
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         directory = path.parent / 'data' / 'backups'
         directory.mkdir(parents=True, exist_ok=True)
-        target = directory / f'pre-snapshots-{digest}.db'
+        target = directory / f'pre-kickoffs-{digest}.db'
         if not target.exists():
             with sqlite3.connect(target) as backup:
                 source.backup(backup)
@@ -82,3 +82,5 @@ def migrate(conn):
             AND p.status='pending' AND p.result_o25 IS NULL AND p.result_btts IS NULL
             AND unixepoch(NEW.predicted_at) < p.timestamp)
         BEGIN SELECT RAISE(ABORT, 'snapshot requires pending pre-match prediction'); END''')
+    from pipeline.schedule_migration import migrate_schedule
+    migrate_schedule(conn)

@@ -93,6 +93,7 @@ def _carregar_league_map(caminho=LIGAS_BSD_JSON):
 LEAGUE_MAP = _carregar_league_map()
 
 from pipeline.database import init_db, salvar_previsoes_db, DB_NAME, carregar_team_stats, MODELO_ACTUAL
+from pipeline.kickoffs import observe_events
 from src.adjusted_xg import calcular_adjusted_xg
 
 from src.predictor import monte_carlo as monte_carlo_sim, calibrar_probabilidades
@@ -568,6 +569,11 @@ def analisar():
         sys.exit(1)
 
     agora_utc = datetime.now(timezone.utc)
+    # Observe changes even if the proposed start has passed and no new forecast
+    # can be created. Historical timestamps remain untouched.
+    with sqlite3.connect(DB_NAME) as schedule_db:
+        schedule_db.execute('BEGIN IMMEDIATE')
+        observe_events(schedule_db,matches,detected_at=agora_utc)
 
     medias_por_liga, media_global = calcular_medias_liga()
     ids_ja_existentes = obter_match_ids_existentes()

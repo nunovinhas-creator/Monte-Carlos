@@ -53,56 +53,97 @@ def capturar(db_path=DB_NAME, max_calls=None, delay=None, api_client=obter_odds,
     now_ts = int(now.timestamp())
     db = sqlite3.connect(db_path)
     results = {'tentativas': 0, 'capturadas': 0, 'sem_odd': 0}
+    run_at = now.isoformat()
+    def record(match_id, revision, decision, queried=0, detail=None):
+        db.execute('''INSERT OR IGNORE INTO odds_capture_audit
+            (run_at,match_id,kickoff_revision_id,decision,queried,detail) VALUES (?,?,?,?,?,?)''',
+            (run_at,match_id,revision,decision,queried,detail))
+        db.commit()
     try:
         jogos = db.execute('''
-            SELECT p.match_id, p.timestamp, p.prob_o25, p.prob_o25_base,
-                   p.calibracao_o25_id, p.prob_btts, p.baixa_confianca, p.modelo,
+            SELECT p.match_id,o.operational_kickoff,o.revision_id,o.schedule_state,
+                   p.prob_o25,p.prob_o25_base,p.calibracao_o25_id,p.prob_btts,
+                   p.baixa_confianca,p.modelo,
                    (SELECT id FROM prediction_snapshots ps WHERE ps.match_id=p.match_id
-                    AND ps.predicted_at=p.prediction_updated_at ORDER BY ps.id DESC LIMIT 1)
-            FROM predictions p
-            WHERE p.modelo = 'v2' AND p.status = 'pending' AND p.result_o25 IS NULL
-              AND p.timestamp > ? AND p.timestamp <= ?
-              AND p.created_at IS NOT NULL
-              AND NOT EXISTS (
-                SELECT 1 FROM odds_snapshots s WHERE s.match_id = p.match_id
-                  AND s.fonte = ? AND s.estado = 'ok'
-              )
-            ORDER BY p.timestamp ASC, p.match_id ASC
-            LIMIT ?
-        ''', (now_ts, now_ts + JANELA_HORAS * 3600, FONTE, max_calls)).fetchall()
-        for match_id, kickoff, prob, prob_base, cal_id, prob_btts, baixa_conf, modelo, snapshot_id in jogos:
-            # Para não associar odds de jogos diferentes via IDs fallback.
+                    AND ps.predicted_at=p.prediction_updated_at
+                    AND ps.kickoff_revision_id IS o.revision_id ORDER BY ps.id DESC LIMIT 1)
+            FROM predictions p JOIN operational_schedule o USING(match_id)
+            WHERE p.modelo='v2' AND p.status='pending'
+              AND p.result_o25 IS NULL AND p.result_btts IS NULL
+            ORDER BY o.operational_kickoff,p.match_id
+        ''').fetchall()
+        for match_id,kickoff,revision,schedule_state,prob,prob_base,cal_id,prob_btts,baixa_conf,modelo,snapshot_id in jogos:
+            if schedule_state == 'quarantined':
+                record(match_id,revision,'quarantined'); continue
+            if db.execute('''SELECT 1 FROM odds_snapshots WHERE match_id=? AND fonte=?
+                AND estado='ok' AND kickoff_revision_id IS ?''',(match_id,FONTE,revision)).fetchone():
+                record(match_id,revision,'already_valid'); continue
             if not str(match_id).isdigit():
+                record(match_id,revision,'non_numeric_id'); continue
+            if kickoff <= now_ts:
+                record(match_id,revision,'past_kickoff'); continue
+            if kickoff > now_ts + JANELA_HORAS*3600:
+                record(match_id,revision,'outside_6h_window'); continue
+            if revision is not None and snapshot_id is None:
+                record(match_id,revision,'missing_revision_snapshot'); continue
+            if snapshot_id is None and db.execute('SELECT 1 FROM legacy_prediction_flags WHERE match_id=?',(match_id,)).fetchone():
+                record(match_id,revision,'legacy_unverifiable'); continue
+            if results['tentativas'] >= max_calls:
+                record(match_id,revision,'run_call_limit'); continue
+            # Do not repeat API calls when the same deterministic run is replayed.
+            if db.execute('SELECT 1 FROM odds_capture_audit WHERE run_at=? AND match_id=?',
+                          (run_at,match_id)).fetchone():
                 continue
             observed = fixed_now or datetime.now(timezone.utc)
-            # Verificar novamente kickoff real no momento da chamada.
             if observed.timestamp() >= kickoff:
-                continue
+                record(match_id,revision,'past_kickoff'); continue
+            results['tentativas'] += 1
             try:
                 payload = api_client(match_id)
                 observed = fixed_now or datetime.now(timezone.utc)
                 odd, quote_time, estado = parse_quote(payload)
                 if quote_time is not None:
-                    idade = (observed - quote_time).total_seconds()
-                    if idade < 0 or idade > 6 * 3600 or quote_time.timestamp() >= kickoff or observed.timestamp() >= kickoff:
-                        odd, estado = None, 'cotacao_desatualizada_ou_futura'
+                    age = (observed-quote_time).total_seconds()
+                    if age < 0:
+                        odd,estado = None,'cotacao_futura'
+                    elif age > 6*3600:
+                        odd,estado = None,'cotacao_antiga'
+                    elif revision is not None and quote_time < datetime.fromisoformat(db.execute(
+                            'SELECT detected_at FROM kickoff_revisions WHERE id=?',(revision,)).fetchone()[0]):
+                        odd,estado = None,'cotacao_anterior_a_revisao'
             except Exception as exc:
-                quote_time, odd, estado = None, None, f'erro_api:{type(exc).__name__}'
+                quote_time,odd,estado = None,None,getattr(exc,'reason',f'erro_api:{type(exc).__name__}')
+                observed = fixed_now or datetime.now(timezone.utc)
+            # Lock after the network call; another writer may have revised the game.
+            db.execute('BEGIN IMMEDIATE')
+            active = db.execute('SELECT operational_kickoff,revision_id,schedule_state FROM operational_schedule WHERE match_id=?',
+                                (match_id,)).fetchone()
+            if active != (kickoff,revision,schedule_state):
+                record(match_id,revision,'schedule_changed_during_call',1)
+                results['sem_odd'] += 1; continue
+            event_state = db.execute('SELECT status,result_o25,result_btts FROM predictions WHERE match_id=?',(match_id,)).fetchone()
+            if event_state != ('pending',None,None):
+                record(match_id,revision,'event_finished_during_call',1)
+                results['sem_odd'] += 1; continue
             if observed.timestamp() >= kickoff:
-                continue
+                record(match_id,revision,'response_after_kickoff',1)
+                results['sem_odd'] += 1; continue
+            if db.execute('''SELECT 1 FROM odds_snapshots WHERE match_id=? AND fonte=?
+                AND estado='ok' AND kickoff_revision_id IS ?''',(match_id,FONTE,revision)).fetchone():
+                record(match_id,revision,'concurrent_valid_capture',1)
+                results['sem_odd'] += 1; continue
             db.execute('''
                 INSERT INTO odds_snapshots
-                (match_id, capturado_em, quote_at, fonte, mercado, odd, estado, detalhe,
-                 prob_o25_no_instante, prob_o25_base_no_instante, calibracao_o25_no_instante,
-                 prob_btts_no_instante, baixa_confianca_no_instante, modelo_no_instante, prediction_snapshot_id)
-                VALUES (?, ?, ?, ?, 'over_25_goals', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (match_id, observed.isoformat(), quote_time.isoformat() if quote_time else None,
-                  FONTE, odd, estado, 'consenso não executável' if odd else estado,
-                  prob, prob_base, cal_id,
-                  prob_btts, baixa_conf, modelo, snapshot_id))
-            db.commit()
-            results['tentativas'] += 1
-            results['capturadas' if estado == 'ok' else 'sem_odd'] += 1
+                (match_id,capturado_em,quote_at,fonte,mercado,odd,estado,detalhe,
+                 prob_o25_no_instante,prob_o25_base_no_instante,calibracao_o25_no_instante,
+                 prob_btts_no_instante,baixa_confianca_no_instante,modelo_no_instante,prediction_snapshot_id,
+                 kickoff_revision_id,kickoff_at_capture)
+                VALUES (?,?,?,?,'over_25_goals',?,?,?,?,?,?,?,?,?,?,?,?)
+            ''',(match_id,observed.isoformat(),quote_time.isoformat() if quote_time else None,
+                 FONTE,odd,estado,'consenso não executável' if odd else estado,
+                 prob,prob_base,cal_id,prob_btts,baixa_conf,modelo,snapshot_id,revision,kickoff))
+            record(match_id,revision,estado,1)
+            results['capturadas' if estado=='ok' else 'sem_odd'] += 1
             if delay > 0:
                 time.sleep(delay)
     finally:

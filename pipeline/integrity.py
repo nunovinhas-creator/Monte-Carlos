@@ -14,7 +14,8 @@ def state(db_path):
     with sqlite3.connect(f'file:{Path(db_path).resolve()}?mode=ro', uri=True) as db:
         tables = {r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         result = {'counts': {}, 'tables': {}}
-        for table, key in [('predictions', 'match_id'), ('odds_snapshots', 'id'), ('prediction_snapshots', 'id')]:
+        for table, key in [('predictions', 'match_id'), ('odds_snapshots', 'id'), ('prediction_snapshots', 'id'),
+                           ('kickoff_revisions','id'),('legacy_prediction_flags','match_id'),('odds_capture_audit','id')]:
             if table not in tables:
                 continue
             cols = [r[1] for r in db.execute(f'PRAGMA table_info({table})')]
@@ -55,6 +56,9 @@ def audit(db_path, now=None):
     with sqlite3.connect(f'file:{Path(db_path).resolve()}?mode=ro', uri=True) as db:
         if db.execute('PRAGMA integrity_check').fetchall() != [('ok',)]:
             errors.append('SQLite integrity_check failed')
+        revised = bool(db.execute("SELECT 1 FROM sqlite_master WHERE name='kickoff_revisions'").fetchone())
+        frozen_kickoff = 'COALESCE(s.kickoff_at_capture,p.timestamp)' if revised else 'p.timestamp'
+        revision_group = ',kickoff_revision_id' if revised else ''
         checks = {
             'duplicate match IDs': 'SELECT COUNT(*) FROM (SELECT match_id FROM predictions GROUP BY match_id HAVING COUNT(*)>1)',
             'contradictory results': '''SELECT COUNT(*) FROM predictions WHERE status='finished' AND
@@ -63,14 +67,43 @@ def audit(db_path, now=None):
                  result_o25 != (home_score+away_score>2) OR result_btts != (home_score>0 AND away_score>0))''',
             'invalid probabilities': '''SELECT COUNT(*) FROM predictions WHERE
                 prob_o25 NOT BETWEEN 0 AND 100 OR prob_btts NOT BETWEEN 0 AND 100''',
-            'invalid valid-odds chronology': '''SELECT COUNT(*) FROM odds_snapshots s LEFT JOIN predictions p USING(match_id)
+            'invalid valid-odds chronology': f'''SELECT COUNT(*) FROM odds_snapshots s LEFT JOIN predictions p USING(match_id)
                 WHERE s.estado='ok' AND (p.match_id IS NULL OR s.odd NOT BETWEEN 1.01 AND 100 OR
                 unixepoch(s.capturado_em) IS NULL OR unixepoch(s.quote_at) IS NULL OR
-                unixepoch(s.capturado_em)>=p.timestamp OR unixepoch(s.quote_at)>unixepoch(s.capturado_em) OR
+                unixepoch(s.capturado_em)>={frozen_kickoff} OR unixepoch(s.quote_at)>unixepoch(s.capturado_em) OR
                 unixepoch(s.capturado_em)-unixepoch(s.quote_at) NOT BETWEEN 0 AND 21600 OR
-                p.timestamp-unixepoch(s.capturado_em) NOT BETWEEN 1 AND 21600)''',
-            'duplicate valid odds': "SELECT COUNT(*) FROM (SELECT match_id,fonte FROM odds_snapshots WHERE estado='ok' GROUP BY match_id,fonte HAVING COUNT(*)>1)",
+                {frozen_kickoff}-unixepoch(s.capturado_em) NOT BETWEEN 1 AND 21600)''',
+            'duplicate valid odds': f"SELECT COUNT(*) FROM (SELECT match_id,fonte FROM odds_snapshots WHERE estado='ok' GROUP BY match_id,fonte{revision_group} HAVING COUNT(*)>1)",
         }
+        if revised:
+            checks.update({
+                'broken revision chain': '''SELECT COUNT(*) FROM kickoff_revisions r
+                    LEFT JOIN predictions p USING(match_id)
+                    LEFT JOIN kickoff_revisions prev ON prev.id=r.previous_revision_id
+                    WHERE p.match_id IS NULL OR r.old_kickoff IS NOT COALESCE((
+                      SELECT k.new_kickoff FROM kickoff_revisions k WHERE k.match_id=r.match_id
+                      AND k.state='applied' AND k.id<r.id ORDER BY k.id DESC LIMIT 1),p.timestamp)
+                    OR r.previous_revision_id IS NOT (SELECT MAX(k.id) FROM kickoff_revisions k
+                        WHERE k.match_id=r.match_id AND k.id<r.id)
+                    OR (r.previous_revision_id IS NOT NULL AND (prev.id IS NULL OR prev.match_id!=r.match_id OR prev.id>=r.id))''',
+                'snapshot revision mismatch': '''SELECT COUNT(*) FROM prediction_snapshots s
+                    LEFT JOIN kickoff_revisions r ON r.id=s.kickoff_revision_id
+                    JOIN predictions p ON p.match_id=s.match_id
+                    WHERE unixepoch(s.predicted_at)>=s.kickoff OR
+                    (s.kickoff_revision_id IS NULL AND s.kickoff!=p.timestamp) OR
+                    (s.kickoff_revision_id IS NOT NULL AND (r.id IS NULL OR r.match_id!=s.match_id
+                        OR r.state!='applied' OR r.new_kickoff!=s.kickoff OR julianday(s.predicted_at)<julianday(r.detected_at)))''',
+                'odds revision mismatch': '''SELECT COUNT(*) FROM odds_snapshots s
+                    LEFT JOIN kickoff_revisions r ON r.id=s.kickoff_revision_id
+                    JOIN predictions p ON p.match_id=s.match_id
+                    WHERE s.estado='ok' AND (
+                      (s.kickoff_revision_id IS NULL AND COALESCE(s.kickoff_at_capture,p.timestamp)!=p.timestamp) OR
+                      (s.kickoff_revision_id IS NOT NULL AND (r.id IS NULL OR r.match_id!=s.match_id OR r.state!='applied'
+                        OR s.kickoff_at_capture IS NOT r.new_kickoff OR s.prediction_snapshot_id IS NULL
+                        OR julianday(s.quote_at)<julianday(r.detected_at))))''',
+                'legacy flags missing': '''SELECT COUNT(*) FROM predictions p WHERE unixepoch(p.created_at)>=p.timestamp
+                    AND NOT EXISTS (SELECT 1 FROM legacy_prediction_flags f WHERE f.match_id=p.match_id)''',
+            })
         for label, sql in checks.items():
             n = db.execute(sql).fetchone()[0]
             if n:
@@ -84,18 +117,17 @@ def audit(db_path, now=None):
                   s.modelo_no_instante IS NOT ps.modelo OR
                   s.prob_o25_no_instante IS NOT ps.prob_o25 OR
                   s.prob_btts_no_instante IS NOT ps.prob_btts OR
-                  s.prob_o25_base_no_instante IS NOT ps.prob_o25_base)''').fetchone()[0]
+                  s.prob_o25_base_no_instante IS NOT ps.prob_o25_base OR
+                  s.calibracao_o25_no_instante IS NOT ps.calibracao_o25_id OR
+                  s.baixa_confianca_no_instante IS NOT ps.baixa_confianca)''').fetchone()[0]
             if invalid:
                 errors.append(f'odds/prediction snapshot mismatch: {invalid}')
         late = db.execute("SELECT COUNT(*) FROM predictions WHERE status='finished' AND unixepoch(created_at)>=timestamp").fetchone()[0]
         if late:
             warnings.append(f'{late} legacy predictions created at/after kickoff; no first/last reconstruction')
-        start = int(now.timestamp()) - 7 * 86400
-        n, quoted = db.execute('''SELECT COUNT(*), COALESCE(SUM(EXISTS (
-            SELECT 1 FROM odds_snapshots s WHERE s.match_id=p.match_id AND s.estado='ok'
-            AND unixepoch(s.capturado_em)<p.timestamp)),0)
-            FROM predictions p WHERE modelo='v2' AND status='finished' AND timestamp>=? AND timestamp<?''',
-            (start, int(now.timestamp()))).fetchone()
+        from pipeline.coverage import coverage_report
+        report = coverage_report(db_path,now=now)
+        n,quoted = report['settled'],report['eligible']
         coverage = quoted / n if n else None
         return {'errors': errors, 'warnings': warnings, 'coverage_7d': coverage,
                 'coverage_n': n, 'coverage_quoted': quoted, 'db_sha256': hashlib.sha256(Path(db_path).read_bytes()).hexdigest()}

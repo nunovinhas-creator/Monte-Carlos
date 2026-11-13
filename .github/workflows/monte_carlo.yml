@@ -105,12 +105,11 @@ jobs:
             git push origin HEAD:main
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: Pedir build Pages e verificar publicação do commit persistido
+      - name: Confirmar SHA no Pages (build de recurso apenas se ausente)
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ steps.persist.outputs.sha }}
         run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" > work/pages-request.json
           python -m pipeline.pages_status
       - name: Recuperação de corrida falhada (1 dia; não publicar)
         if: failure()
@@ -120,6 +119,5 @@ jobs:
           path: |
             work/pre-run.db
             predictions.db
-            work/pages-request.json
           retention-days: 1
           compression-level: 9
