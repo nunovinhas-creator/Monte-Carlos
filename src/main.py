@@ -369,6 +369,8 @@ def gravar_origem_xg(jogos):
         UPDATE predictions
         SET origem_xg = ?
         WHERE match_id = ? AND origem_xg IS NULL
+          AND status='pending' AND result_o25 IS NULL AND result_btts IS NULL
+          AND timestamp > unixepoch('now')
         """,
         [(j["origem_xg"], j["match_id"]) for j in jogos],
     )
@@ -416,6 +418,8 @@ def gravar_baixa_confianca(jogos):
         UPDATE predictions
         SET baixa_confianca = ?
         WHERE match_id = ? AND baixa_confianca IS NULL
+          AND status='pending' AND result_o25 IS NULL AND result_btts IS NULL
+          AND timestamp > unixepoch('now')
         """,
         [(j["baixa_confianca"], j["match_id"]) for j in jogos],
     )
@@ -571,10 +575,11 @@ def analisar():
 
     for match in matches:
         dt_obj = extrair_data_hora(match)
-        if not dt_obj:
-            dt_obj = agora_utc
+        if not dt_obj or dt_obj.tzinfo is None:
+            continue
+        dt_obj = dt_obj.astimezone(timezone.utc)
 
-        if dt_obj < (agora_utc - timedelta(hours=2)):
+        if dt_obj <= agora_utc:
             continue
 
         home_name = extrair_nome_equipa(match, 'home_team')
@@ -686,13 +691,23 @@ def analisar():
             'baixa_confianca': baixa_confianca,
             'modelo': MODELO_ACTUAL
         })
+        jogos_processados[-1]['btts_base'] = p_btts
+        jogos_processados[-1]['provenance'] = {
+            'source': 'bsd', 'origem_xg': origem_xg, 'n_h2h': n_h2h,
+            'home_stats': home_stats, 'away_stats': away_stats,
+        }
+        jogos_processados[-1]['parameters'] = {
+            'xg_home': xg_home, 'xg_away': xg_away, 'simulations': 50000,
+            'rho': -0.12, 'shrink_o25': 0.18, 'shrink_btts': 0.12,
+            'btts_teto_inicio': 0.58, 'btts_teto_declive': 0.50,
+            'media_liga_usada': media_liga_usada, 'media_h2h_bruta': media_h2h_bruta,
+            'k_encolhimento': K_ENCOLHIMENTO, 'base_o25': base_o25, 'base_btts': base_btts,
+            'experimental_calibration': False,
+        }
 
     jogos_processados.sort(key=lambda x: x['dt_obj'])
 
     salvar_previsoes_db(jogos_processados)
-    gravar_auditoria_h2h(jogos_processados, ids_ja_existentes)
-    gravar_origem_xg(jogos_processados)
-    gravar_baixa_confianca(jogos_processados)
 
     n_adjusted = sum(1 for j in jogos_processados if j['origem_xg'] == 'adjusted')
     n_h2h_path = len(jogos_processados) - n_adjusted
@@ -713,7 +728,7 @@ def analisar():
     print(f"✅ Dashboard gerado com {len(jogos_processados)} jogos próximos!")
 
 def gerar_dashboard_html(jogos):
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    agora = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M:%S UTC")
     
     datas_unicas = sorted(list(set(j['data_dia'] for j in jogos)), key=lambda d: datetime.strptime(d, '%d/%m/%Y'))
     options_datas = '<option value="">Todas as Datas</option>'
@@ -746,7 +761,7 @@ def gerar_dashboard_html(jogos):
         <tr data-liga="{j['liga']}" data-data="{j['data_dia']}" data-baixa-confianca="{baixa_confianca}">
             <td data-value="{j['timestamp']}"><b>{j['data_str']}</b></td>
             <td><span class="badge-liga">{j['liga']}</span></td>
-            <td>{j['home']} vs {j['away']} {tag_baixa_confianca}</td>
+            <td>{j['home']} vs {j['away']} {tag_baixa_confianca} <small>({j.get('modelo', MODELO_ACTUAL)} · {j.get('origem_xg', 'N/D')})</small></td>
             <td data-value="{j['o25']}" style="color: {cor_o25}; font-weight: bold;">{j['o25']:.1f}%</td>
             <td data-value="{j['btts']}" style="color: {cor_btts}; font-weight: bold;">{j['btts']:.1f}%</td>
         </tr>

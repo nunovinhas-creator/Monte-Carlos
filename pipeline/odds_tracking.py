@@ -56,7 +56,10 @@ def capturar(db_path=DB_NAME, max_calls=None, delay=None, api_client=obter_odds,
     try:
         jogos = db.execute('''
             SELECT p.match_id, p.timestamp, p.prob_o25, p.prob_o25_base,
-                   p.calibracao_o25_id, p.prob_btts, p.baixa_confianca FROM predictions p
+                   p.calibracao_o25_id, p.prob_btts, p.baixa_confianca, p.modelo,
+                   (SELECT id FROM prediction_snapshots ps WHERE ps.match_id=p.match_id
+                    AND ps.predicted_at=p.prediction_updated_at ORDER BY ps.id DESC LIMIT 1)
+            FROM predictions p
             WHERE p.modelo = 'v2' AND p.status = 'pending' AND p.result_o25 IS NULL
               AND p.timestamp > ? AND p.timestamp <= ?
               AND p.created_at IS NOT NULL
@@ -67,7 +70,7 @@ def capturar(db_path=DB_NAME, max_calls=None, delay=None, api_client=obter_odds,
             ORDER BY p.timestamp ASC, p.match_id ASC
             LIMIT ?
         ''', (now_ts, now_ts + JANELA_HORAS * 3600, FONTE, max_calls)).fetchall()
-        for match_id, kickoff, prob, prob_base, cal_id, prob_btts, baixa_conf in jogos:
+        for match_id, kickoff, prob, prob_base, cal_id, prob_btts, baixa_conf, modelo, snapshot_id in jogos:
             # Para não associar odds de jogos diferentes via IDs fallback.
             if not str(match_id).isdigit():
                 continue
@@ -77,23 +80,26 @@ def capturar(db_path=DB_NAME, max_calls=None, delay=None, api_client=obter_odds,
                 continue
             try:
                 payload = api_client(match_id)
+                observed = fixed_now or datetime.now(timezone.utc)
                 odd, quote_time, estado = parse_quote(payload)
                 if quote_time is not None:
                     idade = (observed - quote_time).total_seconds()
-                    if idade < 0 or idade > 6 * 3600 or quote_time.timestamp() >= kickoff:
+                    if idade < 0 or idade > 6 * 3600 or quote_time.timestamp() >= kickoff or observed.timestamp() >= kickoff:
                         odd, estado = None, 'cotacao_desatualizada_ou_futura'
             except Exception as exc:
                 quote_time, odd, estado = None, None, f'erro_api:{type(exc).__name__}'
+            if observed.timestamp() >= kickoff:
+                continue
             db.execute('''
                 INSERT INTO odds_snapshots
                 (match_id, capturado_em, quote_at, fonte, mercado, odd, estado, detalhe,
                  prob_o25_no_instante, prob_o25_base_no_instante, calibracao_o25_no_instante,
-                 prob_btts_no_instante, baixa_confianca_no_instante)
-                VALUES (?, ?, ?, ?, 'over_25_goals', ?, ?, ?, ?, ?, ?, ?, ?)
+                 prob_btts_no_instante, baixa_confianca_no_instante, modelo_no_instante, prediction_snapshot_id)
+                VALUES (?, ?, ?, ?, 'over_25_goals', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (match_id, observed.isoformat(), quote_time.isoformat() if quote_time else None,
                   FONTE, odd, estado, 'consenso não executável' if odd else estado,
                   prob, prob_base if prob_base is not None else prob, cal_id,
-                  prob_btts, baixa_conf))
+                  prob_btts, baixa_conf, modelo, snapshot_id))
             db.commit()
             results['tentativas'] += 1
             results['capturadas' if estado == 'ok' else 'sem_odd'] += 1

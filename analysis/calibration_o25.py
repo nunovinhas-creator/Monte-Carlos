@@ -36,10 +36,8 @@ def logit(prob):
 def aplicar(prob_pct, config=None):
     """Recebe e devolve percentagem, ou devolve probabilidade original sem config."""
     if config is None:
-        if not CONFIG.exists():
-            return round(prob_pct, 2), None
-        with CONFIG.open(encoding='utf-8') as file:
-            config = json.load(file)
+        # Production lock: experimental calibration requires a future reviewed change.
+        return round(prob_pct, 2), None
     if config.get('ativo') is not True or config.get('modelo') != 'v2':
         return round(prob_pct, 2), None
     a, b = float(config['a']), float(config['b'])
@@ -110,21 +108,21 @@ def gerar(db_path='predictions.db'):
     raw = brier(teste)
     cal = brier(teste, beta_treino)
     # Só ativar se o holdout mostra melhoria sem fingir significância.
-    ativar = cal < raw
-    beta_final = fit(treino + teste)
+    # Train-only coefficients. Holdout never selects activation or enters fitting.
+    beta_final = beta_treino
     return {
         'versao': 'MC-O25-PLATT-20261023',
         'modelo': 'v2',
         'gerado_em': datetime.now(timezone.utc).isoformat(),
-        'ativo': ativar,
+        'ativo': False,
         'a': round(beta_final[0], 9), 'b': round(beta_final[1], 9),
         'n_treino': len(treino), 'n_validacao': len(teste),
-        'n_ajuste_final': len(rows),
-        'ultimo_evento_treino_utc': datetime.fromtimestamp(rows[-1][2], tz=timezone.utc).isoformat(),
-        'ultimo_evento_treino_ts': rows[-1][2],
+        'n_ajuste_final': len(treino),
+        'ultimo_evento_treino_utc': datetime.fromtimestamp(rows[split-1][2], tz=timezone.utc).isoformat(),
+        'ultimo_evento_treino_ts': rows[split-1][2],
         'brier_original_validacao': round(raw, 8),
         'brier_recalibrado_validacao': round(cal, 8),
-        'validacao_metodo': 'primeiros 60% por kickoff -> últimos 40%; coeficientes finais ajustados em todos os pre-deploy',
+        'validacao_metodo': 'primeiros 60% por kickoff -> últimos 40%; coeficientes exclusivamente do treino; offline, sem ativação',
         'advertencia': 'Melhoria de calibração não demonstra ROI positivo. Não retreinar automaticamente.'
     }
 
@@ -132,12 +130,15 @@ def gerar(db_path='predictions.db'):
 def cli():
     ap = argparse.ArgumentParser()
     ap.add_argument('--db', default=os.getenv('PREDICTIONS_DB', 'predictions.db'))
-    ap.add_argument('--write', action='store_true', help='Congelar parâmetros após avaliação')
+    ap.add_argument('--output', default='research/legacy_platt_offline.json')
     args = ap.parse_args()
     result = gerar(args.db)
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    if args.write:
-        CONFIG.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    output = Path(args.output)
+    if output.resolve() == CONFIG.resolve():
+        ap.error('Production calibration config is protected')
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 if __name__ == "__main__":
     cli()

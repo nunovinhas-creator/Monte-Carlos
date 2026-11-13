@@ -99,31 +99,8 @@ def _motivo_e_duro(motivo):
 
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS predictions (
-            match_id TEXT PRIMARY KEY,
-            event_date TEXT,
-            timestamp INTEGER,
-            league TEXT,
-            home_team TEXT,
-            away_team TEXT,
-            xg_home REAL,
-            xg_away REAL,
-            prob_o25 REAL,
-            prob_btts REAL,
-            created_at TEXT,
-            status TEXT DEFAULT 'pending',
-            home_score INTEGER,
-            away_score INTEGER,
-            result_o25 INTEGER,
-            result_btts INTEGER
-        )
-        """
-    )
-    conn.commit()
-    conn.close()
+    from pipeline.database import init_db as migrate_db
+    migrate_db(DB_NAME)
 
 
 def obter_jogos_pendentes_passados(limite=200):
@@ -139,6 +116,7 @@ def obter_jogos_pendentes_passados(limite=200):
         SELECT match_id, home_team, away_team, timestamp
         FROM predictions
         WHERE status = 'pending' AND timestamp <= ?
+          AND result_o25 IS NULL AND result_btts IS NULL
         ORDER BY timestamp DESC
         LIMIT ?
         """,
@@ -441,10 +419,12 @@ def resolver_jogos():
                 UPDATE predictions
                 SET home_score = ?, away_score = ?,
                     result_o25 = ?, result_btts = ?,
-                    status = 'finished'
-                WHERE match_id = ?
+                    status = 'finished', settled_at = ?
+                WHERE match_id = ? AND status = 'pending'
+                  AND result_o25 IS NULL AND result_btts IS NULL
                 """,
-                (home_score, away_score, res_o25, res_btts, str(match_id)),
+                (home_score, away_score, res_o25, res_btts,
+                 datetime.now(timezone.utc).isoformat(), str(match_id)),
             )
 
             resolvidos += 1

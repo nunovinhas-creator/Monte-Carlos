@@ -37,7 +37,7 @@ EPS = 1e-6
 MAX_ITER = 50
 TOL = 1e-8
 
-OUTPUT_JSON = "recalibracao.json"
+OUTPUT_JSON = "research/legacy_recalibracao_offline.json"
 
 # N minimo de previsoes v2 liquidadas para ajustar Platt so no v2.
 MIN_N_V2_FIT = 300
@@ -240,6 +240,8 @@ def main():
         "btts": resultado_btts,
     }
 
+    from pathlib import Path
+    Path(OUTPUT_JSON).parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
         json.dump(saida, f, indent=2, ensure_ascii=False)
 

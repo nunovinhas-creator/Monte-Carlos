@@ -92,11 +92,12 @@ class OddsRoiTests(unittest.TestCase):
 
 
     def test_historical_snapshot_missing_btts_confidence_is_not_backfilled(self):
+        con = sqlite3.connect(self.path)
+        con.execute("UPDATE predictions SET prob_btts=NULL, baixa_confianca=NULL WHERE match_id='1001'")
+        con.commit(); con.close()
         cap = capturar(self.path, api_client=lambda _: self.payload(), now=self.now, delay=0)
         self.assertEqual(cap['capturadas'], 1)
         con = sqlite3.connect(self.path)
-        con.execute("""UPDATE odds_snapshots SET prob_btts_no_instante=NULL,
-            baixa_confianca_no_instante=NULL WHERE match_id='1001'""")
         con.execute("""UPDATE predictions SET status='finished', result_o25=1,
             prob_btts=99, baixa_confianca=0 WHERE match_id='1001'""")
         con.commit()

@@ -1,0 +1,19 @@
+{
+  "id": "MC-CAL-O25-20261113-v1",
+  "registered_on": "2026-11-13",
+  "status": "EXPLORATORIO_HISTORICO",
+  "warning": "Os resultados agregados históricos já eram conhecidos. O holdout mecânico deste estudo não constitui confirmação prospetiva independente.",
+  "source": "first_valid_bsd_odds_frozen_probability_v2",
+  "target": "Over 2.5 reliability, never ROI maximization",
+  "split": "UTC days: first 60% train, next 20% validation, last 20% final holdout; same-day games never split",
+  "outcome_embargo_hours": 48,
+  "outcome_availability": "Legacy settlement timestamps absent: 48h maturity is an explicit retrospective assumption; future proof requires settled_at",
+  "models": ["original_v2", "platt_fixed_regularization_2", "isotonic_PAVA"],
+  "minimum_isotonic_train": 400,
+  "minimum_isotonic_unique_probabilities": 20,
+  "minimum_isotonic_each_class": 50,
+  "selection": "minimum validation Brier; tie favors original, then Platt; no hyperparameter search; no refitting using validation or holdout",
+  "uncertainty": "paired bootstrap by UTC day, 1000 resamples, seed 20261113; Wilson 95% for bin frequencies; dependence across days remains a limitation",
+  "metrics": ["Brier", "Log Loss", "skill_vs_train_rate", "skill_vs_0.5", "ECE_fixed_bins", "reliability", "weekly_stability", "paired_Brier_delta_CI95"],
+  "production_activation": false
+}

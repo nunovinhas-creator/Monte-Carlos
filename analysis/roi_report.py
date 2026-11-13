@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import html
 import sqlite3
+from pathlib import Path
 from datetime import datetime, timezone
 
 from pipeline.database import DB_NAME, init_db
@@ -19,10 +20,12 @@ MAX_AGE_SECONDS = 6 * 3600
 
 def load_rows(db_path=DB_NAME):
     """Uma cotação válida pré-jogo por evento terminado, sem olhar para odds futuras."""
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(f'file:{Path(db_path).resolve()}?mode=ro', uri=True)
     conn.row_factory = sqlite3.Row
     try:
-        return [dict(r) for r in conn.execute('''
+        columns = {r[1] for r in conn.execute('PRAGMA table_info(odds_snapshots)')}
+        frozen_model = 's.modelo_no_instante' if 'modelo_no_instante' in columns else 'NULL'
+        return [dict(r) for r in conn.execute(f'''
             WITH candidates AS (
                 SELECT p.match_id, p.home_team, p.away_team, p.league,
                     p.timestamp, s.prob_o25_no_instante AS prob_o25,
@@ -31,17 +34,19 @@ def load_rows(db_path=DB_NAME):
                     s.baixa_confianca_no_instante AS baixa_confianca,
                     s.calibracao_o25_no_instante AS calibracao_o25_id,
                     p.result_o25, p.status, s.odd, s.capturado_em, s.quote_at,
-                    s.fonte,
-                    ROW_NUMBER() OVER (PARTITION BY p.match_id ORDER BY s.capturado_em DESC, s.id DESC) AS pos
+                    s.fonte, p.league_id, p.modelo AS modelo_atual,
+                    {frozen_model} AS modelo_no_instante, COALESCE({frozen_model},p.modelo) AS modelo,
+                    ROW_NUMBER() OVER (PARTITION BY p.match_id ORDER BY julianday(s.capturado_em) ASC, s.id ASC) AS pos
                 FROM predictions p JOIN odds_snapshots s ON p.match_id = s.match_id
-                WHERE p.modelo = 'v2' AND p.status = 'finished' AND p.result_o25 IN (0,1)
+                WHERE COALESCE({frozen_model},p.modelo) = 'v2' AND p.status = 'finished' AND p.result_o25 IN (0,1)
                   AND s.estado = 'ok' AND s.fonte = 'bsd_consensus'
-                  AND s.odd > 1.0
-                  AND s.prob_o25_no_instante IS NOT NULL
-                  AND s.prob_o25_base_no_instante IS NOT NULL
+                  AND s.odd BETWEEN 1.01 AND 100
+                  AND s.prob_o25_no_instante BETWEEN 0 AND 100
+                  AND s.prob_o25_base_no_instante BETWEEN 0 AND 100
                   AND CAST(strftime('%s', s.capturado_em) AS INTEGER) < p.timestamp
                   AND p.timestamp - CAST(strftime('%s', s.capturado_em) AS INTEGER) <= ?
-                  AND CAST(strftime('%s', s.quote_at) AS INTEGER) <= CAST(strftime('%s', s.capturado_em) AS INTEGER) + 300
+                  AND CAST(strftime('%s', s.quote_at) AS INTEGER) <= CAST(strftime('%s', s.capturado_em) AS INTEGER)
+                  AND CAST(strftime('%s', s.capturado_em) AS INTEGER) - CAST(strftime('%s', s.quote_at) AS INTEGER) BETWEEN 0 AND 21600
             ) SELECT * FROM candidates WHERE pos = 1 ORDER BY timestamp, match_id
         ''', (MAX_AGE_SECONDS,))]
     finally:
@@ -91,7 +96,7 @@ def classificar(row):
 
 def stats(db_path=DB_NAME):
     rows = load_rows(db_path)
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(f'file:{Path(db_path).resolve()}?mode=ro', uri=True)
     try:
         total = conn.execute("SELECT COUNT(*) FROM odds_snapshots").fetchone()[0]
         quoted = conn.execute("SELECT COUNT(*) FROM odds_snapshots WHERE estado='ok'").fetchone()[0]
@@ -101,8 +106,6 @@ def stats(db_path=DB_NAME):
 
 
 def gerar(db_path=DB_NAME, html_path='roi.html', csv_path='roi_jogos.csv'):
-    if db_path == DB_NAME:
-        init_db()
     rows, total, quoted = stats(db_path)
     classes = [(r, classificar(r)) for r in rows]
     original = [r for r, c in classes if c['original_over'] is True]

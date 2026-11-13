@@ -1,8 +1,11 @@
 from project_paths import ROOT, DB_PATH
+from contextlib import closing
 import json
 import os
 import sqlite3
 from datetime import datetime, timezone, timedelta
+
+from pipeline.migrations import backup_before_migration, migrate
 
 DB_NAME = DB_PATH
 
@@ -20,8 +23,15 @@ def get_connection():
     return sqlite3.connect(DB_NAME)
 
 
-def init_db():
-    conn = get_connection()
+def init_db(db_path=None):
+    path = db_path or DB_NAME
+    backup_before_migration(path)
+    with closing(sqlite3.connect(path)) as conn, conn:
+        conn.execute("BEGIN IMMEDIATE")
+        _init_schema(conn)
+
+
+def _init_schema(conn):
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -122,8 +132,11 @@ def init_db():
         if nome not in colunas_team_stats:
             cursor.execute(f"ALTER TABLE team_stats ADD COLUMN {nome} {tipo}")
 
-    conn.commit()
-    conn.close()
+    for name, kind in (("origem_xg", "TEXT"), ("n_h2h", "INTEGER"),
+                       ("media_liga_usada", "REAL"), ("media_h2h_bruta", "REAL")):
+        if name not in colunas_predictions:
+            cursor.execute(f"ALTER TABLE predictions ADD COLUMN {name} {kind}")
+    migrate(conn)
 
 
 # Colunas opcionais (criadas por main.py) que tambem sao reescritas quando
@@ -168,73 +181,51 @@ def _backfill_modelo(cursor):
 
 
 def salvar_previsoes_db(jogos):
-    """
-    INSERT para match_id novo; UPDATE de xG/probs/modelo (e colunas extra,
-    se existirem) para match_id ja existente que ainda esteja pending, sem
-    resultado e cujo jogo ainda nao comecou. Linhas finished/void/stale
-    ou com result_o25/result_btts preenchidos nunca sao alteradas.
-    created_at nao e alterado.
+    """Save current pending view and append observed snapshot in one transaction.
+
+    No historical import, result update or invented observation timestamp.
     """
     if not jogos:
         return
-
-    conn = get_connection()
-    cursor = conn.cursor()
-    agora = datetime.now(timezone.utc)
-    agora_iso = agora.isoformat()
-    agora_ts = int(agora.timestamp())
-
-    cursor.execute("PRAGMA table_info(predictions)")
-    colunas = {row[1] for row in cursor.fetchall()}
-    extras = [c for c in COLUNAS_EXTRA_UPDATE if c in colunas]
-
-    n_inseridas = n_actualizadas = n_intocadas = 0
-
-    for j in jogos:
-        match_id = str(j.get("id") or f"{j['home']}_{j['away']}_{j['timestamp']}")
-        modelo = j.get("modelo", MODELO_ACTUAL)
-
-        cursor.execute("""
-            INSERT OR IGNORE INTO predictions (
-                match_id,event_date,timestamp,league,league_id,home_team,away_team,
-                xg_home,xg_away,prob_o25,prob_btts,created_at,status,modelo,
-                prob_o25_base,calibracao_o25_id
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
-        """, (
-            match_id, j["data_str"], j["timestamp"], j["liga"], j.get("league_id"),
-            j["home"], j["away"], j["xg_home"], j["xg_away"],
-            round(j["o25"], 2), round(j["btts"], 2), agora_iso, modelo,
-            j.get("o25_base", j["o25"]), j.get("calibracao_o25_id")
-        ))
-        if cursor.rowcount:
-            n_inseridas += 1
-            continue
-
-        extras_jogo = [c for c in extras if c in j]
-        sets = ["xg_home = ?", "xg_away = ?", "prob_o25 = ?", "prob_btts = ?", "modelo = ?", "prob_o25_base = ?", "calibracao_o25_id = ?"]
-        sets += [f"{c} = ?" for c in extras_jogo]
-        valores = [j["xg_home"], j["xg_away"], round(j["o25"], 2), round(j["btts"], 2), modelo, j.get("o25_base", j["o25"]), j.get("calibracao_o25_id")]
-        valores += [j[c] for c in extras_jogo]
-
-        cursor.execute(f"""
-            UPDATE predictions
-            SET {", ".join(sets)}
-            WHERE match_id = ?
-              AND (status = 'pending' OR status IS NULL)
-              AND result_o25 IS NULL AND result_btts IS NULL
-              AND timestamp > ?
-        """, (*valores, match_id, agora_ts))
-        if cursor.rowcount:
-            n_actualizadas += 1
-        else:
-            n_intocadas += 1
-
-    conn.commit()
-    conn.close()
-    print(f"💾 Registos guardados em '{DB_NAME}': {n_inseridas} inserida(s), "
-          f"{n_actualizadas} pending actualizada(s) com o modelo actual, "
-          f"{n_intocadas} intocada(s) (ja comecou/liquidada/void/stale).")
+    now = datetime.now(timezone.utc)
+    observed, now_ts = now.isoformat(), now.timestamp()
+    saved = 0
+    with closing(get_connection()) as conn, conn:
+        conn.execute("BEGIN IMMEDIATE")
+        for j in jogos:
+            if j['timestamp'] <= now_ts:
+                continue
+            match_id = str(j.get('id') or f"{j['home']}_{j['away']}_{j['timestamp']}")
+            existing = conn.execute('SELECT status,result_o25,result_btts,timestamp FROM predictions WHERE match_id=?', (match_id,)).fetchone()
+            if existing and (existing[0] not in ('pending', None) or
+                             existing[1] is not None or existing[2] is not None or existing[3] <= now_ts):
+                continue
+            conn.execute("""INSERT OR IGNORE INTO predictions
+                (match_id,event_date,timestamp,league,league_id,home_team,away_team,created_at,status)
+                VALUES (?,?,?,?,?,?,?,?,'pending')""",
+                (match_id,j['data_str'],j['timestamp'],j['liga'],j.get('league_id'),j['home'],j['away'],observed))
+            values = {'xg_home': j['xg_home'], 'xg_away': j['xg_away'],
+                'prob_o25': round(j['o25'],2), 'prob_btts': round(j['btts'],2),
+                'modelo': j.get('modelo',MODELO_ACTUAL),
+                'prob_o25_base': j.get('o25_base',j['o25']),
+                'calibracao_o25_id': j.get('calibracao_o25_id'),
+                'prediction_updated_at': observed}
+            values.update({key:j[key] for key in COLUNAS_EXTRA_UPDATE if key in j})
+            conn.execute('UPDATE predictions SET '+','.join(key+'=?' for key in values)+' WHERE match_id=?', (*values.values(),match_id))
+            row = conn.execute('SELECT timestamp,modelo,prob_o25,prob_btts,prob_o25_base,baixa_confianca,calibracao_o25_id FROM predictions WHERE match_id=?',(match_id,)).fetchone()
+            provenance = j.get('provenance', {'source':'bsd', 'origem_xg':j.get('origem_xg'),
+                                            'n_h2h':j.get('n_h2h')})
+            parameters = j.get('parameters', {'xg_home':j['xg_home'],'xg_away':j['xg_away'],
+                                              'media_liga_usada':j.get('media_liga_usada')})
+            conn.execute("""INSERT INTO prediction_snapshots
+                (match_id,predicted_at,kickoff,modelo,prob_o25,prob_btts,prob_o25_base,
+                baixa_confianca,calibracao_o25_id,prob_btts_base,provenance_json,parameters_json)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (match_id,observed,*row,j.get('btts_base'),
+                 json.dumps(provenance,ensure_ascii=False,sort_keys=True,allow_nan=False),
+                 json.dumps(parameters,ensure_ascii=False,sort_keys=True,allow_nan=False)))
+            saved += 1
+    print(f"Snapshots pré-jogo guardados: {saved}; base compatível: {DB_NAME}")
 
 
 def guardar_team_stats(team_id, team_name, stats):

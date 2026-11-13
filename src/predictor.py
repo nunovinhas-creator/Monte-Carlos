@@ -45,20 +45,8 @@ def _sigmoid(z: float) -> float:
 
 @lru_cache(maxsize=1)
 def _carregar_recalibracao():
-    """Carrega coeficientes Platt se existirem e estiverem marcados para uso."""
-    try:
-        with open(RECALIBRACAO_JSON, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        # Só aplicar se o ficheiro tiver coeficientes válidos.
-        # 'aplicado' pode ser False enquanto se valida fora de amostra;
-        # aqui permitimos aplicação controlada via env APPLY_RECAL=1
-        # ou se aplicado==True.
-        aplicar = data.get("aplicado") is True or os.getenv("APPLY_RECAL", "") == "1"
-        if not aplicar:
-            return None
-        return data
-    except Exception:
-        return None
+    """Production lock: legacy env/config cannot enable an unvalidated mapping."""
+    return None
 
 
 def _platt(prob_0_1: float, a: float, b: float) -> float:
