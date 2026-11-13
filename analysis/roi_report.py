@@ -14,6 +14,8 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 from pipeline.database import DB_NAME, init_db
+from analysis.metrics import block_interval, wilson
+from analysis.strategy_status import scientific_status
 
 MAX_AGE_SECONDS = 6 * 3600
 
@@ -33,7 +35,7 @@ def load_rows(db_path=DB_NAME):
                     s.prob_btts_no_instante AS prob_btts,
                     s.baixa_confianca_no_instante AS baixa_confianca,
                     s.calibracao_o25_no_instante AS calibracao_o25_id,
-                    p.result_o25, p.status, s.odd, s.capturado_em, s.quote_at,
+                    p.result_o25, p.result_btts, p.status, s.odd, s.capturado_em, s.quote_at,
                     s.fonte, p.league_id, p.modelo AS modelo_atual,
                     {frozen_model} AS modelo_no_instante, COALESCE({frozen_model},p.modelo) AS modelo,
                     ROW_NUMBER() OVER (PARTITION BY p.match_id ORDER BY julianday(s.capturado_em) ASC, s.id ASC) AS pos
@@ -56,7 +58,8 @@ def load_rows(db_path=DB_NAME):
 def simular(rows):
     if not rows:
         return {'n': 0, 'wins': 0, 'stake': 0, 'profit': 0, 'roi': None,
-                'avg_odds': None, 'hit_rate': None}
+                'avg_odds': None, 'hit_rate': None, 'avg_probability':None,
+                'roi_ci95':None, 'hit_ci95':None, 'period':None, 'models':[], 'days':0}
     gains = [float(r['odd']) - 1 if r['result_o25'] == 1 else -1 for r in rows]
     profit = sum(gains)
     wins = sum(r['result_o25'] for r in rows)
@@ -65,6 +68,13 @@ def simular(rows):
         'profit': profit, 'roi': profit / len(rows) * 100,
         'avg_odds': sum(r['odd'] for r in rows) / len(rows),
         'hit_rate': wins / len(rows) * 100,
+        'avg_probability':sum(r['prob_o25'] for r in rows)/len(rows),
+        'roi_ci95':block_interval([g*100 for g in gains],[r['timestamp'] for r in rows]),
+        'hit_ci95':[v*100 for v in wilson(wins,len(rows))],
+        'period':[datetime.fromtimestamp(min(r['timestamp'] for r in rows),timezone.utc).date().isoformat(),
+                  datetime.fromtimestamp(max(r['timestamp'] for r in rows),timezone.utc).date().isoformat()],
+        'models':sorted({r.get('modelo','N/D') for r in rows}),
+        'days':len({r['timestamp']//86400 for r in rows}),
     }
 
 
@@ -123,14 +133,14 @@ def gerar(db_path=DB_NAME, html_path='roi.html', csv_path='roi_jogos.csv'):
     ]
 
     with open(csv_path, 'w', newline='', encoding='utf-8-sig') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, lineterminator='\n')
         writer.writerow([
             'match_id', 'liga', 'casa', 'fora', 'kickoff_utc',
             'prob_o25_base_no_instante_pct', 'prob_o25_publicada_no_instante_pct',
             'prob_btts_no_instante_pct', 'baixa_confianca_no_instante', 'calibracao_id',
             'odd_consenso_bsd', 'capturado_em_utc', 'quote_at_utc', 'resultado_over25',
             'lucro_teorico_1u', 'ev_modelado_pct', 'original_over_verde_60',
-            'original_over_e_btts_verdes_60', 'mc_o70', 'mc_o70_ev5'
+            'original_over_e_btts_verdes_60', 'mc_o70', 'mc_o70_ev5', 'modelo_no_instante', 'modelo_legado_inferido'
         ])
         for r, c in classes:
             writer.writerow([
@@ -143,19 +153,37 @@ def gerar(db_path=DB_NAME, html_path='roi.html', csv_path='roi_jogos.csv'):
                 round(c['ev_pct'], 2),
                 'N/D' if c['original_over'] is None else int(c['original_over']),
                 'N/D' if c['original_over_btts'] is None else int(c['original_over_btts']),
-                int(c['mc_o70']), int(c['mc_o70_ev5'])
+                int(c['mc_o70']), int(c['mc_o70_ev5']),r['modelo_no_instante'] or 'N/D',
+                r['modelo'] if r['modelo_no_instante'] is None else ''
             ])
 
     def percent(v):
         return f'{v:+.2f}%' if v is not None else 'Sem amostra'
 
-    trs = ''.join('''<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>
-        <td>{}</td><td>{}</td></tr>'''.format(
-        html.escape(name), t['n'], t['wins'],
-        f"{t['hit_rate']:.1f}%" if t['hit_rate'] is not None else '—',
-        f"{t['avg_odds']:.3f}" if t['avg_odds'] is not None else '—',
-        f"{t['profit']:+.2f}u" if t['n'] else '—', percent(t['roi'])
-    ) for name, t in summaries)
+    ids = ['ROI-ALL-v1','ROI-GREEN60-v1','ROI-DOUBLE60-v1','ROI-O70-v1','ROI-O70-EV5-v1']
+    def interval(values):
+        return 'N/D' if values is None else f'[{values[0]:+.2f}%; {values[1]:+.2f}%]'
+    trs = ''
+    for identifier,(name,t) in zip(ids,summaries):
+        trs += '<tr>'+''.join('<td>'+str(v)+'</td>' for v in [
+            html.escape(name)+'<br><small>'+identifier+'</small>', scientific_status(t),
+            t['n'],t['wins'],f"{t['hit_rate']:.1f}%" if t['n'] else 'N/D',
+            interval(t['hit_ci95']),f"{t['avg_odds']:.3f}" if t['n'] else 'N/D',
+            f"{t['avg_probability']:.1f}%" if t['n'] else 'N/D',
+            f"{t['profit']:+.2f}u" if t['n'] else 'N/D',percent(t['roi']),interval(t['roi_ci95']),
+            ' a '.join(t['period']) if t['period'] else 'N/D','/'.join(t['models']) or 'N/D'
+        ])+'</tr>'
+    evolution = ''
+    for identifier,subset in zip(ids,[rows,original,original_duplo,pattern,value]):
+        weeks = sorted({datetime.fromtimestamp(r['timestamp'],timezone.utc).strftime('%G-W%V') for r in subset})
+        for week in weeks:
+            t = simular([r for r in subset if datetime.fromtimestamp(r['timestamp'],timezone.utc).strftime('%G-W%V')==week])
+            evolution += f"<tr><td>{identifier}</td><td>{week}</td><td>{t['n']}</td><td>{percent(t['roi'])}</td></tr>"
+    conn = sqlite3.connect(f'file:{Path(db_path).resolve()}?mode=ro',uri=True)
+    eligible = conn.execute("SELECT COUNT(*) FROM predictions WHERE modelo='v2' AND status='finished'").fetchone()[0]
+    conn.close()
+    coverage = f'{len(rows)}/{eligible} ({len(rows)/eligible:.1%})' if eligible else 'N/D'
+    legacy_versions = sum(r['modelo_no_instante'] is None for r in rows)
 
     final = f'''<!doctype html><html lang="pt"><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -193,8 +221,11 @@ def gerar(db_path=DB_NAME, html_path='roi.html', csv_path='roi_jogos.csv'):
       <div class="stat"><span>Odds válidas (acumuladas)</span><b>{quoted}</b></div>
       <div class="stat"><span>Jogos terminados com odd elegível</span><b>{len(rows)}</b></div>
       <div class="stat"><span>Liquidados sem BTTS / confiança históricos completos</span><b>{incompletos}</b></div></div>
-    <div class="scroll"><table><thead><tr><th>Conjunto de jogos / filtro</th><th>Jogos</th><th>Acertos Over</th><th>Taxa</th><th>Odd média</th><th>Lucro (1u/jogo)</th><th>ROI teórico</th></tr></thead><tbody>{trs}</tbody></table></div>
+    <div class="scroll"><table><thead><tr><th>Conjunto de jogos / filtro</th><th>Estado científico</th><th>Jogos</th><th>Acertos Over</th><th>Taxa</th><th>IC95% acerto</th><th>Odd média</th><th>Prob. média</th><th>Lucro (1u/jogo)</th><th>ROI teórico</th><th>IC95% ROI</th><th>Período UTC</th><th>Modelo</th></tr></thead><tbody>{trs}</tbody></table></div>
     <p class="hint">Cada linha é uma simulação independente sobre os mesmos jogos elegíveis quando as variáveis da regra estão disponíveis. As linhas sobrepõem-se: <strong>não se somam lucros entre estratégias</strong>. «Sem amostra» significa que ainda não existem jogos liquidados aptos para aquela regra; não significa ROI de 0%.</p>
+    <p class="hint">Cobertura acumulada: <strong>{coverage}</strong> dos jogos v2 liquidados têm odd elegível. O denominador inclui o período anterior à recolha; não é uma taxa de captura prospetiva. Versão v2 inferida da tabela histórica em {legacy_versions} jogos; sem versão congelada antiga, esta proveniência é explícita.</p>
+    <p class="notice"><strong>Exploratório histórico.</strong> NO-GO = IC95% do ROI inteiramente negativo ou falha de integridade; INCONCLUSIVO = não permite decisão; EXPERIMENTAL = sem amostra. CANDIDATO e VALIDADO exigem protocolos prospetivos separados e revisão registada; nenhum é atribuído automaticamente. IC de acerto: Wilson; IC de ROI: bootstrap de dias UTC (1000 réplicas), N/D com menos de 5 dias. Dependência entre dias e seleção de cobertura limitam estes intervalos.</p>
+    <h2>Evolução semanal (UTC)</h2><div class="scroll"><table><thead><tr><th>Hipótese</th><th>Semana</th><th>n</th><th>ROI</th></tr></thead><tbody>{evolution}</tbody></table></div>
     <h2>Metodologia e limitações — para analisar mais tarde</h2>
     <div class="card">
       <p><strong>Unidade de análise:</strong> um jogo terminado da versão v2, com resultado Over 2,5, odd BSD válida e respetiva probabilidade registadas <em>antes</em> do início. Apenas a primeira odd válida guardada por jogo é utilizada (a recolha deixa de repetir jogos com odd válida). Não se inventam odds anteriores à implementação. A janela é de até 6 horas antes do jogo.</p>
