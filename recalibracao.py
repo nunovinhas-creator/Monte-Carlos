@@ -202,6 +202,8 @@ def main():
     if tem_modelo and len(rows_v2) >= MIN_N_V2_FIT:
         modo = "v2_split"
         corte = int(len(rows_v2) * FRACAO_TREINO_V2)
+        while corte < len(rows_v2)-1 and rows_v2[corte-1][6] == rows_v2[corte][6]:
+            corte += 1
         treino_rows, teste_rows = rows_v2[:corte], rows_v2[corte:]
         desc_treino = f"modelo='v2', primeiros {FRACAO_TREINO_V2:.0%}"
         desc_teste = f"modelo='v2', ultimos {1 - FRACAO_TREINO_V2:.0%}"
@@ -224,6 +226,10 @@ def main():
         desc_teste = f"created_at >= {DATA_CORTE}"
         print("AVISO: coluna modelo vazia -- a separar por DATA_CORTE.")
 
+    if teste_rows:
+        limite = min(r[6] for r in teste_rows)
+        treino_rows = [r for r in treino_rows if r[6]+48*3600 < limite]
+    print('Diagnóstico legado exploratório; embargo de 48h; sem prova de disponibilidade histórica dos resultados.')
     print(f"Modo treino/teste: {modo} (v2 liquidadas: {len(rows_v2)}, minimo para fit v2: {MIN_N_V2_FIT})")
 
     resultado_o25 = avaliar_mercado("Over 2.5", treino_rows, teste_rows, 0, 2, desc_treino, desc_teste)

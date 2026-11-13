@@ -80,8 +80,8 @@ def brier(rows, beta=None):
                for p, y in rows) / len(rows)
 
 
-def gerar(db_path='predictions.db'):
-    conn = sqlite3.connect(db_path)
+def gerar(db_path=DB_PATH):
+    conn = sqlite3.connect(f'file:{Path(db_path).resolve()}?mode=ro', uri=True)
     try:
         rows = conn.execute('''
             SELECT prob_o25, result_o25, timestamp, match_id FROM predictions
@@ -100,7 +100,8 @@ def gerar(db_path='predictions.db'):
     # Nunca dividir entre dois jogos no mesmo instante.
     while split < len(rows) - 1 and rows[split - 1][2] == rows[split][2]:
         split += 1
-    treino = [(r[0], r[1]) for r in rows[:split]]
+    train_rows = [r for r in rows[:split] if r[2]+48*3600 < rows[split][2]]
+    treino = [(r[0], r[1]) for r in train_rows]
     teste = [(r[0], r[1]) for r in rows[split:]]
     if len(teste) < 150:
         raise RuntimeError('Holdout temporal insuficiente')
@@ -110,25 +111,25 @@ def gerar(db_path='predictions.db'):
     # Train-only coefficients. Holdout never selects activation or enters fitting.
     beta_final = beta_treino
     return {
-        'versao': 'MC-O25-PLATT-20261023',
+        'versao': 'LEGACY-PLATT-OFFLINE-20261113',
         'modelo': 'v2',
         'gerado_em': datetime.now(timezone.utc).isoformat(),
         'ativo': False,
         'a': round(beta_final[0], 9), 'b': round(beta_final[1], 9),
         'n_treino': len(treino), 'n_validacao': len(teste),
         'n_ajuste_final': len(treino),
-        'ultimo_evento_treino_utc': datetime.fromtimestamp(rows[split-1][2], tz=timezone.utc).isoformat(),
-        'ultimo_evento_treino_ts': rows[split-1][2],
+        'ultimo_evento_treino_utc': datetime.fromtimestamp(train_rows[-1][2], tz=timezone.utc).isoformat(),
+        'ultimo_evento_treino_ts': train_rows[-1][2],
         'brier_original_validacao': round(raw, 8),
         'brier_recalibrado_validacao': round(cal, 8),
-        'validacao_metodo': 'primeiros 60% por kickoff -> últimos 40%; coeficientes exclusivamente do treino; offline, sem ativação',
+        'validacao_metodo': '60/40 por kickoff, embargo 48h; coeficientes exclusivamente do treino; legado exploratório, sem ativação',
         'advertencia': 'Melhoria de calibração não demonstra ROI positivo. Não retreinar automaticamente.'
     }
 
 
 def cli():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--db', default=os.getenv('PREDICTIONS_DB', 'predictions.db'))
+    ap.add_argument('--db', default=DB_PATH)
     ap.add_argument('--output', default='research/legacy_platt_offline.json')
     args = ap.parse_args()
     result = gerar(args.db)

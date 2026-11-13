@@ -435,9 +435,11 @@ def main():
     )
     args = parser.parse_args()
 
-    init_db()
+    if args.aplicar:
+        parser.error('Escrita histórica desativada: requer migração separada, revista e testada numa cópia.')
 
-    conn = sqlite3.connect(DB_NAME)
+    from pathlib import Path
+    conn = sqlite3.connect(f'file:{Path(DB_NAME).resolve()}?mode=ro', uri=True)
     cursor = conn.cursor()
     cursor.execute("SELECT match_id, league, home_team, away_team, league_id FROM predictions")
     linhas = cursor.fetchall()
