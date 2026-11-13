@@ -8,6 +8,7 @@ import sqlite3
 from datetime import datetime, timezone, timedelta
 
 from pipeline.migrations import backup_before_migration, migrate
+from pipeline.kickoffs import current, observe
 
 DB_NAME = DB_PATH
 
@@ -201,20 +202,25 @@ def salvar_previsoes_db(jogos):
     with closing(get_connection()) as conn, conn:
         conn.execute("BEGIN IMMEDIATE")
         for j in jogos:
-            if j['timestamp'] <= now_ts:
-                continue
             match_id = str(j.get('id') or f"{j['home']}_{j['away']}_{j['timestamp']}")
             existing = conn.execute('SELECT status,result_o25,result_btts,timestamp FROM predictions WHERE match_id=?', (match_id,)).fetchone()
-            if existing and (existing[0] not in ('pending', None) or
-                             existing[1] is not None or existing[2] is not None or existing[3] <= now_ts):
+            if existing:
+                observe(conn,match_id,j['timestamp'],detected_at=now,source='bsd:events:prediction_input')
+            if j['timestamp'] <= now_ts:
                 continue
-            if existing and existing[3] != j['timestamp']:
-                print(f'Horário divergente em {match_id}; preservar o original e excluir nova previsão até revisão.')
+            if existing and (existing[0] not in ('pending', None) or
+                             existing[1] is not None or existing[2] is not None):
+                continue
+            if existing and current(conn,match_id)[2] == 'quarantined':
                 continue
             conn.execute("""INSERT OR IGNORE INTO predictions
                 (match_id,event_date,timestamp,league,league_id,home_team,away_team,created_at,status)
                 VALUES (?,?,?,?,?,?,?,?,'pending')""",
                 (match_id,j['data_str'],j['timestamp'],j['liga'],j.get('league_id'),j['home'],j['away'],observed))
+            if conn.execute('SELECT 1 FROM prediction_snapshots WHERE match_id=? AND predicted_at=? AND modelo=?',
+                            (match_id,observed,j.get('modelo',MODELO_ACTUAL))).fetchone():
+                saved_ids.add(match_id)
+                continue
             values = {'xg_home': j['xg_home'], 'xg_away': j['xg_away'],
                 'prob_o25': round(j['o25'],2), 'prob_btts': round(j['btts'],2),
                 'modelo': j.get('modelo',MODELO_ACTUAL),
@@ -223,7 +229,8 @@ def salvar_previsoes_db(jogos):
                 'prediction_updated_at': observed}
             values.update({key:j[key] for key in COLUNAS_EXTRA_UPDATE if key in j})
             conn.execute('UPDATE predictions SET '+','.join(key+'=?' for key in values)+' WHERE match_id=?', (*values.values(),match_id))
-            row = conn.execute('SELECT timestamp,modelo,prob_o25,prob_btts,prob_o25_base,baixa_confianca,calibracao_o25_id FROM predictions WHERE match_id=?',(match_id,)).fetchone()
+            kickoff, revision_id, _ = current(conn,match_id)
+            row = conn.execute('SELECT modelo,prob_o25,prob_btts,prob_o25_base,baixa_confianca,calibracao_o25_id FROM predictions WHERE match_id=?',(match_id,)).fetchone()
             provenance = j.get('provenance', {'source':'bsd', 'origem_xg':j.get('origem_xg'),
                                             'n_h2h':j.get('n_h2h')})
             parameters = j.get('parameters', {'xg_home':j['xg_home'],'xg_away':j['xg_away'],
@@ -231,11 +238,11 @@ def salvar_previsoes_db(jogos):
             parameters = dict(parameters, source_sha256=model_fingerprint())
             conn.execute("""INSERT INTO prediction_snapshots
                 (match_id,predicted_at,kickoff,modelo,prob_o25,prob_btts,prob_o25_base,
-                baixa_confianca,calibracao_o25_id,prob_btts_base,provenance_json,parameters_json)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
-                (match_id,observed,*row,j.get('btts_base'),
+                baixa_confianca,calibracao_o25_id,prob_btts_base,provenance_json,parameters_json,kickoff_revision_id)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (match_id,observed,kickoff,*row,j.get('btts_base'),
                  json.dumps(provenance,ensure_ascii=False,sort_keys=True,allow_nan=False),
-                 json.dumps(parameters,ensure_ascii=False,sort_keys=True,allow_nan=False)))
+                 json.dumps(parameters,ensure_ascii=False,sort_keys=True,allow_nan=False),revision_id))
             saved_ids.add(match_id)
     print(f"Snapshots pré-jogo guardados: {len(saved_ids)}; base compatível: {DB_NAME}")
     return saved_ids

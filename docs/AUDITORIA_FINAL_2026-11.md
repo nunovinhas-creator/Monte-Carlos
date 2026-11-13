@@ -1,6 +1,8 @@
 # Auditoria final — Monte-Carlos — 13/11/2026
 
-Trabalho na branch `codex/monte-carlos-final-cleanup`. Sem merge, execução BSD real ou alteração da produção. Implementação P0–P7 preparada para revisão; a confirmação operacional em produção só pode ocorrer depois dessa revisão.
+O **PR #24 foi integrado em `main` em 13/11/2026 às 12:47:52 UTC**, merge `2fe1132`. O [run #820](https://github.com/nunovinhas-creator/Monte-Carlos/actions/runs/43428215133) concluiu com sucesso e persistiu `6eaa16c`; o [Pages desse SHA](https://github.com/nunovinhas-creator/Monte-Carlos/actions/runs/43428615452) também teve sucesso. Persistiram seis conflitos de horário e cobertura recente de **245/563 = 43,5%**: sucesso técnico não significa validação científica.
+
+As secções 1–13 conservam a auditoria original do PR #24 e a sua baseline anterior. As correções, testes, exemplos dos seis IDs, quarentena, cobertura por liga/dia e rollback do **Issue #25** estão em [CORRECOES_ISSUE25.md](CORRECOES_ISSUE25.md), com [evidência antes/depois](baseline/ISSUE25_2026-11-13.json). O PR do Issue #25 é Draft; neste trabalho não houve merge, chamada BSD real ou alteração da base de produção.
 
 ## 1. Versão inicial e baseline P0
 
@@ -163,7 +165,7 @@ Cobertura inferior a **25%**, com pelo menos 20 jogos liquidados recentes, bloqu
 
 Persistência é atómica por commit. Se a main avançar durante a corrida, o push é bloqueado sem rebase de SQLite. Uma etapa crítica falhada impede publicação; observações da corrida falhada ficam num artefacto de recuperação com retenção de um dia. Atualmente duas cópias da base somam aproximadamente 5,4 MB antes de compressão; mesmo 12 falhas/dia ficam perto de 65 MB antes de compressão. Crescimento da base e quota de artefactos da conta devem ser acompanhados; nenhuma subscrição ou quota paga foi ativada.
 
-A configuração Pages foi apenas lida: `legacy`, fonte `main:/`, estado inicial `built`. Após revisão, o workflow pedirá um build e verificará SHA/estado; token, permissões e resposta desse endpoint em produção ainda não foram exercitados. Uma falha de publicação produz workflow vermelho e recuperação, sem alegar que o site foi atualizado. A revisão deve incluir uma primeira corrida supervisionada após eventual merge.
+À data da auditoria original a configuração Pages tinha sido apenas lida: `legacy`, fonte `main:/`. Depois do merge do PR #24, o run #820 confirmou a publicação de `6eaa16c`; dois builds desse SHA foram observados, um cancelado e outro concluído. O Issue #25 substitui o pedido incondicional por observação prévia e um único pedido de recurso quando necessário, mantendo a confirmação do SHA exato. Falha de publicação continua a produzir workflow vermelho e recuperação.
 
 ## 12. Registo de hipóteses
 

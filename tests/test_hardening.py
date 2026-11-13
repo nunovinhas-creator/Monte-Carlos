@@ -135,14 +135,15 @@ class HistoryTests(unittest.TestCase):
         digest = hashlib.sha256(Path(self.path).read_bytes()).hexdigest()
         database.init_db(); after=state(self.path)
         self.assertFalse(compare(before,after))
-        self.assertEqual(after['counts']['prediction_snapshots'],0)
+        self.assertEqual(after['counts']['prediction_snapshots'],before['counts'].get('prediction_snapshots',0))
         db_hash=hashlib.sha256(Path(self.path).read_bytes()).hexdigest()
         database.init_db()
         self.assertEqual(after,state(self.path))
         self.assertEqual(db_hash,hashlib.sha256(Path(self.path).read_bytes()).hexdigest())
-        backup=Path(self.tmp.name)/'data/backups'/f'pre-snapshots-{digest}.db'
-        self.assertTrue(backup.exists())
-        shutil.copyfile(backup,self.path)
+        backup=Path(self.tmp.name)/'data/backups'/f'pre-kickoffs-{digest}.db'
+        if 'odds_capture_audit' not in before['counts']:
+            self.assertTrue(backup.exists())
+            shutil.copyfile(backup,self.path)
         self.assertEqual(before,state(self.path))
 
     def test_failed_migration_rolls_back_ddl(self):

@@ -17,7 +17,13 @@ CACHE_TIME = 300
 RATE_LIMIT_BACKOFF = [2, 4, 8]  # segundos, por tentativa de retry apos 429
 
 
-def _get(endpoint, params=None):
+class BSDRequestError(RuntimeError):
+    def __init__(self, reason):
+        self.reason = reason
+        super().__init__(reason)
+
+
+def _get(endpoint, params=None, raise_errors=False):
 
     key = endpoint + str(params)
 
@@ -54,6 +60,8 @@ def _get(endpoint, params=None):
 
             if r.status_code != 200:
                 print(f"Erro BSD {r.status_code}: {endpoint}")
+                if raise_errors:
+                    raise BSDRequestError('quota_http_429' if r.status_code == 429 else f'http_{r.status_code}')
                 return None
 
             data = r.json()
@@ -66,7 +74,10 @@ def _get(endpoint, params=None):
             return data
 
         except Exception as e:
-
+            if raise_errors:
+                if isinstance(e,BSDRequestError):
+                    raise
+                raise BSDRequestError(f'erro_api:{type(e).__name__}') from e
             print("Erro API:", e)
             return None
 
@@ -142,7 +153,7 @@ def obter_prediction(event_id):
 
 def obter_odds(event_id):
 
-    data = _get(f"/events/{event_id}/odds/")
+    data = _get(f"/events/{event_id}/odds/", raise_errors=True)
 
     if not data:
         return []

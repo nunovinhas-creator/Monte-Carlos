@@ -1,0 +1,43 @@
+$ /workspace/work/venv/bin/python -m pytest -q
+.............................................................            [100%]
+61 passed in 1.86s
+exit=0
+
+$ /workspace/work/venv/bin/python -m compileall -q src pipeline analysis tests database.py ligas_bsd.py team_stats.py adjusted_xg.py calibration_o25.py roi_report.py api.py migrar_ligas.py recalibracao.py main.py odds_tracking.py project_paths.py predictor.py settlement.py backtest.py
+exit=0
+
+$ /workspace/work/venv/bin/python -m pipeline.offline_check
+Kickoff 649924: old=2026-11-13T13:00:00+00:00 new=N/D source=github:actions/runs/43428215133:job/131894823856:bsd_warning detected=2026-11-13T12:50:25.425867+00:00 kind=unknown state=quarantined reason=run_820_conflict_new_time_not_logged
+Kickoff 604616: old=2026-11-15T15:00:00+00:00 new=N/D source=github:actions/runs/43428215133:job/131894823856:bsd_warning detected=2026-11-13T12:50:25.426004+00:00 kind=unknown state=quarantined reason=run_820_conflict_new_time_not_logged
+Kickoff 606209: old=2026-11-13T20:00:00+00:00 new=N/D source=github:actions/runs/43428215133:job/131894823856:bsd_warning detected=2026-11-13T12:50:25.426114+00:00 kind=unknown state=quarantined reason=run_820_conflict_new_time_not_logged
+Kickoff 654308: old=2026-11-14T13:00:00+00:00 new=N/D source=github:actions/runs/43428215133:job/131894823856:bsd_warning detected=2026-11-13T12:50:25.426229+00:00 kind=unknown state=quarantined reason=run_820_conflict_new_time_not_logged
+Kickoff 604619: old=2026-11-15T15:00:00+00:00 new=N/D source=github:actions/runs/43428215133:job/131894823856:bsd_warning detected=2026-11-13T12:50:25.426351+00:00 kind=unknown state=quarantined reason=run_820_conflict_new_time_not_logged
+Kickoff 604620: old=2026-11-15T15:00:00+00:00 new=N/D source=github:actions/runs/43428215133:job/131894823856:bsd_warning detected=2026-11-13T12:50:25.426490+00:00 kind=unknown state=quarantined reason=run_820_conflict_new_time_not_logged
+OK: backtest.html gerado. Amostra liquidada: 7533 jogos.
+ROI: 933 jogos com odd pré-jogo; Original 60=401; O70=158; ROI O70=-6.92%
+Offline pipeline: migrated copy, reports and preserved original history OK.
+exit=0
+
+$ /workspace/work/venv/bin/python -m pipeline.integrity --published .
+{
+  "errors": [],
+  "warnings": [
+    "12 legacy predictions created at/after kickoff; no first/last reconstruction"
+  ],
+  "coverage_7d": 0.43672014260249553,
+  "coverage_n": 561,
+  "coverage_quoted": 245,
+  "db_sha256": "0f31d652d9a9fe36176b376aca61aaf1c3c5b6002051cef8645a62aac0a6e1cb"
+}
+exit=0
+
+$ /workspace/work/bin/actionlint -shellcheck=
+exit=0
+
+$ git diff --check
+exit=0
+
+Already-migrated database: repeat full offline test suite in isolated repository copy
+.............................................................            [100%]
+61 passed in 1.82s
+exit=0
